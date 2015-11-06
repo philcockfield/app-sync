@@ -9,6 +9,7 @@ const isEmpty = (value) => (R.isNil(value) || R.isEmpty(value));
 const api = {
   apps: [],
 
+
   /**
    * Resets the state of the API.
    */
