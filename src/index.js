@@ -19,7 +19,7 @@ const isEmpty = (value) => (R.isNil(value) || R.isEmpty(value));
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
-  const targetFolder = settings.targetFolder || "./.synced-apps"
+  const targetFolder = settings.targetFolder || "./.build"
   const token = settings.token;
 
   return {

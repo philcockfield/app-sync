@@ -23,7 +23,7 @@ describe("Main API", () => {
     it("has default values", () => {
       const app = syncer();
       expect(app.apps).to.eql([]);
-      expect(app.targetFolder).to.equal("./.synced-apps");
+      expect(app.targetFolder).to.equal("./.build");
     });
   });
 

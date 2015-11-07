@@ -1,14 +1,15 @@
 import syncer from "../";
 
 
-const node = syncer({ targetFolder: "./example/.synced-apps" });
+const node = syncer({ targetFolder: "./example/.build" });
 
 node
-  .add("my-app", "philcockfield/node-syncer/example/app-1")
+  .add("my-app-name", "philcockfield/node-syncer/example/app-1")
 
 // console.log("app", app);
 
 console.log("node", node);
+console.log("-------------------------------------------");
 
 node.apps[0].download()
 .then(result => {
