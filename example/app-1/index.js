@@ -7,8 +7,10 @@ var express = require("express");
 var app = express();
 
 
+let count = 0;
 app.get("/", function(req, res) {
-  res.send("Hello World! - " + new Date());
+  count += 1;
+  res.send("Hello World! - " + count);
 });
 
 
