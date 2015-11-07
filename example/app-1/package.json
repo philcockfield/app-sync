@@ -1,0 +1,7 @@
+{
+  "name": "my-components",
+  "main": "./index.js",
+  "scripts": {
+    "start": "node ."
+  }
+}
