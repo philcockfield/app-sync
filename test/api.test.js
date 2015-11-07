@@ -39,23 +39,23 @@ describe("Main API", () => {
     });
 
     it("adds an app (root of repo)", () => {
-      node.add("my-app", "philcockfield/node-syncer");
+      node.add("my-app", "philcockfield/app-sync");
       const app = node.apps[0];
       expect(app.id).to.equal("my-app");
-      expect(app.repo.name).to.equal("philcockfield/node-syncer");
+      expect(app.repo.name).to.equal("philcockfield/app-sync");
       expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
     });
 
     it("adds an app with a path to a sub-folder within the repo", () => {
-      node.add("my-app", "philcockfield/node-syncer/example/app-1");
+      node.add("my-app", "philcockfield/app-sync/example/app-1");
       const app = node.apps[0];
       expect(app.id).to.equal("my-app");
-      expect(app.repo.name).to.equal("philcockfield/node-syncer");
+      expect(app.repo.name).to.equal("philcockfield/app-sync");
       expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
     });
 
     it("adds an app with default values", () => {
-      node.add("my-app", "philcockfield/node-syncer/example/app-1");
+      node.add("my-app", "philcockfield/app-sync/example/app-1");
       const app = node.apps[0];
       expect(app.branch).to.equal("master");
     });

@@ -1,5 +1,5 @@
 {
-  "name": "node-syncer",
+  "name": "app-sync",
   "version": "0.0.1",
   "description": "Runs one or more node-apps keeping them in sync with Github.",
   "main": "./lib/index.js",
@@ -30,16 +30,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/philcockfield/node-syncer"
+    "url": "https://github.com/philcockfield/app-sync"
   },
   "keywords": [
-    "sync,github,pm2"
+    "sync,github,pm2,gateway"
   ],
   "author": {
     "name": "Phil Cockfield",
     "email": "phil@cockfield.net",
     "url": "https://github.com/philcockfield"
   },
-  "homepage": "https://github.com/philcockfield/node-syncer",
+  "homepage": "https://github.com/philcockfield/app-sync",
   "license": "MIT"
 }

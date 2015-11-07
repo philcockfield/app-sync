@@ -1,7 +1,8 @@
-# node-syncer
-[![Build Status](https://travis-ci.org/philcockfield/node-syncer.svg)](https://travis-ci.org/philcockfield/node-syncer)
+# node-sync
+[![Build Status](https://travis-ci.org/philcockfield/node-sync.svg)](https://travis-ci.org/philcockfield/node-sync)
 
-Runs one or more node-apps keeping them in sync with Github.
+Pulls and runs node apps from Github, keeping them in sync with the repository using [Semantic Versioning](http://semver.org/).
+
 
 
 ## Run

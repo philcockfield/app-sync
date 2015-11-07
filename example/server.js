@@ -2,7 +2,7 @@ import syncer from "../src/";
 
 
 const node = syncer({ targetFolder: "./example/.build", token: process.env.GITHUB_TOKEN })
-  .add("my-app-1", "philcockfield/node-syncer/example/app-1");
+  .add("my-app-1", "philcockfield/app-sync/example/app-1");
 
 // console.log("app", app);
 
