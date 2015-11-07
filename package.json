@@ -9,7 +9,7 @@
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
     "prepublish": "gulp build",
-    "docker-push": "sh ./sh/docker-push.sh"
+    "docker-build": "sh ./sh/docker-build.sh"
   },
   "dependencies": {
     "file-system-github": "1.0.0",
