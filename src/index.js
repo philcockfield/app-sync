@@ -1,10 +1,7 @@
 import R from "ramda";
-import fsPath from "path";
-import github from "file-system-github";
-
+import app from "./app";
+import { isEmpty } from "./util";
 const DEFAULT_PORT = 5000;
-let githubSettings = {};
-const isEmpty = (value) => (R.isNil(value) || R.isEmpty(value));
 
 
 
@@ -27,7 +24,6 @@ export default (settings = {}) => {
     userAgent,
     targetFolder,
 
-
     /**
      * Adds a new application to run.
      * @param {string} name: The unique name of the app (ID).
@@ -41,35 +37,14 @@ export default (settings = {}) => {
      */
     add(name, repo, options = {}) {
       // Setup initial conditions.
-      if (isEmpty(name)) { throw new Error("'name' of app required"); }
-      if (isEmpty(repo)) { throw new Error("'repo' name required, eg. 'username/my-repo'"); }
       if (R.find(item => item.name === name, this.apps)) {
         throw new Error(`An app with the name '${ name }' has already been registered.`);
       }
 
-      // Extract the repo and sub-path.
-      const parts = repo.split("/");
-      if (parts.length < 2) { throw new Error(`A repo must have a 'user-name' and 'repo-name', eg 'username/repo'.`); }
-      repo = github.repo(userAgent, `${ parts[0] }/${ parts[1] }`, { token });
-      const path = R.takeLast(parts.length - 2, parts).join("/");
-
-      // Store values.
-      const item = R.clone(options);
-      item.name = name;
-      item.repo = repo;
-      item.branch = item.branch || "master";
-      item.port = DEFAULT_PORT + (this.apps.length);
-      if (!isEmpty(path)) { item.path = path; }
+      // Create the App object.
+      const port = DEFAULT_PORT + (this.apps.length);
+      const item = app(userAgent, token, targetFolder, name, repo, port, options);
       this.apps.push(item);
-
-      /**
-       * Downloads the app from the remote repository.
-       * @return {Promise}.
-       */
-      item.download = () => {
-          const targetPath = fsPath.resolve(`${ targetFolder }/${ name }`);
-          return repo.copy(path, targetPath, { branch: item.branch });
-        };
 
       // Finish up.
       return this;

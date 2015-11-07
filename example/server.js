@@ -1,10 +1,8 @@
-import syncer from "../";
+import syncer from "../src/";
 
 
-const node = syncer({ targetFolder: "./example/.build" });
-
-node
-  .add("my-app-name", "philcockfield/node-syncer/example/app-1")
+const node = syncer({ targetFolder: "./example/.build" })
+  .add("my-app-name", "philcockfield/node-syncer/example/app-1");
 
 // console.log("app", app);
 
