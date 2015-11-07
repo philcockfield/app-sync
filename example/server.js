@@ -12,6 +12,8 @@ console.log("-------------------------------------------");
 node.apps[0].download()
 .then(result => {
   console.log("result", result);
+  node.apps[0].start();
+
 })
 .catch(err => {
   console.log("err", err);

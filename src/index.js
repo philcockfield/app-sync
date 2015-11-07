@@ -26,7 +26,7 @@ export default (settings = {}) => {
 
     /**
      * Adds a new application to run.
-     * @param {string} name: The unique name of the app (ID).
+     * @param {string} id:   The unique name of the app (ID).
      * @param {repo}  repo:  The Github 'username/repo'.
      *                       Optionally you can specify a sub-path within the repos
      *                       like this:
@@ -35,15 +35,15 @@ export default (settings = {}) => {
      *                    - branch: The branch to query.
      *                              Default: "master".
      */
-    add(name, repo, options = {}) {
+    add(id, repo, options = {}) {
       // Setup initial conditions.
-      if (R.find(item => item.name === name, this.apps)) {
-        throw new Error(`An app with the name '${ name }' has already been registered.`);
+      if (R.find(item => item.id === id, this.apps)) {
+        throw new Error(`An app with the ID '${ id }' has already been registered.`);
       }
 
       // Create the App object.
       const port = DEFAULT_PORT + (this.apps.length);
-      const item = app(userAgent, token, targetFolder, name, repo, port, options);
+      const item = app(userAgent, token, targetFolder, id, repo, port, options);
       this.apps.push(item);
 
       // Finish up.

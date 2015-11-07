@@ -16,64 +16,73 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 describe("Main API", () => {
   describe("init", function() {
     it("initializes with default values", () => {
-      const app = syncer();
-      expect(app.userAgent).to.equal("app-syncer");
+      const node = syncer();
+      expect(node.userAgent).to.equal("app-syncer");
     });
 
     it("has default values", () => {
-      const app = syncer();
-      expect(app.apps).to.eql([]);
-      expect(app.targetFolder).to.equal("./.build");
+      const node = syncer();
+      expect(node.apps).to.eql([]);
+      expect(node.targetFolder).to.equal("./.build");
     });
   });
 
 
   describe("add", function() {
-    let app;
+    let node;
     beforeEach(() => {
-      app = syncer({ token: GITHUB_TOKEN });
+      node = syncer({ token: GITHUB_TOKEN });
     });
 
     it("has no apps", () => {
-      expect(app.apps).to.eql([]);
+      expect(node.apps).to.eql([]);
     });
 
     it("adds an app (root of repo)", () => {
-      app.add("my-app", "philcockfield/node-syncer");
-      expect(app.apps[0].name).to.equal("my-app");
-      expect(app.apps[0].repo.name).to.equal("philcockfield/node-syncer");
-      expect(app.apps[0].path).to.equal(undefined);
+      node.add("my-app", "philcockfield/node-syncer");
+      const app = node.apps[0];
+      expect(app.id).to.equal("my-app");
+      expect(app.repo.name).to.equal("philcockfield/node-syncer");
+      expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
     });
 
     it("adds an app with a path to a sub-folder within the repo", () => {
-      app.add("my-app", "philcockfield/node-syncer/example/app-1");
-      expect(app.apps[0].name).to.equal("my-app");
-      expect(app.apps[0].repo.name).to.equal("philcockfield/node-syncer");
-      expect(app.apps[0].path).to.equal("example/app-1");
+      node.add("my-app", "philcockfield/node-syncer/example/app-1");
+      const app = node.apps[0];
+      expect(app.id).to.equal("my-app");
+      expect(app.repo.name).to.equal("philcockfield/node-syncer");
+      expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
+    });
+
+    it("adds an app with default values", () => {
+      node.add("my-app", "philcockfield/node-syncer/example/app-1");
+      const app = node.apps[0];
+      expect(app.branch).to.equal("master");
+      expect(app.runCommand).to.equal("npm start");
     });
 
     it("throws if the 'name' or 'repo' are not specified", () => {
-      expect(() => app.add(undefined, "user/my-repo")).to.throw();
-      expect(() => app.add("name")).to.throw();
+      expect(() => node.add(undefined, "user/my-repo")).to.throw();
+      expect(() => node.add("name")).to.throw();
     });
 
     it("throws if the repo is not two parts (username/repo-name)", () => {
-      expect(() => app.add("my-app", "fail")).to.throw();
+      expect(() => node.add("my-app", "fail")).to.throw();
     });
 
     it("throws if a 'name' is repeated", () => {
-      app.add("my-app", "user/my-repo-1");
+      node.add("my-app", "user/my-repo-1");
       let fn = () => {
-        app.add("my-app", "user/my-repo-2");
+        node.add("my-app", "user/my-repo-2");
       };
       expect(fn).to.throw();
     });
 
     it("auto-assigns port numbers", () => {
-      app.add("my-app-1", "user/my-repo");
-      app.add("my-app-2", "user/my-repo");
-      expect(app.apps[0].port).to.equal(5000);
-      expect(app.apps[1].port).to.equal(5001);
+      node.add("my-app-1", "user/my-repo");
+      node.add("my-app-2", "user/my-repo");
+      expect(node.apps[0].port).to.equal(5000);
+      expect(node.apps[1].port).to.equal(5001);
     });
   });
 });
