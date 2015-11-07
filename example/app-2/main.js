@@ -6,12 +6,12 @@ var app = express();
 var count = 0;
 app.get("/", function(req, res) {
   count += 1;
-  res.send("<h1>Hello App-1 - " + count + "</h1>");
+  res.send("<h1>Hello App-2 - " + count + "</h1>");
 });
 
 
 var PORT = argv.port || 5000;
-console.log("Starting App-1");
+console.log("Starting App-2");
 app.listen(PORT, function() {
     console.log("Listning on port:", PORT);
     console.log("");
