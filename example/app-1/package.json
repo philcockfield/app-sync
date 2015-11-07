@@ -2,6 +2,7 @@
   "name": "sample-1",
   "main": "./index.js",
   "dependencies": {
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "minimist": "^1.2.0"
   }
 }
