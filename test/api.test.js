@@ -25,13 +25,6 @@ describe("Main API", () => {
       expect(app.apps).to.eql([]);
       expect(app.targetFolder).to.equal("./.synced-apps");
     });
-
-    it("stores optional values", () => {
-      const app = syncer({
-        token: "my-github-token"
-      });
-      expect(app.token).to.equal("my-github-token");
-    });
   });
 
 
@@ -48,14 +41,14 @@ describe("Main API", () => {
     it("adds an app (root of repo)", () => {
       app.add("my-app", "philcockfield/node-syncer");
       expect(app.apps[0].name).to.equal("my-app");
-      expect(app.apps[0].repo).to.equal("philcockfield/node-syncer");
+      expect(app.apps[0].repo.name).to.equal("philcockfield/node-syncer");
       expect(app.apps[0].path).to.equal(undefined);
     });
 
     it("adds an app with a path to a sub-folder within the repo", () => {
       app.add("my-app", "philcockfield/node-syncer/example/app-1");
       expect(app.apps[0].name).to.equal("my-app");
-      expect(app.apps[0].repo).to.equal("philcockfield/node-syncer");
+      expect(app.apps[0].repo.name).to.equal("philcockfield/node-syncer");
       expect(app.apps[0].path).to.equal("example/app-1");
     });
 
