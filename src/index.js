@@ -55,11 +55,14 @@ export default (settings = {}) => {
 
     /**
      * Downloads all registered apps.
+     * @param options:
+     *            - install: Flag indicating if `npm install` should be run on the directory.
+     *                       Default: true.
      * @return {Promise}
      */
-    download() {
+    download(options = {}) {
       return new Promise((resolve, reject) => {
-        promises(this.apps.map(app => app.download()))
+        promises(this.apps.map(app => app.download(options)))
           .then(result => resolve({ apps: result.results }))
           .catch(err => reject(err));
       });

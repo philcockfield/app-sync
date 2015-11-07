@@ -3,7 +3,7 @@ import Promise from "bluebird";
 import shell from "shelljs";
 import fsPath from "path";
 import github from "file-system-github";
-import { isEmpty } from "./util";
+import { isEmpty, shellAsync } from "./util";
 
 
 
@@ -29,6 +29,7 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
   if (isEmpty(id)) { throw new Error("'id' for the app is required"); }
   if (isEmpty(repo)) { throw new Error("'repo' name required, eg. 'username/my-repo'"); }
   const branch = options.branch || "master";
+  const WORKING_DIRECTORY = process.cwd();
 
   // Extract the repo and sub-path.
   let parts = repo.split("/");
@@ -51,18 +52,61 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
 
     /**
      * Downloads the app from the remote repository.
+     * @param options:
+     *            - install: Flag indicating if `npm install` should be run on the directory.
+     *                       Default: true.
      * @return {Promise}.
      */
-    download() {
+    download(options = {}) {
+      const install = options.install == undefined ? true : options.install;
       return new Promise((resolve, reject) => {
+
+        const onSaved = (result) => {
+              if (install) {
+                // Run `npm install`.
+                this.install()
+                  .then(() => {
+                      result.installed = true;
+                      resolve(result);
+                  })
+                  .catch(err => reject(err));
+              } else {
+                resolve(result); // Return without running `npm install`.
+              }
+            };
+
+        // Download the repository files.
         repo
           .get(repoSubFolder, { branch: branch })
           .then(result => {
               result.save(localFolder)
-                .then(result => resolve({ id, files: result.files }))
+                .then(result => onSaved({ id, files: result.files }))
                 .catch(err => reject(err));
           })
           .catch(err => reject(err));
+      });
+    },
+
+
+    /**
+     * Runs `npm install` on the app.
+     * @return {Promise}.
+     */
+    install() {
+      return new Promise((resolve, reject) => {
+          shell.cd(localFolder);
+          shellAsync("npm install --loglevel error >&-")
+            .then(result => {
+                shell.cd(WORKING_DIRECTORY);
+                if (result.code === 0) {
+                  resolve(result)
+                } else {
+                  result.error = `Failed while running 'npm install'.`;
+                  reject(result)
+                }
+            })
+            .catch(err => reject(err))
+            .finally(() => shell.cd(WORKING_DIRECTORY));
       });
     },
 
@@ -73,8 +117,8 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
     start() {
       this.stop();
       shell.cd(localFolder);
-      shell.exec("npm install --loglevel error >&-");
       shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
+      shell.cd(WORKING_DIRECTORY);
     },
 
 
@@ -84,6 +128,7 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
     stop() {
       shell.cd(localFolder);
       shell.exec(`pm2 stop ${ id }`);
+      shell.cd(WORKING_DIRECTORY);
     }
   };
 

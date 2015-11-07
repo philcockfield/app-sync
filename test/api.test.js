@@ -14,7 +14,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
 
 
-describe("Main API", () => {
+describe("api (module)", () => {
   describe("init", function() {
     it("initializes with default values", () => {
       const node = appSync();
@@ -32,7 +32,7 @@ describe("Main API", () => {
   describe("add", function() {
     let node;
     beforeEach(() => {
-      node = syncer({ token: GITHUB_TOKEN });
+      node = appSync({ token: GITHUB_TOKEN });
     });
 
     it("has no apps", () => {
