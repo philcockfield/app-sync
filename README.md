@@ -1,7 +1,7 @@
 # app-sync
 [![Build Status](https://travis-ci.org/philcockfield/app-sync.svg)](https://travis-ci.org/philcockfield/app-sync)
 
-Pulls and runs node apps from Github, keeping them in sync with the repository using [Semantic Versioning](http://semver.org/).
+Pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
 
 
 ## Setup
