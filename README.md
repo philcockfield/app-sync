@@ -1,11 +1,20 @@
-# node-sync
-[![Build Status](https://travis-ci.org/philcockfield/node-sync.svg)](https://travis-ci.org/philcockfield/node-sync)
+# app-sync
+[![Build Status](https://travis-ci.org/philcockfield/app-sync.svg)](https://travis-ci.org/philcockfield/app-sync)
 
 Pulls and runs node apps from Github, keeping them in sync with the repository using [Semantic Versioning](http://semver.org/).
 
 
+## Setup
 
-## Run
+    npm install app-sync --save
+
+If you are not using the module within it's Docker container, then ensure that [`pm2`](http://pm2.keymetrics.io/) is installed within it's runtime environment:
+
+    npm install pm2 -g
+
+
+
+## Run Example
     npm install
     npm start
 
