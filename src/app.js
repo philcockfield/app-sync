@@ -59,8 +59,10 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
      * Starts the app within the `pm2` process monitor.
      */
     start() {
+      this.stop();
       shell.cd(localFolder);
-      shell.exec(`pm2 start . --name ${ id } --node-args '--port=${ port }'`);
+      shell.exec("npm install --loglevel error >&-");
+      shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
     },
 
     /**
