@@ -58,7 +58,6 @@ describe("Main API", () => {
       node.add("my-app", "philcockfield/node-syncer/example/app-1");
       const app = node.apps[0];
       expect(app.branch).to.equal("master");
-      expect(app.runCommand).to.equal("npm start");
     });
 
     it("throws if the 'name' or 'repo' are not specified", () => {

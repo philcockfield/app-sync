@@ -18,3 +18,7 @@ node.apps[0].download()
 .catch(err => {
   console.log("err", err);
 })
+
+
+// node.apps[0].start();
+// node.apps[0].stop();

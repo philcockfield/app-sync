@@ -22,14 +22,12 @@ import { isEmpty } from "./util";
  * @param {integer} port: The port the app runs on.
  * @param {Object} options:
  *                    - branch:     The branch to query. Default: "master".
- *                    - runCommand: The start command to run the app with.
  */
 export default (userAgent, token, targetFolder, id, repo, port, options = {}) => {
   // Setup initial conditions.
   if (isEmpty(id)) { throw new Error("'id' for the app is required"); }
   if (isEmpty(repo)) { throw new Error("'repo' name required, eg. 'username/my-repo'"); }
   const branch = options.branch || "master";
-  const runCommand = options.runCommand || "npm start";
 
   // Extract the repo and sub-path.
   let parts = repo.split("/");
@@ -47,7 +45,6 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
     repo,
     port,
     branch,
-    runCommand,
     localFolder,
 
     /**
@@ -59,16 +56,21 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
     },
 
     /**
-     * Starts the app.
+     * Starts the app within the `pm2` process monitor.
      */
     start() {
-      console.log("start ||", runCommand);
-      // console.log("targetPath", targetPath);
-      console.log("localFolder", localFolder);
+      shell.cd(localFolder);
+      shell.exec(`pm2 start . --name ${ id } --node-args '--port=${ port }'`);
+    },
 
+    /**
+     * Stops the app running within the 'pm2' process monitor.
+     */
+    stop() {
+      shell.cd(localFolder);
+      shell.exec(`pm2 stop ${ id }`);
     }
   };
-  // if (!isEmpty(path)) { app.path = path; }
 
   // Finish up.
   return app;
