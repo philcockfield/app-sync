@@ -1,4 +1,7 @@
 {
   "name": "sample-1",
-  "main": "./index.js"
+  "main": "./index.js",
+  "dependencies": {
+    "express": "^4.13.3"
+  }
 }
