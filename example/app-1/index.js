@@ -14,5 +14,6 @@ app.get("/", function(req, res) {
 
 const PORT = 5000;
 app.listen(PORT, function() {
-  console.log("PORT", PORT);
-})
+    console.log("Listning on port:", PORT);
+    console.log("");
+});
