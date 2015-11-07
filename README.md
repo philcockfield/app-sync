@@ -16,7 +16,7 @@ If you are not using the module within it's Docker container, then ensure that [
 
 ## Run Example
     npm install
-    npm start
+    npm run example
 
 
 ## Test

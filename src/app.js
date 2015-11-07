@@ -1,4 +1,5 @@
 import R from "ramda";
+import Promise from "bluebird";
 import shell from "shelljs";
 import fsPath from "path";
 import github from "file-system-github";
@@ -56,7 +57,11 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
       return new Promise((resolve, reject) => {
         repo
           .get(repoSubFolder, { branch: branch })
-          .then(result => result.save(localFolder))
+          .then(result => {
+              result.save(localFolder)
+                .then(result => resolve({ id, files: result.files }))
+                .catch(err => reject(err));
+          })
           .catch(err => reject(err));
       });
     },

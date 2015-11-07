@@ -1,7 +1,8 @@
 "use strict";
 import { expect } from "chai";
-import syncer from "../src";
 import fsPath from "path";
+import fs from "fs-extra";
+import appSync from "../src";
 
 // NOTE: Tests will work if the GITHUB_TOKEN is not present.
 //       The rate-limit will be lower though, so when testing locally
@@ -16,12 +17,12 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 describe("Main API", () => {
   describe("init", function() {
     it("initializes with default values", () => {
-      const node = syncer();
+      const node = appSync();
       expect(node.userAgent).to.equal("app-syncer");
     });
 
     it("has default values", () => {
-      const node = syncer();
+      const node = appSync();
       expect(node.apps).to.eql([]);
       expect(node.targetFolder).to.equal("./.build");
     });

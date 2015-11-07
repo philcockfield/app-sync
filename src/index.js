@@ -1,6 +1,8 @@
 import R from "ramda";
+import Promise from "bluebird";
 import app from "./app";
-import { isEmpty } from "./util";
+import { isEmpty, promises } from "./util";
+
 const DEFAULT_PORT = 5000;
 
 
@@ -48,6 +50,19 @@ export default (settings = {}) => {
 
       // Finish up.
       return this;
+    },
+
+
+    /**
+     * Downloads all registered apps.
+     * @return {Promise}
+     */
+    download() {
+      return new Promise((resolve, reject) => {
+        promises(this.apps.map(app => app.download()))
+          .then(result => resolve({ apps: result.results }))
+          .catch(err => reject(err));
+      });
     }
   };
 };
