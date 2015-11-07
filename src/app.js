@@ -126,9 +126,7 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
      * Stops the app running within the 'pm2' process monitor.
      */
     stop() {
-      shell.cd(localFolder);
       shell.exec(`pm2 stop ${ id }`);
-      shell.cd(WORKING_DIRECTORY);
     }
   };
 
