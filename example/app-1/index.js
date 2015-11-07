@@ -10,7 +10,7 @@ var app = express();
 let count = 0;
 app.get("/", function(req, res) {
   count += 1;
-  res.send("Hello World! - " + count);
+  res.send("<h1>Hello World! - " + count + "</h1>");
 });
 
 
