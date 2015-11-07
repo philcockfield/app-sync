@@ -47,13 +47,20 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
     branch,
     localFolder,
 
+
     /**
      * Downloads the app from the remote repository.
      * @return {Promise}.
      */
     download() {
-      return repo.copy(repoSubFolder, localFolder, { branch: branch });
+      return new Promise((resolve, reject) => {
+        repo
+          .get(repoSubFolder, { branch: branch })
+          .then(result => result.save(localFolder))
+          .catch(err => reject(err));
+      });
     },
+
 
     /**
      * Starts the app within the `pm2` process monitor.
@@ -65,6 +72,7 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
       shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
     },
 
+
     /**
      * Stops the app running within the 'pm2' process monitor.
      */
@@ -73,6 +81,7 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
       shell.exec(`pm2 stop ${ id }`);
     }
   };
+
 
   // Finish up.
   return app;
