@@ -46,7 +46,15 @@ export default (settings = {}) => {
 
       // Create the App object.
       const port = DEFAULT_PORT + (this.apps.length);
-      const item = app(userAgent, token, targetFolder, id, repo, port, options);
+      const item = app({
+        userAgent,
+        token,
+        targetFolder,
+        id,
+        repo,
+        port,
+        branch: options.branch
+      });
       this.apps.push(item);
 
       // Finish up.

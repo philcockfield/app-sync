@@ -24,11 +24,13 @@ import { isEmpty, shellAsync } from "./util";
  *            - port:          The port the app runs on.
  *            - branch:        The branch to query. Default: "master".
  */
-export default (userAgent, token, targetFolder, id, repo, port, options = {}) => {
+export default (options = {}) => {
   // Setup initial conditions.
+  let { userAgent, token, targetFolder, id, repo, port, branch } = options;
+
   if (isEmpty(id)) { throw new Error("'id' for the app is required"); }
   if (isEmpty(repo)) { throw new Error("'repo' name required, eg. 'username/my-repo'"); }
-  const branch = options.branch || "master";
+  branch = branch || "master";
   const WORKING_DIRECTORY = process.cwd();
 
   // Extract the repo and sub-path.
