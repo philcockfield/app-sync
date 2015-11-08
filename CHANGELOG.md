@@ -14,7 +14,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.0.2] - 2015-11-8
 #### Added
 - Setup configuration with Github tokens/user-agent and adding of apps with remote repository details.
-
 - Downloading repository files from Github to local cache.
-
 - Running downloaded app using [`pm2`](http://pm2.keymetrics.io/)

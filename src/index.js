@@ -2,6 +2,7 @@ import R from "ramda";
 import Promise from "bluebird";
 import app from "./app";
 import { isEmpty, promises } from "./util";
+import gateway from "./gateway";
 
 const DEFAULT_PORT = 5000;
 
@@ -66,6 +67,50 @@ export default (settings = {}) => {
           .then(result => resolve({ apps: result.results }))
           .catch(err => reject(err));
       });
+    },
+
+
+
+    /**
+     * Starts the gateway and apps.
+     * @return {Promise}
+     */
+    start() {
+      return new Promise((resolve, reject) => {
+        // Start the gateway (proxy).
+        console.log("Starting...");
+        gateway.start()
+          .then(result => {
+            // Start each app.
+            this.apps.forEach(app => app.start());
+
+            // Log.
+            console.log("");
+            console.log(`Gateway running on port: ${ result.port }`);
+            this.apps.forEach(app => {
+              console.log(` - '${ app.id }' running on port: ${ app.port }`);
+            });
+            console.log("");
+            resolve({ gateway: result });
+          })
+          .catch(err => reject(err));
+      });
+    },
+
+
+
+    /**
+     * Stops the gateway and all running apps.
+     */
+    stop() {
+      console.log("Stopping...");
+      return new Promise((resolve, reject) => {
+          gateway.stop();
+          this.apps.forEach(app => app.stop());
+          console.log("");
+          console.log("Gateway and apps stopped.");
+          resolve({});
+        });
     }
   };
 };

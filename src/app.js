@@ -10,19 +10,19 @@ import { isEmpty, shellAsync } from "./util";
 
 /**
  * Creates a new object representing an application.
- * @param {string} userAgent:     https://developer.github.com/v3/#user-agent-required
- * @param {string} token:         The Github authorization token to use for calls to
- *                                restricted resources.
- *                                  see: https://github.com/settings/tokens
- * @param {string} targetFolder:  The root location where apps are downloaded to.
- * @param {string} id: The unique name of the app (ID).
- * @param {repo}  repo:  The Github 'username/repo'.
- *                       Optionally you can specify a sub-path within the repos
- *                       like this:
- *                            'username/repo/my/sub/path'
- * @param {integer} port: The port the app runs on.
- * @param {Object} options:
- *                    - branch:     The branch to query. Default: "master".
+ * @param options:
+ *            - userAgent:     https://developer.github.com/v3/#user-agent-required
+ *            - token:         The Github authorization token to use for calls to
+ *                             restricted resources.
+ *                             see: https://github.com/settings/tokens
+ *            - targetFolder:  The root location where apps are downloaded to.
+ *            - id:            The unique name of the app (ID).
+ *            - repo:          The Github 'username/repo'.
+ *                             Optionally you can specify a sub-path within the repos
+ *                             like this:
+ *                             'username/repo/my/sub/path'
+ *            - port:          The port the app runs on.
+ *            - branch:        The branch to query. Default: "master".
  */
 export default (userAgent, token, targetFolder, id, repo, port, options = {}) => {
   // Setup initial conditions.
@@ -115,10 +115,13 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
      * Starts the app within the `pm2` process monitor.
      */
     start() {
-      this.stop();
-      shell.cd(localFolder);
-      shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
-      shell.cd(WORKING_DIRECTORY);
+      return new Promise((resolve, reject) => {
+          this.stop();
+          shell.cd(localFolder);
+          shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
+          shell.cd(WORKING_DIRECTORY);
+          resolve();
+      });
     },
 
 
@@ -126,7 +129,10 @@ export default (userAgent, token, targetFolder, id, repo, port, options = {}) =>
      * Stops the app running within the 'pm2' process monitor.
      */
     stop() {
-      shell.exec(`pm2 stop ${ id }`);
+      return new Promise((resolve, reject) => {
+          shell.exec(`pm2 stop ${ id }`);
+          resolve();
+      });
     }
   };
 
