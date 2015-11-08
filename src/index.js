@@ -3,7 +3,11 @@ import Promise from "bluebird";
 import app from "./app";
 import { isEmpty, promises } from "./util";
 import gateway from "./gateway";
-import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
+import {
+  DEFAULT_APP_PORT,
+  DEFAULT_GATEWAY_PORT,
+  DEFAULT_TARGET_FOLDER,
+} from "./const";
 
 
 
@@ -90,7 +94,7 @@ export default (settings = {}) => {
       return new Promise((resolve, reject) => {
         // Start the gateway (proxy).
         console.log("Starting...");
-        gateway.start()
+        gateway.start(this.apps, { port: DEFAULT_GATEWAY_PORT })
           .then(result => {
             // Start each app.
             this.apps.forEach(app => app.start());
