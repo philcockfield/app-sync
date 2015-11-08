@@ -3,8 +3,9 @@ import Promise from "bluebird";
 import app from "./app";
 import { isEmpty, promises } from "./util";
 import gateway from "./gateway";
+import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
-const DEFAULT_PORT = 5000;
+
 
 
 
@@ -19,7 +20,7 @@ const DEFAULT_PORT = 5000;
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
-  const targetFolder = settings.targetFolder || "./.build"
+  const targetFolder = settings.targetFolder || DEFAULT_TARGET_FOLDER
   const token = settings.token;
 
   return {
@@ -45,7 +46,7 @@ export default (settings = {}) => {
       }
 
       // Create the App object.
-      const port = DEFAULT_PORT + (this.apps.length);
+      const port = DEFAULT_APP_PORT + (this.apps.length);
       const item = app({
         userAgent,
         token,

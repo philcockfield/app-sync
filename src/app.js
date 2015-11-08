@@ -5,22 +5,25 @@ import fsPath from "path";
 import github from "file-system-github";
 import { isEmpty, shellAsync } from "./util";
 
+import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
+
 
 
 
 /**
  * Creates a new object representing an application.
  * @param options:
+ *            - id:            The unique name of the app (ID).
  *            - userAgent:     https://developer.github.com/v3/#user-agent-required
  *            - token:         The Github authorization token to use for calls to
  *                             restricted resources.
- *                             see: https://github.com/settings/tokens
+ *                                 see: https://github.com/settings/tokens
+ *            - route:         Route details for directing requests to the app.
  *            - targetFolder:  The root location where apps are downloaded to.
- *            - id:            The unique name of the app (ID).
  *            - repo:          The Github 'username/repo'.
  *                             Optionally you can specify a sub-path within the repos
  *                             like this:
- *                             'username/repo/my/sub/path'
+ *                                 'username/repo/my/sub/path'
  *            - port:          The port the app runs on.
  *            - branch:        The branch to query. Default: "master".
  */
@@ -30,7 +33,10 @@ export default (options = {}) => {
 
   if (isEmpty(id)) { throw new Error("'id' for the app is required"); }
   if (isEmpty(repo)) { throw new Error("'repo' name required, eg. 'username/my-repo'"); }
+  if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
   branch = branch || "master";
+  targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
+  port = port || DEFAULT_APP_PORT;
   const WORKING_DIRECTORY = process.cwd();
 
   // Extract the repo and sub-path.

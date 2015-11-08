@@ -1,16 +1,8 @@
 "use strict";
 import { expect } from "chai";
 import fsPath from "path";
-import fs from "fs-extra";
 import appSync from "../src";
 
-// NOTE: Tests will work if the GITHUB_TOKEN is not present.
-//       The rate-limit will be lower though, so when testing locally
-//       if you run into a rate-limit problem add a token to your bash script.
-//
-//          https://github.com/settings/tokens
-//
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 
 
 
@@ -32,7 +24,7 @@ describe("api (module)", () => {
   describe("add", function() {
     let node;
     beforeEach(() => {
-      node = appSync({ token: GITHUB_TOKEN });
+      node = appSync();
     });
 
     it("has no apps", () => {
