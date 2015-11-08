@@ -29,11 +29,11 @@ import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
  */
 export default (options = {}) => {
   // Setup initial conditions.
-  let { userAgent, token, targetFolder, id, repo, port, branch } = options;
-
-  if (isEmpty(id)) { throw new Error("'id' for the app is required"); }
-  if (isEmpty(repo)) { throw new Error("'repo' name required, eg. 'username/my-repo'"); }
+  let { userAgent, token, targetFolder, id, repo, port, branch, route } = options;
+  if (isEmpty(id)) { throw new Error(`'id' for the app is required`); }
+  if (isEmpty(repo)) { throw new Error(`'repo' name required, eg. 'username/my-repo'`); }
   if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
+  if (isEmpty(route)) { throw new Error(`A 'route' must be specified for the '${ id }' app.`); }
   branch = branch || "master";
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
@@ -53,6 +53,7 @@ export default (options = {}) => {
   const app = {
     id,
     repo,
+    route,
     port,
     branch,
     localFolder,
