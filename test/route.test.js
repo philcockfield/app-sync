@@ -29,12 +29,28 @@ describe("route", function() {
   describe("match", function() {
     it("matches on specific domain (no path)", () => {
       expect(route.parse("www.foo.com").match("www.foo.com")).to.equal(true);
+      expect(route.parse("www.foo.com").match("www.foo.com", "")).to.equal(true);
       expect(route.parse("www.foo.com").match("www.foo.com", "bar")).to.equal(true);
+      expect(route.parse("www.foo.com").match("www.foo.com", "/bar")).to.equal(true);
+    });
+
+    it("matches on specific domain (with path)", () => {
+      expect(route.parse("www.foo.com/bar").match("www.foo.com", "bar")).to.equal(true);
+      expect(route.parse("www.foo.com/bar").match("www.foo.com", "bar")).to.equal(true);
+      expect(route.parse("www.foo.com/bar").match("www.foo.com", "/bar")).to.equal(true);
     });
 
     it("does not match on specific domain (no path)", () => {
       expect(route.parse("www.foo.com").match("www.bar.org")).to.equal(false);
       expect(route.parse("www.foo.com").match("www.bar.org/foo")).to.equal(false);
+    });
+
+    it("does not match on specific domain (with path)", () => {
+      expect(route.parse("www.foo.com/bar").match("www.bar.org")).to.equal(false);
+      expect(route.parse("www.foo.com/bar").match("www.foo.com")).to.equal(false);
+      expect(route.parse("www.foo.com/bar").match("www.foo.com", "")).to.equal(false);
+      expect(route.parse("www.foo.com/bar").match("www.foo.com", "zoo")).to.equal(false);
+      expect(route.parse("www.foo.com/bar").match("www.foo.com", "barry")).to.equal(false);
     });
 
     it("matches on wildcard domain (*) with path", () => {

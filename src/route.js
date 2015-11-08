@@ -22,6 +22,9 @@ const parse = (route) => {
   // URL path.
   let path = R.takeLast(parts.length - 1, parts).join("/").trim();
   path = isEmpty(path) ? undefined : path;
+  if (path) {
+    path = path.endsWith("/") ? path : path + "/";
+  }
 
   return {
     domain,
@@ -36,6 +39,7 @@ const parse = (route) => {
     match(domain, path) {
       domain = formatMatchValue(domain);
       path = formatMatchValue(path);
+      if (path) { path = path.replace(/^\//, ""); }
       const isWildcardDomain = this.domain === "*";
 
       if (!isWildcardDomain) {
@@ -44,7 +48,7 @@ const parse = (route) => {
 
       if (this.path) {
         if (!path) { return false; }
-        if (path && !path.startsWith(this.path)) { return false; }
+        if (path && !(path + "/").startsWith(this.path)) { return false; }
       }
 
       // Finish up.
