@@ -1,12 +1,13 @@
 var express = require("express");
 var argv = require('minimist')(process.argv.slice(2));
 var app = express();
+var packageJson = require("./package.json");
 
 
 var count = 0;
 app.get("*", function(req, res) {
   count += 1;
-  res.send("<h1>Hello App-2.  Loaded: " + count + "</h1>");
+  res.send("<h1>" + packageJson.name + "@:" + packageJson.version + ".  Loaded: " + count + "</h1>");
 });
 
 
