@@ -97,7 +97,18 @@ export default (options = {}) => {
      *                       Default: true
      * @return {Promise}.
      */
-    download(options = {}) { return appDownload(id, localFolder, repo, repoSubFolder, branch, options); },
+    download(options = {}) {
+      // Don't continue if a download operation is in progress.
+      if (this.downloading) { return this.downloading; }
+
+      // Start the download process.
+      return this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, options)
+        .then(result => {
+            this.isDownloading = false;
+            delete this.downloading;
+            return result;
+        });
+    },
 
 
     /**

@@ -92,7 +92,10 @@ export default (settings = {}) => {
      */
     update() {
       return new Promise((resolve, reject) => {
-        promises(this.apps.map(app => app.update()))
+        const updatingApps = this.apps.map(app => app.downloading
+                                            ? null // Don't update an app that is currently downloading.
+                                            : app.update());
+        promises(updatingApps)
           .then(result => resolve({ apps: result.results }))
           .catch(err => reject(err));
       });

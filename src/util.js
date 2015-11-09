@@ -18,6 +18,7 @@ export const isEmpty = (value) => (R.isNil(value) || R.isEmpty(value));
  * @return {Promise}
  */
 export const promises = (list) => {
+  list = R.reject(R.isNil, list);
   return new Promise((resolve, reject) => {
       const results = [];
       const onComplete = (result) => {
