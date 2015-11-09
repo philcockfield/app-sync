@@ -13,10 +13,11 @@ import appSync from "../../src";
 //
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
 const BUILD_PATH = "./.build-test";
+const ROUTE = "*/foo";
 
 
 describe("download (integration)", function() {
-  this.timeout(10 * 1000);
+  this.timeout(15 * 1000);
   let node;
   beforeEach(() => {
     node = appSync({ targetFolder: BUILD_PATH, token: process.env.GITHUB_TOKEN })
@@ -26,7 +27,7 @@ describe("download (integration)", function() {
 
   it("downloads a single app", (done) => {
     node
-      .add("single-app", "philcockfield/app-sync/example/app-1");
+      .add("single-app", "philcockfield/app-sync/example/app-1", ROUTE);
 
     const app = node.apps[0];
     app.download({ install: true })
@@ -42,8 +43,8 @@ describe("download (integration)", function() {
 
   it("downloads each registered app", (done) => {
     node
-      .add("my-app-1", "philcockfield/app-sync/example/app-1")
-      .add("my-app-2", "philcockfield/app-sync/example/app-2");
+      .add("my-app-1", "philcockfield/app-sync/example/app-1", ROUTE)
+      .add("my-app-2", "philcockfield/app-sync/example/app-2", ROUTE);
 
     node.download({ install: false }) // Default install is 'true'.
     .then(result => {

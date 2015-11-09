@@ -4,9 +4,9 @@ var app = express();
 
 
 var count = 0;
-app.get("/", function(req, res) {
+app.get("*", function(req, res) {
   count += 1;
-  res.send("<h1>Hello App-2 - " + count + "</h1>");
+  res.send("<h1>Hello App-2.  Loaded: " + count + "</h1>");
 });
 
 

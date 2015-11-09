@@ -1,6 +1,9 @@
 import R from "ramda";
+import fs from "fs-extra";
+import fsPath from "path";
 import shell from "shelljs";
 import Promise from "bluebird";
+
 
 
 /**
@@ -40,5 +43,60 @@ export const shellAsync = (cmd) => {
       shell.exec(cmd, (code, output) => {
         resolve({ code, output })
       });
+  });
+};
+
+
+
+/**
+ * Sets a timeout for the specified amount of time.
+ * @param {integer} msecs: The number of milliseconds to wait.
+ * @param {Function} func: The function to invoke.
+ */
+export const delay = (msecs, func) => setTimout(func, msecs);
+
+
+
+
+
+/**
+ * Loads JSON from the given path.
+ */
+export const loadFile = (path) => {
+  return new Promise((resolve, reject) => {
+    path = fsPath.resolve(path);
+    fs.exists(path, (exists) => {
+      if (exists) {
+        fs.readFile(path, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ exists: true, content: result.toString() });
+          }
+        })
+      } else {
+        resolve({ exists: false })
+      }
+    });
+  });
+};
+
+
+
+/**
+ * Loads JSON from the given path.
+ */
+export const loadJson = (path) => {
+  return new Promise((resolve, reject) => {
+    loadFile(path)
+      .then(result => {
+        try {
+          if (result.exists) {
+            result.json = JSON.parse(result.content);
+          }
+        } catch (err) { reject(err); }
+        resolve(result);
+      })
+      .catch(err => reject(err));
   });
 };

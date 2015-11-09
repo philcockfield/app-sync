@@ -23,9 +23,6 @@ If you are not using the module within it's Docker container, then ensure that [
     # Run tests.
     npm test
 
-    # Watch and re-run tests.
-    npm run tdd
-
 
 ---
 ### License: MIT
