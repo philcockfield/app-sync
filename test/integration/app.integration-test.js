@@ -23,7 +23,7 @@ const APP_SETTINGS = {
   route: "*/foo",
   targetFolder: BUILD_PATH,
   token: GITHUB_TOKEN,
-  branch: "gateway" // TEMP
+  branch: "devel"
 };
 
 

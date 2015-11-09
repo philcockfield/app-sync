@@ -1,3 +1,4 @@
+import R from "ramda";
 import Promise from "bluebird";
 import semver from "semver";
 
@@ -19,7 +20,7 @@ export default (localPackage, remotePackage) => {
       const done = () => {
           count += 1;
           if (count === 2) {
-            if (result.remote !== null) {
+            if (R.isNil(result.remote)) {
               result.updateRequired = result.local === null
                   ? true
                   : semver.gt(result.remote, result.local);
@@ -29,12 +30,12 @@ export default (localPackage, remotePackage) => {
         };
 
       remotePackage.then(remote => {
-            if (remote.exists) { result.remote = remote.json.version; }
+            if (remote.exists) { result.remote = remote.json.version || "0.0.0"; }
             done();
           });
 
       localPackage.then(local => {
-            if (local.exists) { result.local = local.json.version; }
+            if (local.exists) { result.local = local.json.version || "0.0.0"; }
             done();
           });
   });
