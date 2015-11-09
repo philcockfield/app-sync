@@ -5,12 +5,14 @@ import fs from "fs-extra";
 import fsPath from "path";
 import github from "file-system-github";
 import Route from "./route";
+import log from "./log";
 import { isEmpty, shellAsync, loadJson, promises } from "./util";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
 import appInstall from "./app-install";
 import appVersion from "./app-version";
 import appDownload from "./app-download";
+import appUpdate from "./app-update";
 import { getLocalPackage, getRemotePackage } from "./app-package";
 
 
@@ -62,6 +64,7 @@ export default (options = {}) => {
     port,
     branch,
     localFolder,
+    isRunning: false,
 
     /**
      * Retrieves the local [package.json] file.
@@ -81,7 +84,7 @@ export default (options = {}) => {
      * Gets the local and remote versions.
      * @return {Promise}
      */
-    version() { return appVersion(this.localPackage(), this.remotePackage()); },
+    version() { return appVersion(id, this.localPackage(), this.remotePackage()); },
 
 
     /**
@@ -98,6 +101,16 @@ export default (options = {}) => {
 
 
     /**
+     * Downloads a new version of the app (if necessary) and restarts it.
+     */
+    update() {
+      return appUpdate(
+          () => this.version(),
+          (options) => this.start(options));
+    },
+
+
+    /**
      * Runs `npm install` on the app.
      * @return {Promise}.
      */
@@ -107,24 +120,36 @@ export default (options = {}) => {
 
     /**
      * Starts the app within the `pm2` process monitor.
+     * @param options
+     *            - download: Flag indicating if the repo should be downloaded
+     *                        even if it exists locally. Default: false.
+     * @return {Promise}.
      */
-    start() {
+    start(options = {}) {
+      const download = options.download === undefined ? false : options.download;
       return new Promise((resolve, reject) => {
-          this.stop();
-          shell.cd(localFolder);
-          shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
-          shell.cd(WORKING_DIRECTORY);
-          resolve();
+        this.download({ force: download })
+          .then(result => {
+              this.stop();
+              shell.cd(localFolder);
+              shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
+              shell.cd(WORKING_DIRECTORY);
+              this.isRunning = true;
+              resolve();
+          })
+          .catch(err => reject(err));
       });
     },
 
 
     /**
      * Stops the app running within the 'pm2' process monitor.
+     * @return {Promise}.
      */
     stop() {
       return new Promise((resolve, reject) => {
           shell.exec(`pm2 stop ${ id }`);
+          this.isRunning = false;
           resolve();
       });
     }

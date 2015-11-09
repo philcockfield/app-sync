@@ -3,6 +3,7 @@ import Promise from "bluebird";
 import app from "./app";
 import { isEmpty, promises } from "./util";
 import gateway from "./gateway";
+import log from "./log";
 import {
   DEFAULT_APP_PORT,
   DEFAULT_GATEWAY_PORT,
@@ -93,19 +94,20 @@ export default (settings = {}) => {
     start() {
       return new Promise((resolve, reject) => {
         // Start the gateway (proxy).
-        console.log("Starting...");
+        log.info("Starting...");
         gateway.start(this.apps, { port: DEFAULT_GATEWAY_PORT })
           .then(result => {
             // Start each app.
             this.apps.forEach(app => app.start());
 
             // Log.
-            console.log("");
-            console.log(`Gateway running on port:${ result.port }`);
+            log.info("");
+            log.info(`Gateway running on port:${ result.port }`);
             this.apps.forEach(app => {
-              console.log(` - '${ app.id }' routing '${ app.route }' => port:${ app.port }`);
+              log.info(` - '${ app.id }' routing '${ app.route }' => port:${ app.port }`);
             });
-            console.log("");
+            log.info("");
+            log.info("");
             resolve({ gateway: result });
           })
           .catch(err => reject(err));
@@ -118,12 +120,12 @@ export default (settings = {}) => {
      * Stops the gateway and all running apps.
      */
     stop() {
-      console.log("Stopping...");
+      log.info("Stopping...");
       return new Promise((resolve, reject) => {
           gateway.stop();
           this.apps.forEach(app => app.stop());
-          console.log("");
-          console.log("Gateway and apps stopped.");
+          log.info("");
+          log.info("Gateway and apps stopped.");
           resolve({});
         });
     }

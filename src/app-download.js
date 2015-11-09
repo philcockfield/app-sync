@@ -1,7 +1,7 @@
 import Promise from "bluebird";
 import { getLocalPackage, getRemotePackage } from "./app-package";
 import appInstall from "./app-install";
-
+import log from "./log";
 
 
 
@@ -28,9 +28,7 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
 
   return new Promise((resolve, reject) => {
     const onComplete = (wasDownloaded, result) => {
-          if (wasDownloaded) {
-              console.log("Downloaded");
-          }
+          if (wasDownloaded) { log.info("...downloaded '${ id }'."); }
           resolve(result)
         };
 
@@ -50,7 +48,7 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
 
     // Download the repository files.
     const download = () => {
-        console.log(`Downloading app '${ id }'...`);
+        log.info(`Downloading app '${ id }'...`);
         repo
           .get(subFolder, { branch })
           .then(result => {
