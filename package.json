@@ -4,7 +4,7 @@
   "description": "Runs one or more node-apps keeping them in sync with Github.",
   "main": "./lib/index.js",
   "scripts": {
-    "example": "node ./example",
+    "start": "node ./example",
     "watch": "nodemon ./example -e js,jsx --ignore .build",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
@@ -13,9 +13,12 @@
   },
   "dependencies": {
     "bluebird": "^3.0.5",
-    "file-system-github": "1.0.0",
+    "express": "^4.13.3",
+    "file-system-github": "1.1.0",
     "fs-extra": "^0.26.2",
+    "http-proxy": "^1.12.0",
     "ramda": "^0.18.0",
+    "semver": "^5.0.3",
     "shelljs": "^0.5.3"
   },
   "devDependencies": {
