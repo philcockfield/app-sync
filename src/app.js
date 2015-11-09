@@ -105,8 +105,10 @@ export default (options = {}) => {
      */
     update() {
       return appUpdate(
+          id,
           () => this.version(),
-          (options) => this.start(options));
+          (options) => this.start(options)
+        );
     },
 
 

@@ -88,6 +88,19 @@ export default (settings = {}) => {
 
 
     /**
+     * Performs an update on all registered apps.
+     */
+    update() {
+      return new Promise((resolve, reject) => {
+        promises(this.apps.map(app => app.update()))
+          .then(result => resolve({ apps: result.results }))
+          .catch(err => reject(err));
+      });
+    },
+
+
+
+    /**
      * Starts the gateway and apps.
      * @return {Promise}
      */
@@ -108,6 +121,7 @@ export default (settings = {}) => {
             });
             log.info("");
             log.info("");
+            this.update(); // Ensure all apps are up-to-date.
             resolve({ gateway: result });
           })
           .catch(err => reject(err));

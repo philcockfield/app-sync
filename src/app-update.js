@@ -5,16 +5,16 @@ import log from "./log";
 /**
  * Downloads a new version of the app (if necessary) and restarts it.
  */
-export default (getVersion, restart) => {
+export default (id, getVersion, restart) => {
   return new Promise((resolve, reject) => {
 
     const update = (version) => {
         log.info();
-        log.info(`Updating '${ version.id }' from ${ version.local } to ${ version.remote }...`);
+        log.info(`Updating '${ id }' from ${ version.local } to ${ version.remote }...`);
         restart({ download: true })
           .then(result => {
-              log.info(`Updated '${ version.id }' to version ${ version.remote }.`);
-              resolve({ updated: true, version: version.remote })
+              log.info(`Updated '${ id }' to version ${ version.remote }.`);
+              resolve({ id, updated: true, version: version.remote })
           })
           .catch(err => reject(err));
     };
@@ -24,7 +24,7 @@ export default (getVersion, restart) => {
           if (version.updateRequired) {
             update(version);
           } else {
-            resolve({ updated: false, version: version.local });
+            resolve({ id, updated: false, version: version.local });
           }
       })
       .catch(err => reject(err));
