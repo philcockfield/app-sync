@@ -37,7 +37,8 @@ describe("api (module)", () => {
       expect(app.id).to.equal("my-app");
       expect(app.repo.name).to.equal("philcockfield/app-sync");
       expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
-      expect(app.route).to.equal("*/foo");
+      expect(app.route.domain).to.equal("*");
+      expect(app.route.path).to.equal("foo/");
     });
 
     it("adds an app with a path to a sub-folder within the repo", () => {

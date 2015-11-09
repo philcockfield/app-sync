@@ -101,9 +101,9 @@ export default (settings = {}) => {
 
             // Log.
             console.log("");
-            console.log(`Gateway running on port: ${ result.port }`);
+            console.log(`Gateway running on port:${ result.port }`);
             this.apps.forEach(app => {
-              console.log(` - '${ app.id }' running on port: ${ app.port }`);
+              console.log(` - '${ app.id }' routing '${ app.route }' => port:${ app.port }`);
             });
             console.log("");
             resolve({ gateway: result });

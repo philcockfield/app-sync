@@ -1,13 +1,17 @@
 import R from "ramda";
 import Promise from "bluebird";
 import shell from "shelljs";
+import fs from "fs-extra";
 import fsPath from "path";
 import github from "file-system-github";
-import { isEmpty, shellAsync } from "./util";
-
+import Route from "./route";
+import { isEmpty, shellAsync, loadJson, promises } from "./util";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
-
+import appInstall from "./app-install";
+import appVersion from "./app-version";
+import appDownload from "./app-download";
+import { getLocalPackage, getRemotePackage } from "./app-package";
 
 
 /**
@@ -34,6 +38,7 @@ export default (options = {}) => {
   if (isEmpty(repo)) { throw new Error(`'repo' name required, eg. 'username/my-repo'`); }
   if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
   if (isEmpty(route)) { throw new Error(`A 'route' must be specified for the '${ id }' app.`); }
+  route = Route.parse(route);
   branch = branch || "master";
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
@@ -58,66 +63,46 @@ export default (options = {}) => {
     branch,
     localFolder,
 
+    /**
+     * Retrieves the local [package.json] file.
+     * @return {Promise}
+     */
+    localPackage() { return getLocalPackage(this.localFolder); },
+
+
+    /**
+     * Retrieves the remote [package.json] file.
+     * @return {Promise}
+     */
+    remotePackage() { return getRemotePackage(repo, repoSubFolder, branch); },
+
+
+    /**
+     * Gets the local and remote versions.
+     * @return {Promise}
+     */
+    version() { return appVersion(this.localPackage(), this.remotePackage()); },
+
 
     /**
      * Downloads the app from the remote repository.
      * @param options:
      *            - install: Flag indicating if `npm install` should be run on the directory.
      *                       Default: true.
+     *            - force:   Flag indicating if the repository should be downloaded if
+     *                       is already present on the local disk.
+     *                       Default: true
      * @return {Promise}.
      */
-    download(options = {}) {
-      const install = options.install == undefined ? true : options.install;
-      return new Promise((resolve, reject) => {
-
-        const onSaved = (result) => {
-              if (install) {
-                // Run `npm install`.
-                this.install()
-                  .then(() => {
-                      result.installed = true;
-                      resolve(result);
-                  })
-                  .catch(err => reject(err));
-              } else {
-                resolve(result); // Return without running `npm install`.
-              }
-            };
-
-        // Download the repository files.
-        repo
-          .get(repoSubFolder, { branch: branch })
-          .then(result => {
-              result.save(localFolder)
-                .then(result => onSaved({ id, files: result.files }))
-                .catch(err => reject(err));
-          })
-          .catch(err => reject(err));
-      });
-    },
+    download(options = {}) { return appDownload(id, localFolder, repo, repoSubFolder, branch, options); },
 
 
     /**
      * Runs `npm install` on the app.
      * @return {Promise}.
      */
-    install() {
-      return new Promise((resolve, reject) => {
-          shell.cd(localFolder);
-          shellAsync("npm install --loglevel error >&-")
-            .then(result => {
-                shell.cd(WORKING_DIRECTORY);
-                if (result.code === 0) {
-                  resolve(result)
-                } else {
-                  result.error = `Failed while running 'npm install'.`;
-                  reject(result)
-                }
-            })
-            .catch(err => reject(err))
-            .finally(() => shell.cd(WORKING_DIRECTORY));
-      });
-    },
+    install() { return appInstall(localFolder); },
+
 
 
     /**

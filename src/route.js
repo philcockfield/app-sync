@@ -53,6 +53,14 @@ const parse = (route) => {
 
       // Finish up.
       return true;
+    },
+
+
+    /**
+     * Retrieves a string representation of the route,
+     */
+    toString() {
+      return `${ this.domain }/${ this.path || "" }`.replace(/\/$/, "");
     }
   };
 };
