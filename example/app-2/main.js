@@ -7,7 +7,7 @@ var packageJson = require("./package.json");
 var count = 0;
 app.get("*", function(req, res) {
   count += 1;
-  res.send("<h1>" + packageJson.name + "@:" + packageJson.version + ".  Loaded: " + count + "</h1>");
+  res.send("<h1>" + packageJson.name + "@" + packageJson.version + ": Loaded: " + count + "</h1>");
 });
 
 
