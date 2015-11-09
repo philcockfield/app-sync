@@ -27,22 +27,30 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
   const force = options.force === undefined ? true : options.force;
 
   return new Promise((resolve, reject) => {
+    const onComplete = (wasDownloaded, result) => {
+          if (wasDownloaded) {
+              console.log("Downloaded");
+          }
+          resolve(result)
+        };
+
     const onSaved = (result) => {
           if (install) {
             // Run `npm install`.
             appInstall(localFolder)
               .then(() => {
                   result.installed = true;
-                  resolve(result);
+                  onComplete(true, result);
               })
               .catch(err => reject(err));
           } else {
-            resolve(result); // Return without running `npm install`.
+            onComplete(true, result); // Return without running `npm install`.
           }
         };
 
     // Download the repository files.
     const download = () => {
+        console.log(`Downloading app '${ id }'...`);
         repo
           .get(subFolder, { branch })
           .then(result => {
@@ -61,7 +69,7 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
       getLocalPackage(localFolder)
         .then(local => {
             if (local.exists) {
-              resolve({ alreadyExists: true });
+              onComplete(false, { alreadyExists: true });
             } else {
               download();
             }
