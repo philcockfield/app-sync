@@ -3,8 +3,8 @@ import syncer from "../src/";
 
 const node = syncer({ targetFolder: "./example/.build", token: process.env.GITHUB_TOKEN })
 node
-  .add("my-app-1", "philcockfield/app-sync/example/app-1")
-  .add("my-app-2", "philcockfield/app-sync/example/app-2");
+  .add("my-app-1", "philcockfield/app-sync/example/app-1", "dev")
+  .add("my-app-2", "philcockfield/app-sync/example/app-2", "*/bar");
 
 // console.log("app", app);
 
