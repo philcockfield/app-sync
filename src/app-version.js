@@ -6,13 +6,14 @@ import semver from "semver";
 
 /**
  * Retrieves version details for the app.
+ * @param {String} id: The unique identifier of the app.
  * @param {Promise} localPackage.
  * @param {Promise} remotePackage.
  * @return {Promise}
  */
-export default (localPackage, remotePackage) => {
+export default (id, localPackage, remotePackage) => {
   return new Promise((resolve, reject) => {
-      const result = { local: null, remote: null, };
+      const result = { id, local: null, remote: null, };
       localPackage.catch(err => reject(err));
       remotePackage.catch(err => reject(err));
 
@@ -20,7 +21,7 @@ export default (localPackage, remotePackage) => {
       const done = () => {
           count += 1;
           if (count === 2) {
-            if (R.isNil(result.remote)) {
+            if (!R.isNil(result.remote)) {
               result.updateRequired = result.local === null
                   ? true
                   : semver.gt(result.remote, result.local);
