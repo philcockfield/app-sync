@@ -28,7 +28,7 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
 
   return new Promise((resolve, reject) => {
     const onComplete = (wasDownloaded, result) => {
-          if (wasDownloaded) { log.info("...downloaded '${ id }'."); }
+          if (wasDownloaded) { log.info(`...downloaded '${ id }'.`); }
           resolve(result)
         };
 
