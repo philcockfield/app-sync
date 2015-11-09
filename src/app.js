@@ -107,7 +107,9 @@ export default (options = {}) => {
       return appUpdate(
           id,
           () => this.version(),
-          (options) => this.start(options)
+          (options) => this.download(options),
+          (options) => this.start(options),
+          this.isRunning
         );
     },
 
@@ -129,6 +131,7 @@ export default (options = {}) => {
      */
     start(options = {}) {
       const download = options.download === undefined ? false : options.download;
+      this.isRunning = true;
       return new Promise((resolve, reject) => {
         this.download({ force: download })
           .then(result => {
@@ -136,7 +139,6 @@ export default (options = {}) => {
               shell.cd(localFolder);
               shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
               shell.cd(WORKING_DIRECTORY);
-              this.isRunning = true;
               resolve();
           })
           .catch(err => reject(err));

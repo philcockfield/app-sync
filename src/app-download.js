@@ -48,7 +48,7 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
 
     // Download the repository files.
     const download = () => {
-        log.info(`Downloading app '${ id }'...`);
+        log.info(`Downloading '${ id }'...`);
         repo
           .get(subFolder, { branch })
           .then(result => {
