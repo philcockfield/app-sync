@@ -27,12 +27,12 @@ export default (apps, update) => {
     // Setup initial conditions.
     apps = sortAppsByRoute(apps);
     log.info("Starting...");
+    log.info("");
 
     const startApps = promises(apps.map(app => app.start())).then(result => result.results);
     const startGateway = gateway.start(apps, { port: GATEWAY_PORT });
 
     const onComplete = (items = []) => {
-        log.info("");
         log.info("");
         log.info(`Gateway running on port:${ GATEWAY_PORT }`);
         console.log("");

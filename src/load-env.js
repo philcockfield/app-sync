@@ -1,9 +1,10 @@
 import R from "ramda";
+import fsPath from "path";
 import minimist from "minimist";
-import appSync from "./index";
+import appSync from "./main";
 import log from "./log";
 
-const { GITHUB_TOKEN, GITHUB_USER_AGENT } = process.env;
+const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER } = process.env;
 
 // Check for required variables.
 if (!GITHUB_TOKEN) {
@@ -30,10 +31,12 @@ if (!GITHUB_USER_AGENT) {
 // Create gateway.
 const gateway = appSync({
   token: GITHUB_TOKEN,
-  userAgent: GITHUB_USER_AGENT
+  userAgent: GITHUB_USER_AGENT,
+  targetFolder: TARGET_FOLDER
 });
 
 
+log.info(`Apps downloaded to: ${ fsPath.resolve(gateway.targetFolder) }`);
 
 
 // Regsiter apps.

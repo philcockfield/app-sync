@@ -12,7 +12,8 @@
     "prepublish": "gulp build",
     "dbuild": "sh ./sh/docker-build.sh",
     "drun": "sh ./sh/test-docker-run.sh",
-    "dstop": "docker stop app-sync"
+    "dstop": "docker stop app-sync",
+    "shenv": "sh ./sh/test-start-env.sh"
   },
   "dependencies": {
     "bluebird": "^3.0.5",

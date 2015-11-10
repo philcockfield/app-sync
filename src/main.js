@@ -24,10 +24,10 @@ if (shell.exec("pm2 -v").code !== 0) {
  * Initializes a new app syncer.
  * @param settings:
  *          - userAgent:    https://developer.github.com/v3/#user-agent-required
- *          - targetFolder: The root location where apps are downloaded to.
  *          - token:        The Github authorization token to use for calls to
  *                          restricted resources.
  *                             see: https://github.com/settings/tokens
+ *          - targetFolder: The path where apps are downloaded to.
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
