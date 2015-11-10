@@ -57,13 +57,6 @@ The `--route` field describes the URL pattern that when matches passes requests 
 
 
 
-
-
-## Docker Commands
-
-    docker run -t -p 80:3000 app-sync npm start
-
-
 ## Run Example
     npm install
     npm run example

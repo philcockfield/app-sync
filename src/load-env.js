@@ -10,6 +10,7 @@ if (!process.env.GITHUB_TOKEN) {
   log.warn(`See: https://github.com/settings/tokens`);
   log.warn(`example:`);
   log.warn(`   export GITHUB_TOKEN="..."`);
+  log.warn("-------------------------------------------");
   log.warn();
 }
 if (!process.env.GITHUB_USER_AGENT) {
@@ -17,6 +18,7 @@ if (!process.env.GITHUB_USER_AGENT) {
   log.warn(`See: https://developer.github.com/v3/#user-agent-required`);
   log.warn(`example:`);
   log.warn(`   export GITHUB_USER_AGENT="my-app-name"`);
+  log.warn("-------------------------------------------");
   log.warn();
 }
 
@@ -35,13 +37,13 @@ const gateway = appSync({
 
 // Regsiter apps.
 Object.keys(process.env).forEach(key => {
-    if (key.startsWith("APP_")) {
-      const args = minimist(process.env[key].split(" "));
-      const { repo, route, branch } = args;
-      gateway.add(key, repo, route, { branch });
-    }
-
-  });
+      if (key.startsWith("APP_")) {
+        const value = process.env[key];
+        const args = minimist(value.split(" "));
+        const { repo, route, branch } = args;
+        gateway.add(key, repo, route, { branch });
+      }
+    });
 
 
 

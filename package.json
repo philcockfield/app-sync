@@ -10,7 +10,8 @@
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
     "prepublish": "gulp build",
-    "docker-build": "sh ./sh/docker-build.sh"
+    "docker-build": "sh ./sh/docker-build.sh",
+    "docker-run": "sh ./sh/docker-run.sh"
   },
   "dependencies": {
     "bluebird": "^3.0.5",

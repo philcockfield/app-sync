@@ -119,7 +119,7 @@ export default (settings = {}) => {
         const startApps = promises(this.apps.map(app => app.start())).then(result => result.results);
         const startGateway = gateway.start(this.apps, { port: GATEWAY_PORT });
 
-        const onComplete = (apps) => {
+        const onComplete = (apps = []) => {
             log.info("");
             log.info("");
             log.info(`Gateway running on port:${ GATEWAY_PORT }`);
