@@ -2,7 +2,7 @@
 import { expect } from "chai";
 import fsPath from "path";
 import fs from "fs-extra";
-import appSync from "../../src";
+import appSync from "../../src/main";
 
 
 // NOTE: Tests will work if the GITHUB_TOKEN is not present.
