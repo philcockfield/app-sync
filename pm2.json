@@ -1,0 +1,4 @@
+{
+  "name": "Gateway",
+  "script": "./lib/load-env.js"
+}
