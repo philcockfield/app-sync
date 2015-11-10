@@ -1,12 +1,19 @@
+const log = (items) => {
+  if (!api.silent) { console.log(items.join(" ")); }
+};
 
-const log = (items) => console.log(items.join(" "));
 
 /**
  * Stub log shim.
  * Pipe these log items into a proper service log.
  */
-export default {
+const api = {
+  silent: false,
   info(...items) { log(items) },
   warn(...items) { log(items) },
   error(...items) { log(items) }
 };
+
+
+
+export default api;
