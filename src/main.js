@@ -14,7 +14,7 @@ import {
 
 
 // Ensure PM2 is installed globally.
-if (shell.exec("pm2 -v").code !== 0) {
+if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
   log.warn("WARNING: The PM2 (Process Manager) must be install globally, run: `npm install -g pm2`.");
 }
 
