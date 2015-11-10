@@ -4,7 +4,7 @@ import app from "./app";
 import { isEmpty, promises } from "./util";
 import gateway from "./gateway";
 import log from "./log";
-import start from "./index-start";
+import start from "./main-start";
 import {
   DEFAULT_APP_PORT,
   DEFAULT_TARGET_FOLDER,
