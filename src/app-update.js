@@ -18,6 +18,7 @@ export default (id, getVersion, getDownload, start, options) => {
         const msg = restarted
             ? `...updated and restarted '${ id }' to v${ version }.`
             : `...updated '${ id }' to v${ version }.`
+        log.info("");
         log.info(msg);
       }
       resolve({ id, updated, version });

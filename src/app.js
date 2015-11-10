@@ -64,7 +64,7 @@ export default (options = {}) => {
     port,
     branch,
     localFolder,
-    isRunning: false,
+
 
     /**
      * Retrieves the local [package.json] file.
@@ -144,7 +144,6 @@ export default (options = {}) => {
      */
     start(options = {}) {
       const download = options.download === undefined ? false : options.download;
-      this.isRunning = true;
       return new Promise((resolve, reject) => {
         const localPackage = this.localPackage().catch(err => reject(err));
 
@@ -158,9 +157,7 @@ export default (options = {}) => {
           .then(result => {
               this.stop();
               start();
-              localPackage.then(pkg => {
-                resolve({ id, version: pkg.json.version, route: this.route, port: this.port });
-              })
+              resolve({ id, version: result.version || null, route: this.route, port: this.port });
 
           })
           .catch(err => reject(err));
@@ -175,7 +172,6 @@ export default (options = {}) => {
     stop() {
       return new Promise((resolve, reject) => {
           shell.exec(`pm2 stop ${ id }`);
-          this.isRunning = false;
           resolve({ id });
       });
     }

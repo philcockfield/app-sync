@@ -26,10 +26,15 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
   const install = options.install == undefined ? true : options.install;
   const force = options.force === undefined ? true : options.force;
 
+  const localPackage = () => getLocalPackage(id, localFolder).catch(err => reject(err));
+
   return new Promise((resolve, reject) => {
     const onComplete = (wasDownloaded, result) => {
           if (wasDownloaded) { log.info(`...downloaded '${ id }'.`); }
-          resolve(result)
+          localPackage().then(local => {
+              result.version = local.json.version
+              resolve(result);
+          })
         };
 
     const onSaved = (result) => {
@@ -64,15 +69,14 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
       download();
     } else {
       // Check whether the app exists, before downloading.
-      getLocalPackage(id, localFolder)
+      localPackage()
         .then(local => {
             if (local.exists) {
               onComplete(false, { alreadyExists: true });
             } else {
               download();
             }
-        })
-        .catch(err => reject(err));
+        });
     }
   });
 };
