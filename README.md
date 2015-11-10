@@ -13,7 +13,7 @@ If you are not using the module within it's Docker container, then ensure that [
     npm install pm2 -g
 
 
-## Environment Variables
+## Docker Environment Variables
 Pass the following environment variables into the [docker container](https://hub.docker.com/r/philcockfield/app-sync/) to configure the host gateway application:
 
     GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
