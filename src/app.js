@@ -70,14 +70,14 @@ export default (options = {}) => {
      * Retrieves the local [package.json] file.
      * @return {Promise}
      */
-    localPackage() { return getLocalPackage(this.localFolder); },
+    localPackage() { return getLocalPackage(id, this.localFolder); },
 
 
     /**
      * Retrieves the remote [package.json] file.
      * @return {Promise}
      */
-    remotePackage() { return getRemotePackage(repo, repoSubFolder, branch); },
+    remotePackage() { return getRemotePackage(id, repo, repoSubFolder, branch); },
 
 
     /**
@@ -144,13 +144,22 @@ export default (options = {}) => {
       const download = options.download === undefined ? false : options.download;
       this.isRunning = true;
       return new Promise((resolve, reject) => {
+        const localPackage = this.localPackage().catch(err => reject(err));
+
+        const start = () => {
+            shell.cd(localFolder);
+            shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
+            shell.cd(WORKING_DIRECTORY);
+          };
+
         this.download({ force: download })
           .then(result => {
               this.stop();
-              shell.cd(localFolder);
-              shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
-              shell.cd(WORKING_DIRECTORY);
-              resolve();
+              start();
+              localPackage.then(pkg => {
+                resolve({ id, version: pkg.json.version, route: this.route, port: this.port });
+              })
+
           })
           .catch(err => reject(err));
       });
@@ -165,7 +174,7 @@ export default (options = {}) => {
       return new Promise((resolve, reject) => {
           shell.exec(`pm2 stop ${ id }`);
           this.isRunning = false;
-          resolve();
+          resolve({ id });
       });
     }
   };

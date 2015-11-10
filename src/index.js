@@ -11,6 +11,7 @@ import {
 } from "./const";
 
 
+const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
 
 
 
@@ -111,22 +112,26 @@ export default (settings = {}) => {
       return new Promise((resolve, reject) => {
         // Start the gateway (proxy).
         log.info("Starting...");
-        gateway.start(this.apps, { port: DEFAULT_GATEWAY_PORT })
-          .then(result => {
-            // Start each app.
-            this.apps.forEach(app => app.start());
 
-            // Log.
+        const startApps = promises(this.apps.map(app => app.start())).then(result => result.results);
+        const startGateway = gateway.start(this.apps, { port: GATEWAY_PORT });
+
+        const onComplete = (apps) => {
             log.info("");
-            log.info(`Gateway running on port:${ result.port }`);
-            this.apps.forEach(app => {
-              log.info(` - '${ app.id }' routing '${ app.route }' => port:${ app.port }`);
+            log.info("");
+            log.info(`Gateway running on port:${ GATEWAY_PORT }`);
+            console.log("");
+            apps.forEach(item => {
+                const version = item.version ? ` (v${ item.version })` : "";
+                log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);
             });
-            log.info("");
-            log.info("");
+            console.log("");
             this.update(); // Ensure all apps are up-to-date.
-            resolve({ gateway: result });
-          })
+            resolve({});
+        };
+
+        startGateway
+          .then(() => startApps.then(apps => onComplete(apps)))
           .catch(err => reject(err));
       });
     },

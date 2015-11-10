@@ -64,7 +64,7 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
       download();
     } else {
       // Check whether the app exists, before downloading.
-      getLocalPackage(localFolder)
+      getLocalPackage(id, localFolder)
         .then(local => {
             if (local.exists) {
               onComplete(false, { alreadyExists: true });

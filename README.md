@@ -13,6 +13,10 @@ If you are not using the module within it's Docker container, then ensure that [
     npm install pm2 -g
 
 
+## Docker Commands
+
+    docker run -t -p 80:3000 app-sync npm start
+
 
 ## Run Example
     npm install
