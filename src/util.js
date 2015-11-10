@@ -101,3 +101,32 @@ export const loadJson = (path) => {
       .catch(err => reject(err));
   });
 };
+
+
+
+
+/**
+ * Sorts a set of app definitions, moving the wild-card domains to the end.
+ * @param apps: An array of app definitions.
+ * @return {Array}.
+ */
+export const sortAppsByRoute = (apps) => {
+    apps = apps.map(app => ({ app, route: app.route.toString() }));
+
+    const wildcard = (app) => app.route.startsWith("*");
+    const notWildcard = (app) => !wildcard(app);
+    const sorted = (filter) => R.pipe(R.filter(filter), R.sortBy(R.prop("route")));
+
+    let wildcardDomains = sorted(wildcard)(apps);
+    let explicitDomains = sorted(notWildcard)(apps);
+
+    if (wildcardDomains[0] && wildcardDomains[0].route === "*") {
+      const catchAll = wildcardDomains[0];
+      wildcardDomains = R.remove(0, 1, wildcardDomains);
+      wildcardDomains.push(catchAll);
+    }
+
+    // Finish up.
+    apps = R.union(explicitDomains, wildcardDomains);
+    return apps.map(item => item.app);
+  };

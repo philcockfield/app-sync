@@ -1,13 +1,17 @@
+import R from "ramda";
 import Promise from "bluebird";
 import shell from "shelljs";
-import { promises } from "./util";
 import gateway from "./gateway";
 import log from "./log";
+import { promises, sortAppsByRoute } from "./util";
 
 import {
   DEFAULT_GATEWAY_PORT,
 } from "./const";
 const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
+
+
+
 
 
 
@@ -20,9 +24,8 @@ const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
  */
 export default (apps, update) => {
   return new Promise((resolve, reject) => {
-    // TODO: Ensure the * routes are last.
-
-    // Start the gateway (proxy).
+    // Setup initial conditions.
+    apps = sortAppsByRoute(apps);
     log.info("Starting...");
 
     const startApps = promises(apps.map(app => app.start())).then(result => result.results);

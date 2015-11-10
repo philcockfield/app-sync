@@ -49,6 +49,9 @@ export default (settings = {}) => {
       if (R.find(item => item.id === id, this.apps)) {
         throw new Error(`An app with the ID '${ id }' has already been registered.`);
       }
+      if (R.find(item => item.route.toString() === route, this.apps)) {
+        throw new Error(`An app with the route '${ route }' has already been registered.`);
+      }
 
       // Create the App object.
       const port = DEFAULT_APP_PORT + (this.apps.length);

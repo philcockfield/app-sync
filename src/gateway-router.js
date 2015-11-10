@@ -1,6 +1,7 @@
 import R from "ramda";
 import Promise from "bluebird";
 import httpProxy from "http-proxy"; // See: https://github.com/nodejitsu/node-http-proxy
+import { sortAppsByRoute } from "./util";
 
 
 const proxy = httpProxy.createProxyServer();
@@ -20,6 +21,7 @@ proxy.on("error", (err) => {
 
 
 export default (apps, middleware) => {
+  apps = sortAppsByRoute(apps);
   const findMatchingApp = (domain, path) => {
         return R.find(app => app.route.match(domain, path), apps);
       };
