@@ -4,14 +4,12 @@ import app from "./app";
 import { isEmpty, promises } from "./util";
 import gateway from "./gateway";
 import log from "./log";
+import start from "./index-start";
 import {
   DEFAULT_APP_PORT,
-  DEFAULT_GATEWAY_PORT,
   DEFAULT_TARGET_FOLDER,
 } from "./const";
 
-
-const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
 
 
 
@@ -111,37 +109,10 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     start() {
-      return new Promise((resolve, reject) => {
-
-        // Start the gateway (proxy).
-        log.info("Starting...");
-
-        const startApps = promises(this.apps.map(app => app.start())).then(result => result.results);
-        const startGateway = gateway.start(this.apps, { port: GATEWAY_PORT });
-
-        const onComplete = (apps = []) => {
-            log.info("");
-            log.info("");
-            log.info(`Gateway running on port:${ GATEWAY_PORT }`);
-            console.log("");
-            apps.forEach(item => {
-                const version = item.version ? ` (v${ item.version })` : "";
-                log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);
-            });
-            console.log("");
-            this.update({ start: true }); // Ensure all apps are up-to-date.
-            resolve({});
-        };
-
-        if (this.apps.length === 0) {
-          log.warn("WARNING: No apps have been registered.");
-          onComplete();
-        } else {
-          startGateway
-            .then(() => startApps.then(apps => onComplete(apps)))
-            .catch(err => reject(err));
-        }
-      });
+      return start(
+        this.apps,
+        (options) => this.update(options)
+      );
     },
 
 
