@@ -1,15 +1,22 @@
 import R from "ramda";
 import Promise from "bluebird";
+import shell from "shelljs";
 import app from "./app";
-import { isEmpty, promises } from "./util";
 import gateway from "./gateway";
 import log from "./log";
 import start from "./main-start";
+import { isEmpty, promises } from "./util";
 import {
   DEFAULT_APP_PORT,
   DEFAULT_TARGET_FOLDER,
 } from "./const";
 
+
+
+// Ensure PM2 is installed globally.
+if (shell.exec("pm2 -v").code !== 0) {
+  throw new Error('The PM2 (Process Manager) must be install globally, run: `npm install -g pm2`.');
+}
 
 
 
