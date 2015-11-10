@@ -1,7 +1,7 @@
 "use strict";
 import { expect } from "chai";
 import fsPath from "path";
-import appSync from "../src";
+import appSync from "../src/main";
 
 
 

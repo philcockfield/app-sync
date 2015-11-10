@@ -1,4 +1,5 @@
 # app-sync
+
 [![Build Status](https://travis-ci.org/philcockfield/app-sync.svg)](https://travis-ci.org/philcockfield/app-sync)
 
 Pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
@@ -13,23 +14,30 @@ If you are not using the module within it's Docker container, then ensure that [
     npm install pm2 -g
 
 
+## Docker Image
+The `app-sync` module is designed to be run within a docker image which takes  environment variables describing each app/repo on github to run.
+
+    docker pull philcockfield/app-sync
+
 ## Environment Variables
 Pass the following environment variables into the [docker container](https://hub.docker.com/r/philcockfield/app-sync/) to configure the host gateway application:
 
     GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
-    GITHUB_USER_AGENT     # Used as the github API user-agent.
+    GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
+    TARGET_FOLDER         # The path where apps are downloaded to.
+                          # NB: Use this if you need to change it to a shared container volume.
 
 
 Apps are added with the `APP_<name>` prefix.
 
-Use the following configuration **required** options:
+Use the following configuration options:
 
-    --repo    # The <username/repo>. See 'Repo' section below.
-    --route   # The route pattern to match. See 'Routes' section below.
+    Required:
+      --repo    # The <username/repo>. See 'Repo' section below.
+      --route   # The route pattern to match. See 'Routes' section below.
 
-With the following **optional** settings:
-
-    --branch  # The branch to pull from (default: 'master').
+    Optional:
+      --branch  # The branch to pull from (default: 'master').
 
 For example:
 
@@ -47,7 +55,7 @@ The `--repo` field must be fully qualified Github repository including the user-
 
 
 #### Route
-The `--route` field describes the URL pattern that when matches passes requests over to the application.  The pattern takes the form of `<domain>/<path>`.  Use a wildcard (`*`) to match any domain. For example:
+The `--route` field describes a URL pattern to match for the app.  The pattern takes the form of `<domain>/<path>`.  Use a wildcard (`*`) to match any domain. For example:
 
     www.domain.com
     api.domain.com
@@ -56,13 +64,25 @@ The `--route` field describes the URL pattern that when matches passes requests 
     *
 
 
+## App Ports
+Each application that is run within `app-sync` is given an automatically generated port via the `--port` start parameter.  Listen on this port for requests, for example:
+
+```js
+var argv = require("minimist")(process.argv.slice(2));
+app.listen(argv.port);
+```
+
+
+
+
+
 
 ## Run Example
     npm install
     npm run example
 
 
-## Test
+## Tests
     npm test
 
 

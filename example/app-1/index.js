@@ -1,5 +1,5 @@
 var express = require("express");
-var argv = require('minimist')(process.argv.slice(2));
+var argv = require("minimist")(process.argv.slice(2));
 var app = express();
 var packageJson = require("./package.json");
 var name = packageJson.name;
