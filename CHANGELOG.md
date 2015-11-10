@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 #### Added
+- Download and run registered apps from Github.
+- Docker image: `docker pull philcockfield/app-sync` running from env-vars.
+
 #### Changed
 #### Deprecated
 #### Removed
