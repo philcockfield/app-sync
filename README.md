@@ -13,7 +13,12 @@ If you are not using the module within it's Docker container, then ensure that [
     npm install pm2 -g
 
 
-## Docker Environment Variables
+## Docker Image
+The `app-sync` module is designed to be run within a docker image which takes  environment variables describing each app/repo on github to run.
+
+    docker pull philcockfield/app-sync
+
+## Environment Variables
 Pass the following environment variables into the [docker container](https://hub.docker.com/r/philcockfield/app-sync/) to configure the host gateway application:
 
     GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
@@ -56,13 +61,25 @@ The `--route` field describes a URL pattern to match for the app.  The pattern t
     *
 
 
+## App Ports
+Each application that is run within `app-sync` is given an automatically generated port via the `--port` start parameter.  Listen on this port for requests, for example:
+
+```js
+var argv = require("minimist")(process.argv.slice(2));
+app.listen(argv.port);
+```
+
+
+
+
+
 
 ## Run Example
     npm install
     npm run example
 
 
-## Test
+## Tests
     npm test
 
 
