@@ -22,14 +22,14 @@ Pass the following environment variables into the [docker container](https://hub
 
 Apps are added with the `APP_<name>` prefix.
 
-Use the following configuration **required** options:
+Use the following configuration options:
 
-    --repo    # The <username/repo>. See 'Repo' section below.
-    --route   # The route pattern to match. See 'Routes' section below.
+    Required:
+      --repo    # The <username/repo>. See 'Repo' section below.
+      --route   # The route pattern to match. See 'Routes' section below.
 
-With the following **optional** settings:
-
-    --branch  # The branch to pull from (default: 'master').
+    Optional:
+      --branch  # The branch to pull from (default: 'master').
 
 For example:
 
@@ -47,7 +47,7 @@ The `--repo` field must be fully qualified Github repository including the user-
 
 
 #### Route
-The `--route` field describes the URL pattern that when matches passes requests over to the application.  The pattern takes the form of `<domain>/<path>`.  Use a wildcard (`*`) to match any domain. For example:
+The `--route` field describes a URL pattern to match for the app.  The pattern takes the form of `<domain>/<path>`.  Use a wildcard (`*`) to match any domain. For example:
 
     www.domain.com
     api.domain.com
