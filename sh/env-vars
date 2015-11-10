@@ -1,0 +1,3 @@
+GITHUB_USER_AGENT=test-env
+APP_TWO=--repo philcockfield/app-sync/example/app-2 --route * --branch devel
+APP_ONE=--repo philcockfield/app-sync/example/app-1 --route */foo --branch devel

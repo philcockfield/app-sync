@@ -64,20 +64,20 @@ export default (options = {}) => {
     port,
     branch,
     localFolder,
-    isRunning: false,
+
 
     /**
      * Retrieves the local [package.json] file.
      * @return {Promise}
      */
-    localPackage() { return getLocalPackage(this.localFolder); },
+    localPackage() { return getLocalPackage(id, this.localFolder); },
 
 
     /**
      * Retrieves the remote [package.json] file.
      * @return {Promise}
      */
-    remotePackage() { return getRemotePackage(repo, repoSubFolder, branch); },
+    remotePackage() { return getRemotePackage(id, repo, repoSubFolder, branch); },
 
 
     /**
@@ -97,19 +97,32 @@ export default (options = {}) => {
      *                       Default: true
      * @return {Promise}.
      */
-    download(options = {}) { return appDownload(id, localFolder, repo, repoSubFolder, branch, options); },
+    download(options = {}) {
+      // Don't continue if a download operation is in progress.
+      if (this.downloading) { return this.downloading; }
+
+      // Start the download process.
+      return this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, options)
+        .then(result => {
+            this.isDownloading = false;
+            delete this.downloading;
+            return result;
+        });
+    },
 
 
     /**
      * Downloads a new version of the app (if necessary) and restarts it.
+     * @param options
+     *          - start: Flag indicating if the app should be started after an update.
      */
-    update() {
+    update(options = {}) {
       return appUpdate(
           id,
           () => this.version(),
           (options) => this.download(options),
           (options) => this.start(options),
-          this.isRunning
+          options
         );
     },
 
@@ -131,15 +144,21 @@ export default (options = {}) => {
      */
     start(options = {}) {
       const download = options.download === undefined ? false : options.download;
-      this.isRunning = true;
       return new Promise((resolve, reject) => {
+        const localPackage = this.localPackage().catch(err => reject(err));
+
+        const start = () => {
+            shell.cd(localFolder);
+            shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
+            shell.cd(WORKING_DIRECTORY);
+          };
+
         this.download({ force: download })
           .then(result => {
               this.stop();
-              shell.cd(localFolder);
-              shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
-              shell.cd(WORKING_DIRECTORY);
-              resolve();
+              start();
+              resolve({ id, version: result.version || null, route: this.route, port: this.port });
+
           })
           .catch(err => reject(err));
       });
@@ -153,8 +172,7 @@ export default (options = {}) => {
     stop() {
       return new Promise((resolve, reject) => {
           shell.exec(`pm2 stop ${ id }`);
-          this.isRunning = false;
-          resolve();
+          resolve({ id });
       });
     }
   };

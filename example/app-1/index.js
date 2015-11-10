@@ -2,12 +2,12 @@ var express = require("express");
 var argv = require('minimist')(process.argv.slice(2));
 var app = express();
 var packageJson = require("./package.json");
-
+var name = packageJson.name;
 
 var count = 0;
 app.get("*", function(req, res) {
   count += 1;
-  res.send("<h1>" + packageJson.name + "@" + packageJson.version + ": Loaded: " + count + "</h1>");
+  res.send("<code>" + name + "@" + packageJson.version + ": Loaded: " + count + "</code>");
 });
 
 
@@ -15,6 +15,6 @@ app.get("*", function(req, res) {
 var PORT = argv.port || 5000;
 console.log("Starting App-1");
 app.listen(PORT, function() {
-    console.log("Listning on port:", PORT);
+    console.log(name + " listening on port:", PORT);
     console.log("");
 });

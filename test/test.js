@@ -55,7 +55,7 @@ describe("api (module)", () => {
       expect(app.branch).to.equal("master");
     });
 
-    it("throws if the 'name' 'repo' or 'route' are not specified", () => {
+    it("throws if the 'id' 'repo' or 'route' are not specified", () => {
       expect(() => node.add(undefined, "user/my-repo", "*/foo")).to.throw();
       expect(() => node.add("name", null, "*/foo")).to.throw();
       expect(() => node.add("name", "user/repo")).to.throw();
@@ -65,17 +65,27 @@ describe("api (module)", () => {
       expect(() => node.add("my-app", "fail", "*/foo")).to.throw();
     });
 
-    it("throws if a 'name' is repeated", () => {
-      node.add("my-app", "user/my-repo-1", "*/foo");
+    it("throws if a 'id' is repeated", () => {
+      node.add("my-app", "user/my-repo-1", "*/foo-1");
       let fn = () => {
-        node.add("my-app", "user/my-repo-2", "*/foo");
+        node.add("my-app", "user/my-repo-2", "*/foo-2");
       };
       expect(fn).to.throw();
     });
 
+
+    it("throws if a route is repeated", () => {
+      node.add("my-app-1", "user/my-repo-1", "*/foo");
+      let fn = () => {
+        node.add("my-app-2", "user/my-repo-2", "*/foo");
+      };
+      expect(fn).to.throw();
+    });
+
+
     it("auto-assigns port numbers", () => {
-      node.add("my-app-1", "user/my-repo", "*/foo");
-      node.add("my-app-2", "user/my-repo", "*/foo");
+      node.add("my-app-1", "user/my-repo", "*/foo-1");
+      node.add("my-app-2", "user/my-repo", "*/foo-2");
       expect(node.apps[0].port).to.equal(5000);
       expect(node.apps[1].port).to.equal(5001);
     });

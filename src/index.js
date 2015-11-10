@@ -4,12 +4,11 @@ import app from "./app";
 import { isEmpty, promises } from "./util";
 import gateway from "./gateway";
 import log from "./log";
+import start from "./index-start";
 import {
   DEFAULT_APP_PORT,
-  DEFAULT_GATEWAY_PORT,
   DEFAULT_TARGET_FOLDER,
 } from "./const";
-
 
 
 
@@ -50,6 +49,9 @@ export default (settings = {}) => {
       if (R.find(item => item.id === id, this.apps)) {
         throw new Error(`An app with the ID '${ id }' has already been registered.`);
       }
+      if (R.find(item => item.route.toString() === route, this.apps)) {
+        throw new Error(`An app with the route '${ route }' has already been registered.`);
+      }
 
       // Create the App object.
       const port = DEFAULT_APP_PORT + (this.apps.length);
@@ -89,10 +91,15 @@ export default (settings = {}) => {
 
     /**
      * Performs an update on all registered apps.
+     * @param options
+     *          - start: Flag indicating if the app should be started after an update.
      */
-    update() {
+    update(options = {}) {
       return new Promise((resolve, reject) => {
-        promises(this.apps.map(app => app.update()))
+        const updatingApps = this.apps.map(app => app.downloading
+                                            ? null // Don't update an app that is currently downloading.
+                                            : app.update(options));
+        promises(updatingApps)
           .then(result => resolve({ apps: result.results }))
           .catch(err => reject(err));
       });
@@ -105,27 +112,10 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     start() {
-      return new Promise((resolve, reject) => {
-        // Start the gateway (proxy).
-        log.info("Starting...");
-        gateway.start(this.apps, { port: DEFAULT_GATEWAY_PORT })
-          .then(result => {
-            // Start each app.
-            this.apps.forEach(app => app.start());
-
-            // Log.
-            log.info("");
-            log.info(`Gateway running on port:${ result.port }`);
-            this.apps.forEach(app => {
-              log.info(` - '${ app.id }' routing '${ app.route }' => port:${ app.port }`);
-            });
-            log.info("");
-            log.info("");
-            this.update(); // Ensure all apps are up-to-date.
-            resolve({ gateway: result });
-          })
-          .catch(err => reject(err));
-      });
+      return start(
+        this.apps,
+        (options) => this.update(options)
+      );
     },
 
 

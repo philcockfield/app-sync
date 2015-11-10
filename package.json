@@ -4,12 +4,14 @@
   "description": "Runs one or more node-apps keeping them in sync with Github.",
   "main": "./lib/index.js",
   "scripts": {
-    "start": "node ./example",
+    "start": "pm2 start -x --no-daemon pm2.json",
     "watch": "nodemon ./example -e js,jsx --ignore .build",
+    "watch-env": "nodemon ./lib/load-env -e js,jsx --ignore .build",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
     "prepublish": "gulp build",
-    "docker-build": "sh ./sh/docker-build.sh"
+    "dbuild": "sh ./sh/docker-build.sh",
+    "drun": "sh ./sh/docker-run.sh"
   },
   "dependencies": {
     "bluebird": "^3.0.5",
@@ -17,6 +19,7 @@
     "file-system-github": "1.1.0",
     "fs-extra": "^0.26.2",
     "http-proxy": "^1.12.0",
+    "minimist": "^1.2.0",
     "ramda": "^0.18.0",
     "semver": "^5.0.3",
     "shelljs": "^0.5.3"
