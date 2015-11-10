@@ -5,10 +5,14 @@ import log from "./log";
 
 /**
  * Downloads a new version of the app (if necessary) and restarts it.
+ * @param id: The unique identifier of the app.
+ * @param getVersion: Function that gets the version details.
+ * @param getDownload: Function that initiates a download.
+ * @param options
+ *          - start: Flag indicating if the app should be started after an update.
  */
-export default (id, getVersion, getDownload, start, isRunning) => {
+export default (id, getVersion, getDownload, start, options) => {
   return new Promise((resolve, reject) => {
-
     const done = (updated, restarted, version) => {
       if (updated) {
         const msg = restarted
@@ -32,7 +36,7 @@ export default (id, getVersion, getDownload, start, isRunning) => {
         getDownload()
           .then(result => {
               result = { id, updated: true, version: version.remote };
-              if (isRunning) {
+              if (options.start) {
                 restart()
               } else {
                 done(true, false, version.remote);

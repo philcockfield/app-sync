@@ -113,14 +113,16 @@ export default (options = {}) => {
 
     /**
      * Downloads a new version of the app (if necessary) and restarts it.
+     * @param options
+     *          - start: Flag indicating if the app should be started after an update.
      */
-    update() {
+    update(options = {}) {
       return appUpdate(
           id,
           () => this.version(),
           (options) => this.download(options),
           (options) => this.start(options),
-          this.isRunning
+          options
         );
     },
 

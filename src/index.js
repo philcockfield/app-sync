@@ -90,12 +90,14 @@ export default (settings = {}) => {
 
     /**
      * Performs an update on all registered apps.
+     * @param options
+     *          - start: Flag indicating if the app should be started after an update.
      */
-    update() {
+    update(options = {}) {
       return new Promise((resolve, reject) => {
         const updatingApps = this.apps.map(app => app.downloading
                                             ? null // Don't update an app that is currently downloading.
-                                            : app.update());
+                                            : app.update(options));
         promises(updatingApps)
           .then(result => resolve({ apps: result.results }))
           .catch(err => reject(err));
@@ -126,7 +128,7 @@ export default (settings = {}) => {
                 log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);
             });
             console.log("");
-            this.update(); // Ensure all apps are up-to-date.
+            this.update({ start: true }); // Ensure all apps are up-to-date.
             resolve({});
         };
 
