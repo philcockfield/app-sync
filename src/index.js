@@ -112,6 +112,7 @@ export default (settings = {}) => {
      */
     start() {
       return new Promise((resolve, reject) => {
+
         // Start the gateway (proxy).
         log.info("Starting...");
 
@@ -132,9 +133,14 @@ export default (settings = {}) => {
             resolve({});
         };
 
-        startGateway
-          .then(() => startApps.then(apps => onComplete(apps)))
-          .catch(err => reject(err));
+        if (this.apps.length === 0) {
+          log.warn("WARNING: No apps have been registered.");
+          onComplete();
+        } else {
+          startGateway
+            .then(() => startApps.then(apps => onComplete(apps)))
+            .catch(err => reject(err));
+        }
       });
     },
 
