@@ -67,7 +67,7 @@ The `--route` field describes a URL pattern to match for the app.  The pattern t
     *
 
 ## Tutum
-The setup sequence for creating an `app-sync` service on [Tutum](https://www.tutum.co/) is:
+To create an `app-sync` service on [Tutum](https://www.tutum.co/):
 
 1. Services ⇨ Create Service
 
