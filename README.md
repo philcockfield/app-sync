@@ -79,7 +79,7 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
     - `NODE_ENV: production`
     - `GITHUB_TOKEN`
     - `GITHUB_USER_AGENT`
-    - `TARGET_FOLDER: /opt/downloads` (or whatever volume you want to use)
+    - `TARGET_FOLDER: /opt/downloads` (or whatever volume you wish to use)
 
 5. Application environment variables ([ref](https://github.com/philcockfield/app-sync#applications))
 
