@@ -2,6 +2,7 @@ import R from "ramda";
 import Promise from "bluebird";
 import httpProxy from "http-proxy"; // See: https://github.com/nodejitsu/node-http-proxy
 import { sortAppsByRoute } from "./util";
+import log from "./log";
 
 
 const proxy = httpProxy.createProxyServer();
@@ -12,7 +13,7 @@ proxy.on("error", (err) => {
       //    It is a bug in the `node-http-proxy` that is getting fixed.
       //    See issue: https://github.com/nodejitsu/node-http-proxy/issues/898
       break;
-    default: console.error(`PROXY error:`, err);
+    default: log.error(`PROXY error:`, err);
   }
 });
 
