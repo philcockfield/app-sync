@@ -75,13 +75,13 @@ The setup sequence for creating an `app-sync` service on [Tutum](https://www.tut
 
 3. Service configuration ⇨ Run command ⇨ `npm start`
 
-4. Main environment variables ([ref](https://github.com/philcockfield/app-sync#environment-variables)):
+4. Main environment variables ([ref](https://github.com/philcockfield/app-sync#main)):
     - `NODE_ENV: production`
     - `GITHUB_TOKEN`
     - `GITHUB_USER_AGENT`
     - `TARGET_FOLDER: /opt/downloads` (or whatever volume you want to use)
 
-5. Application environment variables ([ref](https://github.com/philcockfield/app-sync#environment-variables))
+5. Application environment variables ([ref](https://github.com/philcockfield/app-sync#applications))
 
 6. Add volume ⇨ Container path: `/opt/downloads` (leave host path blank)
 
