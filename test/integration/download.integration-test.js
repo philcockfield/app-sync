@@ -16,7 +16,7 @@ const BUILD_PATH = "./.build-test";
 
 
 describe("download (integration)", function() {
-  this.timeout(15 * 1000);
+  this.timeout(30 * 1000);
   let node;
   beforeEach(() => {
     node = appSync({ targetFolder: BUILD_PATH, token: process.env.GITHUB_TOKEN })
