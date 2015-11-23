@@ -5,8 +5,8 @@
   "main": "./index.js",
   "scripts": {
     "start": "pm2 start -x --no-daemon pm2.json",
+    "example": "node ./example",
     "watch": "nodemon ./example -e js,jsx --ignore .build",
-    "watch-env": "nodemon ./lib/load-env -e js,jsx --ignore .build",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
     "prepublish": "gulp build",

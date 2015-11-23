@@ -38,7 +38,7 @@ export default (apps, middleware) => {
         proxy.web(req, res, { target });
       } else {
         // No matching route.
-        res.status(404).send({ message: "Not found.", domain, path });
+        res.status(404).send({ message: "Route not found", domain, path });
       }
     });
 };
