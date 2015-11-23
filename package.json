@@ -2,7 +2,7 @@
   "name": "app-sync",
   "version": "0.0.2",
   "description": "Runs one or more node-apps keeping them in sync with Github.",
-  "main": "./lib/main.js",
+  "main": "./index.js",
   "scripts": {
     "start": "pm2 start -x --no-daemon pm2.json",
     "watch": "nodemon ./example -e js,jsx --ignore .build",

@@ -41,7 +41,10 @@ Use the following configuration options:
 
 For example:
 
-    APP_SITE:"--repo philcockfield/app-sync --route */site --branch master"
+    APP_SITE: --repo philcockfield/app-sync --route */site --branch master
+
+    APP_EXAMPLE_1: --repo philcockfield/app-sync/example/app-1 --route */app-1
+    APP_EXAMPLE_2: --repo philcockfield/app-sync/example/app-2 --route */app-2
 
 
 
