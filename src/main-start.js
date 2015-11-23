@@ -34,6 +34,7 @@ export default (apps, update) => {
 
     const onComplete = (items = []) => {
         log.info("");
+        log.info(`Environment: ${ process.env.NODE_ENV || "development" }`)
         log.info(`Gateway running on port:${ GATEWAY_PORT }`);
         console.log("");
         items.forEach(item => {
