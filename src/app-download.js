@@ -1,3 +1,4 @@
+import fs from "fs-extra";
 import Promise from "bluebird";
 import { getLocalPackage, getRemotePackage } from "./app-package";
 import appInstall from "./app-install";
@@ -59,9 +60,15 @@ export default (id, localFolder, repo, subFolder, branch, statusCache, options =
         repo
           .get(subFolder, { branch })
           .then(result => {
-              result.save(localFolder)
-                .then(result => onSaved({ id, files: result.files }))
-                .catch(err => reject(err));
+              fs.remove(localFolder, (err) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  result.save(localFolder)
+                    .then(result => onSaved({ id, files: result.files }))
+                    .catch(err => reject(err));
+                }
+              });
           })
           .catch(err => reject(err));
       };

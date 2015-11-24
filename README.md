@@ -120,8 +120,9 @@ The status of running applications can be found at the `/gateway` route, for exa
 
 ## TODO
 - Rotate logs: https://github.com/pm2-hive/pm2-logrotate
-- Status
+- Status - fix ID
 - Service restart - on webhook.
+- Delete cached repo files before save.
 
 ---
 ### License: MIT
