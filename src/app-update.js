@@ -8,8 +8,10 @@ import log from "./log";
  * @param {String} id: The unique identifier of the app.
  * @param {Function} getVersion: Function that gets the version details.
  * @param {Function} getDownload: Function that initiates a download.
+ * @param {Function} start: Function that starts the application.
  * @param options
  *          - start: Flag indicating if the app should be started after an update.
+     *               Default: true.
  */
 export default (id, getVersion, getDownload, start, options = {}) => {
   return new Promise((resolve, reject) => {
@@ -37,7 +39,7 @@ export default (id, getVersion, getDownload, start, options = {}) => {
         getDownload()
           .then(result => {
               result = { id, updated: true, version: version.remote };
-              if (options.start) {
+              if (options.start === undefined ? true : options.start) {
                 restart()
               } else {
                 done(true, false, version.remote);
