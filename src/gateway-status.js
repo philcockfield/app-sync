@@ -66,7 +66,7 @@ export default (apps, middleware) => {
           getProcesses()
             .then(processes => {
                 promises(processes.map(processItem => getAppStatus(getApp(processItem.name), processItem)))
-                  .then(result => resolve(result.results))
+                  .then(result => resolve(R.sortBy(R.prop("id"), result.results)))
                   .catch(err => reject(err));
             })
             .catch(err => reject(err));
