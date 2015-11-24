@@ -110,5 +110,10 @@ app.listen(argv.port);
     npm test
 
 
+## TODO
+- Rotate logs: https://github.com/pm2-hive/pm2-logrotate
+- Status
+- Service restart - on webhook.
+
 ---
 ### License: MIT
