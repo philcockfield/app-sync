@@ -9,7 +9,7 @@ pm2.connect(() => isConnected = true);
 
 
 
-export const getAppStatus = (app, processItem) => {
+const getAppStatus = (app, processItem) => {
       const status = {
           id: app.id,
           status: processItem.pm2_env.status,
@@ -36,37 +36,72 @@ export const getAppStatus = (app, processItem) => {
 
 
 
-
-export default (apps, middleware) => {
-  const getRunningApps = () => {
-    return new Promise((resolve, reject) => {
-      pm2.list((err, processes) => {
+const getProcesses = (filter) => {
+      return new Promise((resolve, reject) => {
+        pm2.list((err, processes) => {
           if (err) {
-            reject(err);
+            reject(err)
           } else {
-            promises(processes.map(processItem => {
-                const app = R.find(appItem => appItem.id === processItem.name, apps);
-                return getAppStatus(app, processItem);
-              }))
-              .then(result => resolve(result.results))
-              .catch(err => reject(err));
+            if (filter) {
+              processes = R.filter(filter, processes);
+            }
+            resolve(processes);
           }
         });
-    });
-  };
-
-
-  const getStatus = (req, res) => {
-      const gettingRunningApps = getRunningApps().catch(err => res.status(500).send({ message: "Failed while getting running applications" }));
-      gettingRunningApps.then(runningApps => {
-        res.send({ apps: runningApps });
       });
     };
 
 
-  // Register route.
+
+
+export default (apps, middleware) => {
+  const getApp = (id) => R.find(app => app.id === id, apps);
+  const getRunningApps = () => {
+        return new Promise((resolve, reject) => {
+          getProcesses()
+            .then(processes => {
+                promises(processes.map(processItem => getAppStatus(getApp(processItem.name), processItem)))
+                  .then(result => resolve(result.results))
+                  .catch(err => reject(err));
+            })
+            .catch(err => reject(err));
+        });
+      };
+
+
+  const routeStatus = (req, res) => {
+      const gettingRunningApps = getRunningApps().catch(err => res.status(500).send({ error: "Failed while getting the status of running applications" }));
+      gettingRunningApps.then(appsStatus => {
+        res.send({ apps: appsStatus });
+      });
+    };
+
+
+  const routeAppStatus = (req, res) => {
+      const id = req.params.app;
+      const app = getApp(id);
+      const sendFail = () => res.status(500).send({ error: "Failed while getting the status of the application '${ id }'." });
+      if (!app) {
+        res.status(404).send({ error: `The application '${ id }' does not exist.` });
+      } else {
+        const sendStatus = (processItem) => {
+              getAppStatus(getApp(processItem.name), processItem)
+                .then(result => res.send(result))
+                .catch(err => sendFail());
+            };
+        getProcesses(item => item.name === id)
+          .then(processes => sendStatus(processes[0]))
+          .catch(err => sendFail());
+      }
+    };
+
+
+  // Register routes.
   const gatewayRoute = GATEWAY_ROUTE.replace(/^\//, "");
+  middleware.get(`/${ gatewayRoute }/:app`, (req, res) => {
+        isConnected ? routeAppStatus(req, res) : res.send({ isInitialized: false })
+      });
   middleware.get(`/${ gatewayRoute }`, (req, res) => {
-      isConnected ? getStatus(req, res) : res.send({ isInitialized: false })
-  });
+        isConnected ? routeStatus(req, res) : res.send({ isInitialized: false })
+      });
 };
