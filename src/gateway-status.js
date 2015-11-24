@@ -11,18 +11,23 @@ pm2.connect(() => isConnected = true);
 
 
 const getAppStatus = (app, processItem) => {
-      const status = {
-          id: app.id,
-          status: processItem.pm2_env.status,
-          route: `${ app.route.toString() } ⇨ ${ app.port }`,
-          repository: `${ app.repo.name }:${ app.branch }`,
-          resources: {
-            memory: prettyBytes(processItem.monit.memory),
-            cpu: processItem.monit.cpu,
-          }
-      };
+    return new Promise((resolve, reject) => {
+        if (!app || !processItem) {
+          resolve();
+          return;
+        }
 
-      return new Promise((resolve, reject) => {
+        const status = {
+            id: app.id,
+            status: processItem.pm2_env.status,
+            route: `${ app.route.toString() } ⇨ ${ app.port }`,
+            repository: `${ app.repo.name }:${ app.branch }`,
+            resources: {
+              memory: prettyBytes(processItem.monit.memory),
+              cpu: processItem.monit.cpu,
+            }
+        };
+
         const gettingVersion = app.version().catch(err => reject(err));
         gettingVersion.then(version => {
             status.version = {
@@ -36,8 +41,8 @@ const getAppStatus = (app, processItem) => {
             if (version.updateRequired) { app.update({ start: true }); }
             resolve(status);
           });
-      });
-    };
+    });
+  };
 
 
 
@@ -58,7 +63,6 @@ const getProcesses = (filter) => {
 
 
 
-
 export default (apps, middleware) => {
   const getApp = (id) => R.find(app => app.id === id, apps);
   const getRunningApps = () => {
@@ -66,12 +70,17 @@ export default (apps, middleware) => {
           getProcesses()
             .then(processes => {
                 promises(processes.map(processItem => getAppStatus(getApp(processItem.name), processItem)))
-                  .then(result => resolve(result.results))
+                  .then(result => {
+                      result = R.reject(R.isNil)(result.results);
+                      result = R.sortBy(R.prop("id"))(result);
+                      resolve(result);
+                  })
                   .catch(err => reject(err));
             })
             .catch(err => reject(err));
         });
       };
+
 
 
   const routeStatus = (req, res) => {
@@ -85,6 +94,7 @@ export default (apps, middleware) => {
             });
         });
     };
+
 
 
   const routeAppStatus = (req, res) => {
