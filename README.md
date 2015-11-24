@@ -102,8 +102,11 @@ app.listen(argv.port);
 ```
 
 
+## Status Routes
+The status of running applications can be found at the `/gateway` route, for example:
 
-
+    /gateway            # Status of all running apps
+    /gateway/<app-id>   # Status of the specified app.
 
 
 ## Run Example
