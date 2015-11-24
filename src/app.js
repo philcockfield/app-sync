@@ -1,4 +1,5 @@
 import R from "ramda";
+import pm2 from "pm2";
 import Promise from "bluebird";
 import shell from "shelljs";
 import fs from "fs-extra";
@@ -145,8 +146,6 @@ export default (options = {}) => {
     start(options = {}) {
       const download = options.download === undefined ? false : options.download;
       return new Promise((resolve, reject) => {
-        const localPackage = this.localPackage().catch(err => reject(err));
-
         const start = () => {
             shell.cd(localFolder);
             shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
@@ -158,7 +157,6 @@ export default (options = {}) => {
               this.stop();
               start();
               resolve({ id, version: result.version || null, route: this.route, port: this.port });
-
           })
           .catch(err => reject(err));
       });
