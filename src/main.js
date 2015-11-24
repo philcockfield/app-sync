@@ -129,6 +129,7 @@ export default (settings = {}) => {
 
     /**
      * Stops the gateway and all running apps.
+     * @return {Promise}
      */
     stop() {
       log.info("Stopping...");
