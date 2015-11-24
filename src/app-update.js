@@ -14,6 +14,8 @@ import log from "./log";
      *               Default: true.
  */
 export default (id, getVersion, getDownload, start, options = {}) => {
+  const restartAfterUpdate = options.start === undefined ? true : options.start;
+
   return new Promise((resolve, reject) => {
     const done = (updated, restarted, version) => {
         if (updated) {
@@ -39,7 +41,7 @@ export default (id, getVersion, getDownload, start, options = {}) => {
         getDownload()
           .then(result => {
               result = { id, updated: true, version: version.remote };
-              if (options.start === undefined ? true : options.start) {
+              if (restartAfterUpdate) {
                 restart()
               } else {
                 done(true, false, version.remote);
