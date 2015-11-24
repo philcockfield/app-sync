@@ -13,6 +13,7 @@ import log from "./log";
  * @param repo:         The repository to pull from.
  * @param subFolder:    The sub-folder into the repo (if there is one).
  * @param branch:       The branch to query.
+ * @param statusCache:  A file-system-cache for storing status about the app.
  * @param options:
  *            - install: Flag indicating if `npm install` should be run on the directory.
  *                       Default: true.
@@ -22,7 +23,7 @@ import log from "./log";
  *
  * @return {Promise}.
  */
-export default (id, localFolder, repo, subFolder, branch, options = {}) => {
+export default (id, localFolder, repo, subFolder, branch, statusCache, options = {}) => {
   const install = options.install == undefined ? true : options.install;
   const force = options.force === undefined ? true : options.force;
 
@@ -54,6 +55,7 @@ export default (id, localFolder, repo, subFolder, branch, options = {}) => {
     // Download the repository files.
     const download = () => {
         log.info(`Downloading '${ id }'...`);
+        statusCache.set(id, { isDownloading: true });
         repo
           .get(subFolder, { branch })
           .then(result => {

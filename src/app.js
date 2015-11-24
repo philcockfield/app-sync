@@ -1,4 +1,5 @@
 import R from "ramda";
+import Cache from "file-system-cache";
 import pm2 from "pm2";
 import Promise from "bluebird";
 import shell from "shelljs";
@@ -46,6 +47,7 @@ export default (options = {}) => {
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
   const WORKING_DIRECTORY = process.cwd();
+  const statusCache = Cache({ basePath: `${ targetFolder }/.status` });
 
   // Extract the repo and sub-path.
   let parts = repo.split("/");
@@ -85,7 +87,7 @@ export default (options = {}) => {
      * Gets the local and remote versions.
      * @return {Promise}
      */
-    version() { return appVersion(id, this.localPackage(), this.remotePackage()); },
+    version() { return appVersion(id, this.localPackage(), this.remotePackage(), statusCache); },
 
 
     /**
@@ -103,7 +105,7 @@ export default (options = {}) => {
       if (this.downloading) { return this.downloading; }
 
       // Start the download process.
-      return this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, options)
+      return this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, statusCache, options)
         .then(result => {
             this.isDownloading = false;
             delete this.downloading;

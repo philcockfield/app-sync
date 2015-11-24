@@ -5,24 +5,24 @@ import log from "./log";
 
 /**
  * Downloads a new version of the app (if necessary) and restarts it.
- * @param id: The unique identifier of the app.
- * @param getVersion: Function that gets the version details.
- * @param getDownload: Function that initiates a download.
+ * @param {String} id: The unique identifier of the app.
+ * @param {Function} getVersion: Function that gets the version details.
+ * @param {Function} getDownload: Function that initiates a download.
  * @param options
  *          - start: Flag indicating if the app should be started after an update.
  */
-export default (id, getVersion, getDownload, start, options) => {
+export default (id, getVersion, getDownload, start, options = {}) => {
   return new Promise((resolve, reject) => {
     const done = (updated, restarted, version) => {
-      if (updated) {
-        const msg = restarted
-            ? `...updated and restarted '${ id }' to v${ version }.`
-            : `...updated '${ id }' to v${ version }.`
-        log.info("");
-        log.info(msg);
-      }
-      resolve({ id, updated, version });
-    };
+        if (updated) {
+          const msg = restarted
+              ? `...updated and restarted '${ id }' to v${ version }.`
+              : `...updated '${ id }' to v${ version }.`
+          log.info("");
+          log.info(msg);
+        }
+        resolve({ id, updated, version });
+      };
 
     const update = (version) => {
         log.info();
@@ -48,7 +48,7 @@ export default (id, getVersion, getDownload, start, options) => {
 
     getVersion()
       .then(version => {
-          if (version.updateRequired) {
+          if (version.updateRequired && !version.isDownloading) {
             update(version);
           } else {
             done(false, false, version.local);
