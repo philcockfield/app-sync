@@ -9,52 +9,46 @@ pm2.connect(() => isConnected = true);
 
 
 
+export const getAppStatus = (app, processItem) => {
+      const status = {
+          id: app.id,
+          status: processItem.pm2_env.status,
+          route: `${ app.route.toString() } ⇨ ${ app.port }`,
+          repository: `${ app.repo.name }:${ app.branch }`,
+          resources: {
+            memory: prettyBytes(processItem.monit.memory),
+            cpu: processItem.monit.cpu,
+          }
+      };
+
+      return new Promise((resolve, reject) => {
+        const gettingVersion = app.version().catch(err => reject(err));
+        gettingVersion.then(version => {
+            status.version = {
+              local: version.local,
+              repository: version.remote
+            };
+            if (version.updateRequired) { app.update(); }
+            resolve(status);
+          });
+      });
+    };
+
+
+
 
 export default (apps, middleware) => {
   const getRunningApps = () => {
     return new Promise((resolve, reject) => {
-
-      const getApp = (id) => R.find(item => item.id === id, apps);
-      const getRunningApp = (id) => {
-            const app = getApp(id);
-            return {
-              id,
-              port: app.port,
-              route: app.route.toString(),
-              repo: app.repo.name,
-              branch: app.branch,
-            };
-          };
-
-      const appendVersions = (runningApps) => {
-          const gettingVersions = runningApps.map(runningApp => {
-            return getApp(runningApp.id).version()
-              .then(version => {
-                delete version.id;
-                runningApp.version = version;
-                return version;
-              });
-          });
-          return promises(gettingVersions);
-        };
-
-
-      pm2.list((err, list) => {
+      pm2.list((err, processes) => {
           if (err) {
             reject(err);
           } else {
-            let runningApps = list.map(item => {
-                  let app = getRunningApp(item.name);
-                  app = R.merge(app, {
-                    memory: prettyBytes(item.monit.memory),
-                    cpu: item.monit.cpu,
-                    status: item.pm2_env.status
-                  })
-                  return app;
-                });
-
-            appendVersions(runningApps)
-              .then(result => resolve(runningApps))
+            promises(processes.map(processItem => {
+                const app = R.find(appItem => appItem.id === processItem.name, apps);
+                return getAppStatus(app, processItem);
+              }))
+              .then(result => resolve(result.results))
               .catch(err => reject(err));
           }
         });
