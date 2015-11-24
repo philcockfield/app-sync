@@ -15,7 +15,7 @@ If you are not using the module within it's Docker container, then ensure that [
 
 
 ## Docker Image
-The `app-sync` module is designed to be run within a docker image which takes  environment variables describing each app/repository on github to run.
+The `app-sync` module is designed to be run within a [docker image](https://hub.docker.com/r/philcockfield/app-sync/) which takes  environment variables describing each app/repository on github to run.
 
     docker pull philcockfield/app-sync
 

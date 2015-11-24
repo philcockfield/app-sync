@@ -3,6 +3,7 @@ import pm2 from "pm2";
 import prettyBytes from "pretty-bytes";
 import { GATEWAY_ROUTE } from "./const";
 import { promises } from "./util";
+import log from "./log";
 
 let isConnected = false;
 pm2.connect(() => isConnected = true);
@@ -70,10 +71,15 @@ export default (apps, middleware) => {
 
 
   const routeStatus = (req, res) => {
-      const gettingRunningApps = getRunningApps().catch(err => res.status(500).send({ error: "Failed while getting the status of running applications" }));
-      gettingRunningApps.then(appsStatus => {
-        res.send({ apps: appsStatus });
-      });
+      getRunningApps()
+        .then(appsStatus => res.send({ apps: appsStatus }))
+        .catch(err => {
+            log.error(err);
+            res.status(500).send({
+              error: "Failed while getting the status of running applications",
+              message: err.message
+            });
+        });
     };
 
 
