@@ -23,10 +23,15 @@ The `app-sync` module is designed to be run within a docker image which takes  e
 #### Main
 Pass the following environment variables into the [docker container](https://hub.docker.com/r/philcockfield/app-sync/) to configure the host gateway application:
 
-    GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
-    GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
-    TARGET_FOLDER         # The path where apps are downloaded to.
-                          # NB: Use this if you need to change it to a shared container volume.
+    Required:
+      GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
+      GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
+
+    Optional:
+      TARGET_FOLDER         # The path where apps are downloaded to.
+                            # NB: Use this if you need to change it to a shared container volume.
+      GATEWAY_ROUTE         # The root URL path for status for routes about the gateway. Default: /gateway
+
 
 
 #### Applications

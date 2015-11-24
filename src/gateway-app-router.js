@@ -27,7 +27,6 @@ export default (apps, middleware) => {
         return R.find(app => app.route.match(domain, path), apps);
       };
 
-
   middleware.get("*", (req, res) => {
       const domain = req.get("host").split(":")[0];
       const path = req.url;
