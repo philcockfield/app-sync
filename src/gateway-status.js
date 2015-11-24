@@ -29,6 +29,10 @@ const getAppStatus = (app, processItem) => {
               local: version.local,
               repository: version.remote
             };
+            if (version.isDownloading) {
+              status.status += `, updating to v${ version.remote }`;
+              status.version.isDownloading = true;
+            }
             if (version.updateRequired) { app.update(); }
             resolve(status);
           });
