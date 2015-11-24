@@ -36,7 +36,7 @@ export default (apps, middleware) => {
         // An app matches the current route.
         // Proxy the request to it.
         const target = { host: "localhost", port: app.port };
-        log.info(`Route: ${ req.path } => port:${ app.port }`);
+        // log.info(`Route: ${ req.path } => port:${ app.port }`);
         proxy.web(req, res, { target });
       } else {
         // No matching route.
