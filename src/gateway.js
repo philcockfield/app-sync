@@ -1,6 +1,7 @@
 import express from "express";
 import Promise from "bluebird";
-import gatewayRouter from "./gateway-router";
+import gatewayStatus from "./gateway-status";
+import gatewayAppRouter from "./gateway-app-router";
 import { DEFAULT_GATEWAY_PORT } from "./const";
 
 let server;
@@ -21,8 +22,9 @@ const start = (apps, options = {}) => {
           reject(new Error("The gateway server is already running."));
         }
 
-        // Router.
-        gatewayRouter(apps, app);
+        // Routes.
+        gatewayStatus(apps, app);
+        gatewayAppRouter(apps, app);
 
         // Listen on the desired port.
         const port = options.port || DEFAULT_GATEWAY_PORT;

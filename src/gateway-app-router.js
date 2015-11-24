@@ -27,7 +27,6 @@ export default (apps, middleware) => {
         return R.find(app => app.route.match(domain, path), apps);
       };
 
-
   middleware.get("*", (req, res) => {
       const domain = req.get("host").split(":")[0];
       const path = req.url;
@@ -36,7 +35,7 @@ export default (apps, middleware) => {
         // An app matches the current route.
         // Proxy the request to it.
         const target = { host: "localhost", port: app.port };
-        log.info(`Route: ${ req.path } => port:${ app.port }`);
+        // log.info(`Route: ${ req.path } => port:${ app.port }`);
         proxy.web(req, res, { target });
       } else {
         // No matching route.
