@@ -15,11 +15,12 @@ If you are not using the module within it's Docker container, then ensure that [
 
 
 ## Docker Image
-The `app-sync` module is designed to be run within a docker image which takes  environment variables describing each app/repo on github to run.
+The `app-sync` module is designed to be run within a docker image which takes  environment variables describing each app/repository on github to run.
 
     docker pull philcockfield/app-sync
 
 ## Environment Variables
+#### Main
 Pass the following environment variables into the [docker container](https://hub.docker.com/r/philcockfield/app-sync/) to configure the host gateway application:
 
     GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
@@ -28,9 +29,8 @@ Pass the following environment variables into the [docker container](https://hub
                           # NB: Use this if you need to change it to a shared container volume.
 
 
-Apps are added with the `APP_<name>` prefix.
-
-Use the following configuration options:
+#### Applications
+Apps are added with the `APP_<name>` prefix. Use the following configuration options:
 
     Required:
       --repo    # The <username/repo>. See 'Repo' section below.
@@ -66,9 +66,30 @@ The `--route` field describes a URL pattern to match for the app.  The pattern t
     */path
     *
 
+## Tutum
+To create an `app-sync` service on [Tutum](https://www.tutum.co/):
 
-## App Ports
-Each application that is run within `app-sync` is given an automatically generated port via the `--port` start parameter.  Listen on this port for requests, for example:
+1. Services ⇨ Create Service
+
+2. Image selection ⇨ Public repositories ⇨ `philcockfield/app-sync`
+
+3. Service configuration ⇨ Run command ⇨ `npm start`
+
+4. Main environment variables ([ref](https://github.com/philcockfield/app-sync#main)):
+    - `NODE_ENV: production`
+    - `GITHUB_TOKEN`
+    - `GITHUB_USER_AGENT`
+    - `TARGET_FOLDER: /opt/downloads` (or whatever volume you wish to use)
+
+5. Application environment variables ([ref](https://github.com/philcockfield/app-sync#applications))
+
+6. Add volume ⇨ Container path: `/opt/downloads` (leave host path blank)
+
+7. Create and deploy.
+
+
+## Application Port
+Each application that runs within `app-sync` is assignd an automatically generated port via the `--port` start parameter.  Listen on this port for requests.  You may wish to use [minimist](https://www.npmjs.com/package/minimist) to extract the port value, for example:
 
 ```js
 var argv = require("minimist")(process.argv.slice(2));

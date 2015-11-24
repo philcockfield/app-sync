@@ -2,6 +2,7 @@ import R from "ramda";
 import Promise from "bluebird";
 import httpProxy from "http-proxy"; // See: https://github.com/nodejitsu/node-http-proxy
 import { sortAppsByRoute } from "./util";
+import log from "./log";
 
 
 const proxy = httpProxy.createProxyServer();
@@ -12,7 +13,7 @@ proxy.on("error", (err) => {
       //    It is a bug in the `node-http-proxy` that is getting fixed.
       //    See issue: https://github.com/nodejitsu/node-http-proxy/issues/898
       break;
-    default: console.error(`PROXY error:`, err);
+    default: log.error(`PROXY error:`, err);
   }
 });
 
@@ -34,11 +35,12 @@ export default (apps, middleware) => {
       if (app) {
         // An app matches the current route.
         // Proxy the request to it.
-        const target = `http://localhost:${ app.port }`;
+        const target = { host: "localhost", port: app.port };
+        log.info(`Route: ${ req.path } => port:${ app.port }`);
         proxy.web(req, res, { target });
       } else {
         // No matching route.
-        res.status(404).send({ message: "Not found.", domain, path });
+        res.status(404).send({ message: "Route not found", domain, path });
       }
     });
 };

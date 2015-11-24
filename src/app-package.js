@@ -33,7 +33,7 @@ export const getRemotePackage = (id, repo, subFolder, branch) => {
             const file = result.files[0];
             if (file) {
               try {
-                const json = JSON.parse(file.content);
+                const json = JSON.parse(file.toString());
                 resolve({ id, exists: true, json })
               } catch (err) { reject(err); }
 
