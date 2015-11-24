@@ -1,6 +1,5 @@
 import R from "ramda";
 import Cache from "file-system-cache";
-import pm2 from "pm2";
 import Promise from "bluebird";
 import shell from "shelljs";
 import fs from "fs-extra";

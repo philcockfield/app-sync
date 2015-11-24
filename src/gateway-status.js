@@ -1,5 +1,5 @@
 import R from "ramda";
-import pm2 from "pm2";
+import pm2 from "./pm2";
 import prettyBytes from "pretty-bytes";
 import { GATEWAY_ROUTE } from "./const";
 import { promises } from "./util";
