@@ -5,10 +5,7 @@ import gateway from "./gateway";
 import log from "./log";
 import pm2 from "./pm2";
 import { promises, sortAppsByRoute } from "./util";
-
-import {
-  DEFAULT_GATEWAY_PORT,
-} from "./const";
+import { DEFAULT_GATEWAY_PORT } from "./const";
 const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
 
 
@@ -25,7 +22,7 @@ const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
  * @param update: Function that invokes the update method.
  * @return {Promise}
  */
-export default (apps, update) => {
+export default (apps, update, apiRoute) => {
   return new Promise((resolve, reject) => {
     // Setup initial conditions.
     log.info("Starting...");
@@ -45,7 +42,7 @@ export default (apps, update) => {
 
           // Start the gateway and each app.
           apps = sortAppsByRoute(apps);
-          yield gateway.start(apps, { port: GATEWAY_PORT }).catch(err => reject(err));
+          yield gateway.start(apps, { port: GATEWAY_PORT, apiRoute }).catch(err => reject(err));
           const { results: items } = yield promises(apps.map(app => app.start().catch(err => reject(err))));
 
           // Log status.

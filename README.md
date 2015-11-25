@@ -30,9 +30,9 @@ Pass the following environment variables into the [docker container](https://hub
     Optional:
       TARGET_FOLDER         # The path where apps are downloaded to.
                             # NB: Use this if you need to change it to a shared container volume.
-      GATEWAY_ROUTE         # The root URL path for status for routes about the gateway. Default: /gateway
-
-
+      API_ROUTE             # Optional The <domain/path> for the API of the gateway.
+                            # For example: */gateway
+                            # If not specified the API is not exposed.
 
 #### Applications
 Apps are added with the `APP_<name>` prefix. Use the following configuration options:

@@ -1,6 +1,6 @@
 import express from "express";
 import Promise from "bluebird";
-import gatewayStatus from "./gateway-status";
+import gatewayApi from "./gateway-api";
 import gatewayAppRouter from "./gateway-app-router";
 import { DEFAULT_GATEWAY_PORT } from "./const";
 
@@ -16,6 +16,7 @@ const app = express();
  *           - port: The port to use.
  */
 const start = (apps, options = {}) => {
+    const { apiRoute } = options;
     return new Promise((resolve, reject) => {
         // Ensure the gatway is not already running.
         if (server) {
@@ -23,7 +24,7 @@ const start = (apps, options = {}) => {
         }
 
         // Routes.
-        gatewayStatus(apps, app);
+        if (apiRoute) { gatewayApi(apiRoute, apps, app); }
         gatewayAppRouter(apps, app);
 
         // Listen on the desired port.

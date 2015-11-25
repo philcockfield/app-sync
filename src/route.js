@@ -9,7 +9,7 @@ const formatMatchValue = (value) => isEmpty(value)
 
 
 /**
- * Provides an informational facets of a route.
+ * Provides an informational facet of a route.
  */
 const parse = (route) => {
   // Setup initial conditions.

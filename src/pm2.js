@@ -45,10 +45,10 @@ export default {
   /**
    * Retrieves processes of running apps.
    */
-  apps() {
+  apps(filter) {
     return new Promise((resolve, reject) => {
       Promise.coroutine(function*() {
-        const list = yield listP();
+        let list = yield listP();
         const isAppProcess = (item) => {
               // Apps can be identified by having a port in the 5000 range,
               // eg: <name>:5001
@@ -57,7 +57,9 @@ export default {
                   ? false
                   : parts[1].startsWith("5");
             };
-        resolve(R.filter(isAppProcess, list));
+        list = R.filter(isAppProcess, list);
+        if (filter) { list = R.filter(filter, list); }
+        resolve(list);
       })();
     });
   }
