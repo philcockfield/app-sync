@@ -151,7 +151,7 @@ export default (options = {}) => {
       return new Promise((resolve, reject) => {
         const start = () => {
             shell.cd(localFolder);
-            shell.exec(`pm2 start . --name ${ id } --node-args '. --port ${ port }'`);
+            shell.exec(`pm2 start . --name ${ id }:${ port } --node-args '. --port ${ port }'`);
             shell.cd(WORKING_DIRECTORY);
           };
 

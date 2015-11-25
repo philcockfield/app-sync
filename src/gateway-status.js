@@ -6,7 +6,7 @@ import { promises } from "./util";
 import log from "./log";
 
 let isConnected = false;
-pm2.connect(() => isConnected = true);
+pm2.connect().then(() => isConnected = true);
 
 
 

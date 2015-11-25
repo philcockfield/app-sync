@@ -3,12 +3,15 @@ import Promise from "bluebird";
 import shell from "shelljs";
 import gateway from "./gateway";
 import log from "./log";
+import pm2 from "./pm2";
 import { promises, sortAppsByRoute } from "./util";
 
 import {
   DEFAULT_GATEWAY_PORT,
 } from "./const";
 const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
+
+
 
 
 
@@ -33,6 +36,13 @@ export default (apps, update) => {
 
     } else {
       Promise.coroutine(function*() {
+          // Kill all apps running in a PM2 process.
+          yield pm2.connect();
+          const processes = yield pm2.apps();
+          if (processes.length > 0) {
+            yield promises(processes.map(item => pm2.delete(item.name)));
+          }
+
           // Start the gateway and each app.
           apps = sortAppsByRoute(apps);
           yield gateway.start(apps, { port: GATEWAY_PORT }).catch(err => reject(err));
