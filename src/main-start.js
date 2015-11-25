@@ -25,34 +25,36 @@ const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
 export default (apps, update) => {
   return new Promise((resolve, reject) => {
     // Setup initial conditions.
-    apps = sortAppsByRoute(apps);
     log.info("Starting...");
     log.info("");
 
-    const startApps = promises(apps.map(app => app.start())).then(result => result.results);
-    const startGateway = gateway.start(apps, { port: GATEWAY_PORT });
-
-    const onComplete = (items = []) => {
-        log.info("");
-        log.info(`Environment: ${ process.env.NODE_ENV || "development" }`)
-        log.info(`Gateway running on port:${ GATEWAY_PORT }`);
-        console.log("");
-        items.forEach(item => {
-            const version = item.version ? ` (v${ item.version })` : "";
-            log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);
-        });
-        console.log("");
-        update({ start: true }); // Ensure all apps are up-to-date.
-        resolve({});
-    };
-
     if (apps.length === 0) {
       log.warn("WARNING: No apps have been registered.");
-      onComplete();
+
     } else {
-      startGateway
-        .then(() => startApps.then(items => onComplete(items)))
-        .catch(err => reject(err));
+      Promise.coroutine(function*() {
+          // Start the gateway and each app.
+          apps = sortAppsByRoute(apps);
+          yield gateway.start(apps, { port: GATEWAY_PORT }).catch(err => reject(err));
+          const { results: items } = yield promises(apps.map(app => app.start().catch(err => reject(err))));
+
+          // Log status.
+          log.info("");
+          log.info(`Environment: ${ process.env.NODE_ENV || "development" }`)
+          log.info(`Gateway running on port:${ GATEWAY_PORT }`);
+          console.log("");
+          items.forEach(item => {
+              const version = item.version ? ` (v${ item.version })` : "";
+              log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);
+          });
+          console.log("");
+
+          // Ensure all apps are up-to-date.
+          yield update({ start: true });
+      })();
+
+      // Finish up.
+      resolve({});
     }
   });
 };
