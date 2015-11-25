@@ -1,8 +1,9 @@
 "use strict";
 import { expect } from "chai";
-// import fsPath from "path";
 import fs from "fs-extra";
 import App from "../../src/app";
+
+const delay = (msecs, fn) => setTimeout(fn, msecs);
 
 
 // NOTE: Tests will work if the GITHUB_TOKEN is not present.
@@ -35,9 +36,9 @@ describe("app (integration)", function() {
 
   before(() => {
       app = App(APP_SETTINGS);
-      return app.download({ force: false });
+      return app.download({ force: false, install: false });
   });
-  // after(() => { fs.removeSync(BUILD_PATH); });
+  after(() => { fs.removeSync(BUILD_PATH); });
 
 
   describe("version", function() {
@@ -50,7 +51,31 @@ describe("app (integration)", function() {
     });
   });
 
-  describe.only("status cache", function() {
+
+  describe("download", function() {
+    it("does not force the download (already exists)", () => {
+      return app.download({ force: false })
+        .then(result => {
+          expect(result.alreadyExists).to.equal(true);
+        });
+    });
+
+    it("does not download when another instance of the app is downloading", (done) => {
+      const app1 = App(APP_SETTINGS);
+      const app2 = App(APP_SETTINGS);
+      app1.download({ force: true, install: false });
+      delay(10, () => {
+        app2.download({ force: true, install: false })
+          .then(result => {
+            expect(result.downloadedByAnotherProcess).to.equal(true);
+            done();
+          });
+      });
+    });
+  });
+
+
+  describe("status cache", function() {
     it("is not downloading", () => {
       return app.statusCache.get(APP_ID)
         .then(result => {
@@ -60,16 +85,14 @@ describe("app (integration)", function() {
 
     it("is downloading", (done) => {
       app.download({ force: true });
-      const fn = () => {
+      delay(10, () => {
           app.statusCache.get(APP_ID)
             .then(result => {
               expect(result.isDownloading).to.equal(true);
               done();
             })
             .catch(err => console.error(err));
-
-      };
-      setTimeout(fn, 10);
+      });
     });
 
     it("resets downloading flag when download is complete", (done) => {
