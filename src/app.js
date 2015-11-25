@@ -66,6 +66,7 @@ export default (options = {}) => {
     port,
     branch,
     localFolder,
+    statusCache,
 
 
     /**

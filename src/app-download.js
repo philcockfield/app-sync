@@ -33,10 +33,13 @@ export default (id, localFolder, repo, subFolder, branch, statusCache, options =
   return new Promise((resolve, reject) => {
     const onComplete = (wasDownloaded, result) => {
           if (wasDownloaded) { log.info(`...downloaded '${ id }'.`); }
-          localPackage().then(local => {
-              result.version = local.json.version
-              resolve(result);
-          })
+          localPackage()
+            .then(local => result.version = local.json.version)
+            .then(() => {
+                statusCache.set(id, { isDownloading: false })
+                  .then(() => resolve(result))
+                  .catch(err => reject(err));
+            });
         };
 
     const onSaved = (result) => {
