@@ -66,38 +66,6 @@ export default (apps) => {
         });
       };
 
-  const routeStatus = (req, res) => {
-      getRunningApps()
-        .then(appsStatus => res.send({ apps: appsStatus }))
-        .catch(err => {
-            log.error(err);
-            res.status(500).send({
-              error: "Failed while getting the status of running applications",
-              message: err.message
-            });
-        });
-    };
-
-
-
-  const routeAppStatus = (req, res) => {
-      // Promise.coroutine(function*() {
-      //   const id = req.params.app;
-      //   const app = getApp(id);
-      //   const sendFail = (err) => res.status(500).send({ message: `Failed while getting the status of the application '${ id }'.`, err: err.message });
-      //   if (!app) {
-      //     res.status(404).send({ error: `The application '${ id }' does not exist.` });
-      //   } else {
-      //     const processes = yield pm2
-      //         .apps(item => processNameToAppId(item.name) === id)
-      //         .catch(err => sendFail(err));
-      //
-      //     const item = processes[0];
-      //     const status = yield getAppStatus(getApp(item.name), item).catch(err => sendFail(err));
-      //     res.send(status)
-      //   }
-      // })();
-    };
 
 
   return {
