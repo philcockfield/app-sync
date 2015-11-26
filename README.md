@@ -30,9 +30,9 @@ Pass the following environment variables into the [docker container](https://hub
     Optional:
       TARGET_FOLDER         # The path where apps are downloaded to.
                             # NB: Use this if you need to change it to a shared container volume.
-      GATEWAY_ROUTE         # The root URL path for status for routes about the gateway. Default: /gateway
-
-
+      API_ROUTE             # Optional The <domain/path> for the REST API.
+                            # For example: */api
+                            # If not specified the API is not exposed.
 
 #### Applications
 Apps are added with the `APP_<name>` prefix. Use the following configuration options:
@@ -85,6 +85,7 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
     - `GITHUB_TOKEN`
     - `GITHUB_USER_AGENT`
     - `TARGET_FOLDER: /opt/downloads` (or whatever volume you wish to use)
+    - `API_ROUTE`
 
 5. Application environment variables ([ref](https://github.com/philcockfield/app-sync#applications))
 
@@ -102,11 +103,11 @@ app.listen(argv.port);
 ```
 
 
-## Status Routes
-The status of running applications can be found at the `/gateway` route, for example:
+## REST API
+If you have set the `API_ROUTE` the following API is available for the gateway:
 
-    /gateway            # Status of all running apps
-    /gateway/<app-id>   # Status of the specified app.
+    <api>/            # Status of all running apps
+    <api>/<app-id>    # Status of the specified app.
 
 
 ## Run Example

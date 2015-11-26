@@ -28,9 +28,7 @@ export default (id, localPackage, remotePackage, statusCache) => {
                   ? true
                   : semver.gt(result.remote, result.local);
             }
-            statusCache.set(id, { isDownloading: false })
-              .then(() => resolve(result))
-              .catch(err => reject(err));
+            resolve(result);
           }
         };
 

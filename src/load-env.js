@@ -4,7 +4,7 @@ import minimist from "minimist";
 import appSync from "./main";
 import log from "./log";
 
-const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER } = process.env;
+const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER, API_ROUTE } = process.env;
 
 // Check for required variables.
 if (!GITHUB_TOKEN) {
@@ -32,7 +32,8 @@ if (!GITHUB_USER_AGENT) {
 const gateway = appSync({
   token: GITHUB_TOKEN,
   userAgent: GITHUB_USER_AGENT,
-  targetFolder: TARGET_FOLDER
+  targetFolder: TARGET_FOLDER,
+  apiRoute: API_ROUTE
 });
 
 
@@ -52,4 +53,6 @@ Object.keys(process.env).forEach(key => {
 
 
 // Start the gateway.
-gateway.start().catch(err => log.error("Failed to start gateway:", err));
+gateway
+  .start()
+  .catch(err => log.error("Failed to start gateway:", err));

@@ -3,6 +3,27 @@ import Promise from "bluebird";
 import { getLocalPackage, getRemotePackage } from "./app-package";
 import appInstall from "./app-install";
 import log from "./log";
+const fsRemove = Promise.promisify(fs.remove);
+
+
+
+const waitForDownload = (id, statusCache) => {
+  return new Promise((resolve, reject) => {
+      const checkDownloadState = () => {
+        Promise.coroutine(function*() {
+          const { isDownloading } = yield statusCache.get(id).catch(err => reject(err));
+          if (isDownloading) {
+            setTimeout(() => checkDownloadState(), 1000); // <== Delayed recursion.
+          } else {
+            resolve();
+          }
+        })();
+      };
+      checkDownloadState();
+  });
+};
+
+
 
 
 
@@ -27,65 +48,63 @@ import log from "./log";
 export default (id, localFolder, repo, subFolder, branch, statusCache, options = {}) => {
   const install = options.install == undefined ? true : options.install;
   const force = options.force === undefined ? true : options.force;
-
   const localPackage = () => getLocalPackage(id, localFolder).catch(err => reject(err));
 
   return new Promise((resolve, reject) => {
     const onComplete = (wasDownloaded, result) => {
-          if (wasDownloaded) { log.info(`...downloaded '${ id }'.`); }
-          localPackage().then(local => {
-              result.version = local.json.version
+          Promise.coroutine(function*() {
+              const local = yield localPackage().catch(err => reject(err));
+              result.version = local.json.version;
+              if (wasDownloaded) {
+                log.info(`...downloaded '${ id }'.`);
+                yield statusCache.set(id, { isDownloading: false }).catch(err => reject(err));
+              }
               resolve(result);
-          })
+          })();
         };
 
-    const onSaved = (result) => {
-          if (install) {
-            // Run `npm install`.
-            appInstall(localFolder)
-              .then(() => {
-                  result.installed = true;
-                  onComplete(true, result);
-              })
-              .catch(err => reject(err));
-          } else {
-            onComplete(true, result); // Return without running `npm install`.
-          }
-        };
 
-    // Download the repository files.
     const download = () => {
-        log.info(`Downloading '${ id }'...`);
-        statusCache.set(id, { isDownloading: true });
-        repo
-          .get(subFolder, { branch })
-          .then(result => {
-              fs.remove(localFolder, (err) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  result.save(localFolder)
-                    .then(result => onSaved({ id, files: result.files }))
-                    .catch(err => reject(err));
-                }
-              });
-          })
-          .catch(err => reject(err));
+        // Check whether another process is already downloading the repo.
+        Promise.coroutine(function*() {
+          const { isDownloading } = yield statusCache.get(id, { isDownloading: false }).catch(err => reject(err));
+          if (isDownloading) {
+
+            // Another process is already downloading - wait for it to complete.
+            yield waitForDownload(id, statusCache).catch(err => reject(err));
+            onComplete(true, { id, downloadedByAnotherProcess: true });
+
+          } else {
+
+            // Download and save the repo files.
+            log.info(`Downloading '${ id }'...`);
+            yield statusCache.set(id, { isDownloading: true });
+            const files = yield repo.get(subFolder, { branch }).catch(err => reject(err));
+            yield fsRemove(localFolder).catch(err => reject(err));
+            yield files.save(localFolder).catch(err => reject(err));
+            if (install) {
+              // Run `npm install`.
+              yield appInstall(localFolder);
+              onComplete(true, { id, installed: true });
+            } else {
+              onComplete(true, { id }); // Return without running `npm install`.
+            }
+          }
+        })();
       };
 
-
-    if (force) {
-      download();
-    } else {
-      // Check whether the app exists, before downloading.
-      localPackage()
-        .then(local => {
-            if (local.exists) {
-              onComplete(false, { alreadyExists: true });
-            } else {
-              download();
-            }
-        });
-    }
+    // Don't download if the app files already exist.
+    Promise.coroutine(function*() {
+      if (force) {
+        download();
+      } else {
+        const local = yield localPackage();
+        if (local.exists) {
+          onComplete(false, { alreadyExists: true });
+        } else {
+          download();
+        }
+      }
+    })();
   });
 };
