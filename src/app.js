@@ -57,6 +57,7 @@ export default (options = {}) => {
   parts = R.takeLast(parts.length - 2, parts);
   const repoSubFolder = parts.join("/");
   const localFolder = fsPath.resolve(fsPath.join(targetFolder, id));
+  repo.path = repoSubFolder;
 
   // Store values.
   const app = {
