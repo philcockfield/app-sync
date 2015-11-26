@@ -8,12 +8,6 @@ import { DEFAULT_GATEWAY_PORT } from "./const";
 let server;
 const app = express().use(bodyParser.json());
 
-/*
-curl -H "Content-Type: application/json" -X POST -d '{"foo":123}' http://localhost:3000/api
-
-pagekite.py 3000 phil.pagekite.me
-
-*/
 
 
 /**

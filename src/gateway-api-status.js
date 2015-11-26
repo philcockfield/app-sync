@@ -69,7 +69,7 @@ export default (apps) => {
 
 
   return {
-    routeStatuses(req, res) {
+    getStatuses(req, res) {
       getRunningApps()
         .then(appsStatus => res.send({ apps: appsStatus }))
         .catch(err => {
@@ -81,7 +81,7 @@ export default (apps) => {
         });
     },
 
-    routeAppStatus(req, res) {
+    getAppStatus(req, res) {
       Promise.coroutine(function*() {
         const id = req.params.app;
         const app = getApp(id);

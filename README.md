@@ -95,7 +95,7 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
 
 
 ## Application Port
-Each application that runs within `app-sync` is assignd an automatically generated port via the `--port` start parameter.  Listen on this port for requests.  You may wish to use [minimist](https://www.npmjs.com/package/minimist) to extract the port value, for example:
+Each application that runs within `app-sync` is assigned an automatically generated port via the `--port` start parameter.  Listen on this port for requests.  You may wish to use [minimist](https://www.npmjs.com/package/minimist) to extract the port value, for example:
 
 ```js
 var argv = require("minimist")(process.argv.slice(2));
@@ -110,6 +110,16 @@ If you have set the `API_ROUTE` the following API is available for the gateway:
     <api>/<app-id>    # Status of the specified app.
 
 
+## Github Webhook
+Commits to application repositories are monitored via [Github webhooks](https://developer.github.com/webhooks/).  If the commit is on the registered branch, and the package version number has increased the app is downloaded and restarted.
+
+#### Setup
+1. Ensure the `API_ROUTE` has been set so that the API is exposed.
+2. Within the Github repository settings, select `Webhooks & Services` and click `Add Webhook`
+3. Settings:
+    - Payload URL: `<API_ROUTE>/repo` for example: `https://foo.com/api/repo`
+    - Content type: `application/json`
+
 ## Run Example
     npm install
     npm run example
@@ -121,7 +131,6 @@ If you have set the `API_ROUTE` the following API is available for the gateway:
 
 ## TODO
 - Rotate logs: https://github.com/pm2-hive/pm2-logrotate
-- Service restart - on webhook.
 
 ---
 ### License: MIT

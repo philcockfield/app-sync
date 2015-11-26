@@ -6,8 +6,10 @@ import gatewayApiStatus from "./gateway-api-status";
 import gatewayApiWebhook from "./gateway-api-webhook";
 
 
+
 let isConnected = false;
 pm2.connect().then(() => isConnected = true);
+
 
 
 export default (baseRoute, apps, middleware) => {
@@ -22,17 +24,17 @@ export default (baseRoute, apps, middleware) => {
 
   // Register routes.
   const register = (verb, path, handler) => {
-      path = `/${ baseRoute.path + path }`;
-      middleware[verb](path, (req, res, next) => {
-          isConnected
-            ? isRouteMatch(req) ? handler(req, res) : next()
-            : res.status(500).send({ isInitialized: false });
-        });
-    };
+        path = `/${ baseRoute.path + path }`;
+        middleware[verb](path, (req, res, next) => {
+            isConnected
+              ? isRouteMatch(req) ? handler(req, res) : next()
+              : res.status(500).send({ isInitialized: false });
+          });
+      };
   const get = (path, handler) => register("get", path, handler);
   const post = (path, handler) => register("post", path, handler);
 
   get(":app", status.getAppStatus);
   get("", status.getStatuses);
-  post("", webhook.postPush);
+  post("repo", webhook.post);
 };
