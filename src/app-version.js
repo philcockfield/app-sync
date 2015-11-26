@@ -14,14 +14,27 @@ import semver from "semver";
  */
 export default (id, gettinglocalPackage, gettingRemotePackage, statusCache) => {
   return new Promise((resolve, reject) => {
-      const isUpdateRequired = (local, remote) => {
-            // return semver.gt(remote, local);
-            return R.isNil(remote)
+      const isUpdateRequired = (localVersion, remoteVersion) => {
+            return R.isNil(remoteVersion)
               ? false
-              : local === null ? true : semver.gt(remote, local);
+              : localVersion === null ? true : semver.gt(remoteVersion, localVersion);
           };
 
-      const isDependenciesChanged = (local, remote) => {};
+      const isDependenciesChanged = (localJson, remoteJson) => {
+            if (R.isNil(localJson)) { return false; }
+            if (R.isNil(remoteJson)) { return false; }
+            const local = localJson.dependencies || {};
+            const remote = remoteJson.dependencies || {};
+            const localKeys = Object.keys(local);
+            const remoteKeys = Object.keys(remote);
+            if (localKeys.length !== remoteKeys.length) { return true; }
+            const index = 0
+            const isChanged = (key) => {
+              if (localKeys[index] !== remoteKeys[index]) { return false; }
+              return local[key] !== remote[key]
+            };
+            return R.any(isChanged)(Object.keys(local));
+          };
 
       Promise.coroutine(function*() {
         // Retrieve async data.
@@ -36,7 +49,8 @@ export default (id, gettinglocalPackage, gettingRemotePackage, statusCache) => {
           id,
           local: localVersion,
           remote: remoteVersion,
-          isUpdateRequired: isUpdateRequired(localVersion, remoteVersion)
+          isUpdateRequired: isUpdateRequired(localVersion, remoteVersion),
+          isDependenciesChanged: isDependenciesChanged(localPackage.json, remotePackage.json),
         };
 
         // If versions match, ensure the cached downloading flag has been reset.

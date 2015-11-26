@@ -41,7 +41,8 @@ export default (apps) => {
               status.version = {
                 local: version.local,
                 remote: version.remote,
-                isUpdateRequired: version.isUpdateRequired
+                isUpdateRequired: version.isUpdateRequired,
+                isDependenciesChanged: version.isDependenciesChanged
               };
               if (version.isDownloading) {
                 status.status += `, updating to v${ version.remote }`;
