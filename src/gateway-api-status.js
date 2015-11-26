@@ -46,7 +46,6 @@ export default (apps) => {
                 status.status += `, updating to v${ version.remote }`;
                 status.version.isDownloading = true;
               }
-              if (version.updateRequired) { app.update({ start: true }); }
               resolve(status);
             });
       });
