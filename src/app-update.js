@@ -52,7 +52,7 @@ export default (id, getVersion, getDownload, start, options = {}) => {
 
     getVersion()
       .then(version => {
-          if (version.updateRequired && !version.isDownloading) {
+          if (version.isUpdateRequired && !version.isDownloading) {
             update(version);
           } else {
             done(false, false, version.local);

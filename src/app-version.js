@@ -24,7 +24,7 @@ export default (id, localPackage, remotePackage, statusCache) => {
           count += 1;
           if (count === 3) {
             if (!R.isNil(result.remote)) {
-              result.updateRequired = result.local === null
+              result.isUpdateRequired = result.local === null
                   ? true
                   : semver.gt(result.remote, result.local);
             }

@@ -40,7 +40,7 @@ export default (apps) => {
           gettingVersion.then(version => {
               status.version = {
                 local: version.local,
-                repository: version.remote
+                remote: version.remote
               };
               if (version.isDownloading) {
                 status.status += `, updating to v${ version.remote }`;
