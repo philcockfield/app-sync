@@ -1,12 +1,19 @@
 import express from "express";
+import bodyParser from "body-parser";
 import Promise from "bluebird";
 import gatewayApi from "./gateway-api";
 import gatewayAppRouter from "./gateway-app-router";
 import { DEFAULT_GATEWAY_PORT } from "./const";
 
 let server;
-const app = express();
+const app = express().use(bodyParser.json());
 
+/*
+curl -H "Content-Type: application/json" -X POST -d '{"foo":123}' http://localhost:3000/api
+
+pagekite.py 3000 phil.pagekite.me
+
+*/
 
 
 /**
