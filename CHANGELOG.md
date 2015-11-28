@@ -3,7 +3,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [Unreleased]
+## [Unreleased] - YYYY-MM-DD
+#### Added
+#### Changed
+#### Deprecated
+#### Removed
+#### Fixed
+#### Security
+
+
+## [1.0.0] - 2015-11-29
 #### Added
 - Download and run registered apps from Github.
 - Docker image: `docker pull philcockfield/app-sync` running from env-vars.
@@ -12,10 +21,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Changed
 - Only running NPM install when absolutely required (faster).
-#### Deprecated
-#### Removed
-#### Fixed
-#### Security
+
 
 ## [0.0.2] - 2015-11-8
 #### Added
