@@ -40,9 +40,9 @@ export const promises = (list) => {
  * @return {Promise}
  */
 export const shellAsync = (cmd) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
       shell.exec(cmd, (code, output) => {
-        resolve({ code, output })
+        resolve({ code, output });
       });
   });
 };
@@ -54,7 +54,7 @@ export const shellAsync = (cmd) => {
  * @param {integer} msecs: The number of milliseconds to wait.
  * @param {Function} func: The function to invoke.
  */
-export const delay = (msecs, func) => setTimout(func, msecs);
+export const delay = (msecs, func) => global.setTimout(func, msecs);
 
 
 
@@ -75,9 +75,9 @@ export const loadFile = (path) => {
           } else {
             resolve({ exists: true, content: result.toString() });
           }
-        })
+        });
       } else {
-        resolve({ exists: false })
+        resolve({ exists: false });
       }
     });
   });
@@ -90,7 +90,7 @@ export const loadFile = (path) => {
  * @return {Promise}
  */
 export const pathExists = (path) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     fs.exists(path, (exists) => resolve(exists));
   });
 };

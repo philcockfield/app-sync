@@ -5,7 +5,7 @@ import app from "./app";
 import gateway from "./gateway";
 import log from "./log";
 import start from "./main-start";
-import { isEmpty, promises } from "./util";
+import { promises } from "./util";
 import {
   DEFAULT_APP_PORT,
   DEFAULT_TARGET_FOLDER,
@@ -32,7 +32,7 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
-  const targetFolder = settings.targetFolder || DEFAULT_TARGET_FOLDER
+  const targetFolder = settings.targetFolder || DEFAULT_TARGET_FOLDER;
   const token = settings.token;
 
   return {
@@ -89,7 +89,7 @@ export default (settings = {}) => {
      */
     download(options = {}) {
       return new Promise((resolve, reject) => {
-        promises(this.apps.map(app => app.download(options)))
+        promises(this.apps.map(item => item.download(options)))
           .then(result => resolve({ apps: result.results }))
           .catch(err => reject(err));
       });
@@ -104,9 +104,9 @@ export default (settings = {}) => {
      */
     update(options = {}) {
       return new Promise((resolve, reject) => {
-        const updatingApps = this.apps.map(app => app.downloading
+        const updatingApps = this.apps.map(item => item.downloading
                                             ? null // Don't update an app that is currently downloading.
-                                            : app.update(options));
+                                            : item.update(options));
         promises(updatingApps)
           .then(result => resolve({ apps: result.results }))
           .catch(err => reject(err));
@@ -135,9 +135,9 @@ export default (settings = {}) => {
      */
     stop() {
       log.info("Stopping...");
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
           gateway.stop();
-          this.apps.forEach(app => app.stop());
+          this.apps.forEach(item => item.stop());
           log.info("");
           log.info("Gateway and apps stopped.");
           resolve({});

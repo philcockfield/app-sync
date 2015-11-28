@@ -2,7 +2,6 @@ import R from "ramda";
 import Promise from "bluebird";
 import pm2 from "./pm2";
 import prettyBytes from "pretty-bytes";
-import Route from "./route";
 import { promises } from "./util";
 import log from "./log";
 
@@ -15,7 +14,7 @@ export default (apps) => {
   const getApp = (id) => {
     id = processNameToAppId(id);
     return R.find(app => app.id === id, apps);
-  }
+  };
 
 
   const getAppStatus = (app, processItem) => {
@@ -32,7 +31,7 @@ export default (apps) => {
               repository: `${ app.repo.name }:${ app.branch }`,
               resources: {
                 memory: prettyBytes(processItem.monit.memory),
-                cpu: processItem.monit.cpu,
+                cpu: processItem.monit.cpu
               }
           };
 
@@ -96,13 +95,9 @@ export default (apps) => {
 
           const item = processes[0];
           const status = yield getAppStatus(getApp(item.name), item).catch(err => sendFail(err));
-          res.send(status)
+          res.send(status);
         }
       })();
     }
-
-
   };
-
-
 };

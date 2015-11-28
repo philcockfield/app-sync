@@ -1,5 +1,3 @@
-import R from "ramda";
-import Promise from "bluebird";
 import pm2 from "./pm2";
 import Route from "./route";
 import gatewayApiStatus from "./gateway-api-status";
@@ -26,7 +24,7 @@ export default (baseRoute, apps, middleware) => {
   const register = (verb, path, handler) => {
         path = `/${ baseRoute.path + path }`;
         middleware[verb](path, (req, res, next) => {
-            isConnected
+            return isConnected
               ? isRouteMatch(req) ? handler(req, res) : next()
               : res.status(500).send({ isInitialized: false });
           });

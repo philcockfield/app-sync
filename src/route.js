@@ -8,6 +8,7 @@ const formatMatchValue = (value) => isEmpty(value)
 
 
 
+
 /**
  * Provides an informational facet of a route.
  */
@@ -16,19 +17,16 @@ const parse = (route) => {
   if (isEmpty(route)) { throw new Error("A route string must be specified."); }
   const parts = route.split("/");
 
-  // Domain.
-  const domain = parts[0].trim();
-
   // URL path.
-  let path = R.takeLast(parts.length - 1, parts).join("/").trim();
-  path = isEmpty(path) ? undefined : path;
-  if (path) {
-    path = path.endsWith("/") ? path : path + "/";
+  let urlPath = R.takeLast(parts.length - 1, parts).join("/").trim();
+  urlPath = isEmpty(urlPath) ? undefined : urlPath;
+  if (urlPath) {
+    urlPath = urlPath.endsWith("/") ? urlPath : urlPath + "/";
   }
 
   return {
-    domain,
-    path,
+    domain: parts[0].trim(),
+    path: urlPath,
 
     /**
      * Determines whether the domain/path values match the route.

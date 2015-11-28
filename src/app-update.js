@@ -1,4 +1,3 @@
-import fs from "fs-extra";
 import fsPath from "path";
 import Promise from "bluebird";
 import appInstall from "./app-install";
@@ -31,7 +30,7 @@ export default (id, localFolder, getVersion, startDownload, start, options = {})
         log.info(`Updating '${ id }' from v${ version.local } to v${ version.remote }...`);
 
         // Download remote files.
-        const downloadResult = yield startDownload().catch(err => reject(err));
+        yield startDownload().catch(err => reject(err));
 
         // NPM install if required.
         const nodeModulesPath = fsPath.join(localFolder, "node_modules");
@@ -49,7 +48,7 @@ export default (id, localFolder, getVersion, startDownload, start, options = {})
         // Log output.
         const msg = restartAfterUpdate
             ? `...updated and restarted '${ id }' to v${ version.remote }.`
-            : `...updated '${ id }' to v${ version.remote }.`
+            : `...updated '${ id }' to v${ version.remote }.`;
         log.info("");
         log.info(msg);
         result.updated = true;

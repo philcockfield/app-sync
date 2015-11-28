@@ -1,4 +1,3 @@
-import R from "ramda";
 import fsPath from "path";
 import minimist from "minimist";
 import appSync from "./main";

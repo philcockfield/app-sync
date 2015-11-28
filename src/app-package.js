@@ -12,7 +12,7 @@ export const getLocalPackage = (id, localFolder) => {
     return new Promise((resolve, reject) => {
       loadJson(`${ localFolder }/package.json`)
         .then(file => resolve({ id, exists: file.exists, json: file.json }))
-        .catch(err => reject(err))
+        .catch(err => reject(err));
     });
 };
 
@@ -34,7 +34,7 @@ export const getRemotePackage = (id, repo, subFolder, branch) => {
             if (file) {
               try {
                 const json = JSON.parse(file.toString());
-                resolve({ id, exists: true, json })
+                resolve({ id, exists: true, json });
               } catch (err) { reject(err); }
 
             } else {

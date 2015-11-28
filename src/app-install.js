@@ -18,10 +18,10 @@ export default (localFolder) => {
           .then(result => {
               shell.cd(WORKING_DIRECTORY);
               if (result.code === 0) {
-                resolve(result)
+                resolve(result);
               } else {
                 result.error = `Failed while running 'npm install'.`;
-                reject(result)
+                reject(result);
               }
           })
           .catch(err => reject(err))

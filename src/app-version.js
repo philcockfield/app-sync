@@ -28,10 +28,10 @@ export default (id, gettinglocalPackage, gettingRemotePackage, statusCache) => {
             const localKeys = Object.keys(local);
             const remoteKeys = Object.keys(remote);
             if (localKeys.length !== remoteKeys.length) { return true; }
-            const index = 0
+            const index = 0;
             const isChanged = (key) => {
               if (localKeys[index] !== remoteKeys[index]) { return false; }
-              return local[key] !== remote[key]
+              return local[key] !== remote[key];
             };
             return R.any(isChanged)(Object.keys(local));
           };
@@ -50,17 +50,17 @@ export default (id, gettinglocalPackage, gettingRemotePackage, statusCache) => {
           local: localVersion,
           remote: remoteVersion,
           isUpdateRequired: isUpdateRequired(localVersion, remoteVersion),
-          isDependenciesChanged: isDependenciesChanged(localPackage.json, remotePackage.json),
+          isDependenciesChanged: isDependenciesChanged(localPackage.json, remotePackage.json)
         };
 
         // If versions match, ensure the cached downloading flag has been reset.
         if (status.isDownloading && localVersion && remoteVersion && localVersion === remoteVersion) {
-          status = yield statusCache.set(id, { isDownloading: false }).catch(err => reject(err))
+          status = yield statusCache.set(id, { isDownloading: false }).catch(err => reject(err));
         }
         if (status.isDownloading) { result.isDownloading = true; }
 
         // Finish up.
-        resolve(result)
+        resolve(result);
       })();
   });
 };
