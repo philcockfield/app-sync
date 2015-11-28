@@ -1,17 +1,10 @@
-import R from "ramda";
 import Promise from "bluebird";
-import shell from "shelljs";
 import gateway from "./gateway";
 import log from "./log";
 import pm2 from "./pm2";
 import { promises, sortAppsByRoute } from "./util";
 import { DEFAULT_GATEWAY_PORT } from "./const";
 const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
-
-
-
-
-
 
 
 
@@ -47,7 +40,7 @@ export default (apps, update, apiRoute) => {
 
           // Log status.
           log.info("");
-          log.info(`Environment: ${ process.env.NODE_ENV || "development" }`)
+          log.info(`Environment: ${ process.env.NODE_ENV || "development" }`);
           log.info(`Gateway running on port:${ GATEWAY_PORT }`);
           console.log("");
           items.forEach(item => {

@@ -1,3 +1,5 @@
+/*eslint no-use-before-define:0 */
+
 const log = (items) => {
   if (!api.silent) { console.log(items.join(" ")); }
 };
@@ -9,9 +11,9 @@ const log = (items) => {
  */
 const api = {
   silent: false,
-  info(...items) { log(items) },
-  warn(...items) { log(items) },
-  error(...items) { log(items) }
+  info(...items) { log(items); },
+  warn(...items) { log(items); },
+  error(...items) { log(items); }
 };
 
 

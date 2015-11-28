@@ -1,5 +1,4 @@
 import R from "ramda";
-import Promise from "bluebird";
 import log from "./log";
 
 

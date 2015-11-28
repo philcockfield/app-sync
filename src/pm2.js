@@ -11,7 +11,7 @@
 import R from "ramda";
 import Promise from "bluebird";
 
-const stubPromise = () => new Promise((resolve, reject) => {});
+const stubPromise = () => new Promise(() => {});
 let pm2;
 let connectP = stubPromise;
 let listP = stubPromise;
@@ -26,10 +26,10 @@ try {
   listP = Promise.promisify(pm2.list);
   deleteP = Promise.promisify(pm2.delete);
 
-
 } catch (e) {
   if (e.code === "MODULE_NOT_FOUND") {
     // Ignore.
+    /*eslint no-empty:0*/
   } else {
     throw e;
   }
@@ -46,7 +46,7 @@ export default {
    * Retrieves processes of running apps.
    */
   apps(filter) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       Promise.coroutine(function*() {
         let list = yield listP();
         const isAppProcess = (item) => {

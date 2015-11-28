@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import fsPath from "path";
 import Promise from "bluebird";
-import { getLocalPackage, getRemotePackage } from "./app-package";
+import { getLocalPackage } from "./app-package";
 import { pathExists } from "./util";
 import log from "./log";
 
@@ -47,9 +47,11 @@ const waitForDownload = (id, statusCache) => {
  */
 export default (id, localFolder, repo, subFolder, branch, statusCache, options = {}) => {
   const force = options.force === undefined ? true : options.force;
-  const localPackage = () => getLocalPackage(id, localFolder).catch(err => reject(err));
 
   return new Promise((resolve, reject) => {
+
+    const localPackage = () => getLocalPackage(id, localFolder).catch(err => reject(err));
+
     const onComplete = (wasDownloaded, result) => {
           Promise.coroutine(function*() {
               const local = yield localPackage().catch(err => reject(err));

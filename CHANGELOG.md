@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Gateway reverse proxies requests to running apps.
 
 #### Changed
+- Only running NPM install when absolutely required (faster).
 #### Deprecated
 #### Removed
 #### Fixed

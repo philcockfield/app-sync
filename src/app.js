@@ -1,13 +1,11 @@
 import R from "ramda";
-import Cache from "file-system-cache";
+import fileSystemCache from "file-system-cache";
 import Promise from "bluebird";
 import shell from "shelljs";
-import fs from "fs-extra";
 import fsPath from "path";
 import github from "file-system-github";
 import Route from "./route";
-import log from "./log";
-import { isEmpty, shellAsync, loadJson, promises } from "./util";
+import { isEmpty } from "./util";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
 import appInstall from "./app-install";
@@ -34,9 +32,9 @@ import { getLocalPackage, getRemotePackage } from "./app-package";
  *            - port:          The port the app runs on.
  *            - branch:        The branch to query. Default: "master".
  */
-export default (options = {}) => {
+export default (settings = {}) => {
   // Setup initial conditions.
-  let { userAgent, token, targetFolder, id, repo, port, branch, route } = options;
+  let { userAgent, token, targetFolder, id, repo, port, branch, route } = settings;
   if (isEmpty(id)) { throw new Error(`'id' for the app is required`); }
   if (isEmpty(repo)) { throw new Error(`'repo' name required, eg. 'username/my-repo'`); }
   if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
@@ -46,7 +44,7 @@ export default (options = {}) => {
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
   const WORKING_DIRECTORY = process.cwd();
-  const statusCache = Cache({ basePath: `${ targetFolder }/.status` });
+  const statusCache = fileSystemCache({ basePath: `${ targetFolder }/.status` });
 
   // Extract the repo and sub-path.
   let parts = repo.split("/");
@@ -106,12 +104,13 @@ export default (options = {}) => {
       if (this.downloading) { return this.downloading; }
 
       // Start the download process.
-      return this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, statusCache, options)
+      this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, statusCache, options)
         .then(result => {
             this.isDownloading = false;
             delete this.downloading;
             return result;
         });
+      return this.downloading;
     },
 
 
@@ -126,8 +125,8 @@ export default (options = {}) => {
           id,
           localFolder,
           () => this.version(),
-          (options) => this.download(options),
-          (options) => this.start(options),
+          (args) => this.download(args),
+          (args) => this.start(args),
           options
         );
     },
@@ -173,7 +172,7 @@ export default (options = {}) => {
      * @return {Promise}.
      */
     stop() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
           shell.exec(`pm2 stop ${ id }`);
           resolve({ id });
       });
