@@ -62,6 +62,7 @@ export const delay = (msecs, func) => setTimout(func, msecs);
 
 /**
  * Loads JSON from the given path.
+ * @return {Promise}
  */
 export const loadFile = (path) => {
   return new Promise((resolve, reject) => {
@@ -85,7 +86,21 @@ export const loadFile = (path) => {
 
 
 /**
+ * Determines whether a file exists at the given path.
+ * @return {Promise}
+ */
+export const pathExists = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.exists(path, (exists) => resolve(exists));
+  });
+};
+
+
+
+
+/**
  * Loads JSON from the given path.
+ * @return {Promise}
  */
 export const loadJson = (path) => {
   return new Promise((resolve, reject) => {
@@ -101,6 +116,9 @@ export const loadJson = (path) => {
       .catch(err => reject(err));
   });
 };
+
+
+
 
 
 

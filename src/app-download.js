@@ -1,9 +1,12 @@
 import fs from "fs-extra";
+import fsPath from "path";
 import Promise from "bluebird";
 import { getLocalPackage, getRemotePackage } from "./app-package";
-import appInstall from "./app-install";
+import { pathExists } from "./util";
 import log from "./log";
+
 const fsRemove = Promise.promisify(fs.remove);
+const fsReadDir = Promise.promisify(fs.readdir);
 
 
 
@@ -31,14 +34,11 @@ const waitForDownload = (id, statusCache) => {
  * Downloads the app from the remote repository.
  *
  * @param id:           The unique ID of the application.
- * @param localFolder:  The path to where the app it stored on the local disk.
  * @param repo:         The repository to pull from.
  * @param subFolder:    The sub-folder into the repo (if there is one).
  * @param branch:       The branch to query.
  * @param statusCache:  A file-system-cache for storing status about the app.
  * @param options:
- *            - install: Flag indicating if `npm install` should be run on the directory.
- *                       Default: true.
  *            - force:   Flag indicating if the repository should be downloaded if
  *                       is already present on the local disk.
  *                       Default: true
@@ -46,7 +46,6 @@ const waitForDownload = (id, statusCache) => {
  * @return {Promise}.
  */
 export default (id, localFolder, repo, subFolder, branch, statusCache, options = {}) => {
-  const install = options.install == undefined ? true : options.install;
   const force = options.force === undefined ? true : options.force;
   const localPackage = () => getLocalPackage(id, localFolder).catch(err => reject(err));
 
@@ -76,19 +75,28 @@ export default (id, localFolder, repo, subFolder, branch, statusCache, options =
 
           } else {
 
-            // Download and save the repo files.
+            // Download files.
             log.info(`Downloading '${ id }'...`);
             yield statusCache.set(id, { isDownloading: true });
             const files = yield repo.get(subFolder, { branch }).catch(err => reject(err));
-            yield fsRemove(localFolder).catch(err => reject(err));
-            yield files.save(localFolder).catch(err => reject(err));
-            if (install) {
-              // Run `npm install`.
-              yield appInstall(localFolder);
-              onComplete(true, { id, installed: true });
-            } else {
-              onComplete(true, { id }); // Return without running `npm install`.
+
+            // Delete the old files.
+            // Note: The `node_modules` is retained so that NPM install does not
+            //       need to be rerun unless there is a dependency change.
+            if (yield pathExists(localFolder)) {
+              const fileNames = yield fsReadDir(localFolder).catch(err => reject(err));
+              for (let fileName of fileNames) {
+                if (fileName !== "node_modules") {
+                  yield fsRemove(fsPath.join(localFolder, fileName));
+                }
+              }
             }
+
+            // Save the files to disk.
+            yield files.save(localFolder).catch(err => reject(err));
+
+            // Finish up.
+            onComplete(true, { id });
           }
         })();
       };

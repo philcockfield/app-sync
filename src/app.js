@@ -124,6 +124,7 @@ export default (options = {}) => {
     update(options = {}) {
       return appUpdate(
           id,
+          localFolder,
           () => this.version(),
           (options) => this.download(options),
           (options) => this.start(options),

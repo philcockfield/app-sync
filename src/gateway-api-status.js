@@ -40,13 +40,14 @@ export default (apps) => {
           gettingVersion.then(version => {
               status.version = {
                 local: version.local,
-                repository: version.remote
+                remote: version.remote,
+                isUpdateRequired: version.isUpdateRequired,
+                isDependenciesChanged: version.isDependenciesChanged
               };
               if (version.isDownloading) {
                 status.status += `, updating to v${ version.remote }`;
                 status.version.isDownloading = true;
               }
-              if (version.updateRequired) { app.update({ start: true }); }
               resolve(status);
             });
       });
