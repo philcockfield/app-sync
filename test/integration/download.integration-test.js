@@ -24,35 +24,32 @@ describe("download (integration)", function() {
   afterEach(() => fs.removeSync(BUILD_PATH));
 
 
-  it("downloads a single app", (done) => {
+
+  it("downloads a single app", () => {
     node
       .add("single-app", "philcockfield/app-sync/example/app-1", "*/foo");
 
     const app = node.apps[0];
-    app.download({ install: true })
+    return app.download()
     .then(result => {
         expect(fs.existsSync("./.build-test/single-app/package.json")).to.equal(true);
-        expect(fs.existsSync("./.build-test/single-app/node_modules")).to.equal(true);
-        done();
-    })
-    .catch(err => console.error("ERROR", err))
+        expect(fs.existsSync("./.build-test/single-app/node_modules")).to.equal(false);
+    });
   });
 
 
 
-  it("downloads each registered app", (done) => {
+  it("downloads each registered app", () => {
     node
       .add("my-app-1", "philcockfield/app-sync/example/app-1", "*/foo-1")
       .add("my-app-2", "philcockfield/app-sync/example/app-2", "*/foo-2");
 
-    node.download({ install: false }) // Default install is 'true'.
-    .then(result => {
-        expect(fs.existsSync("./.build-test/my-app-1/package.json")).to.equal(true);
-        expect(fs.existsSync("./.build-test/my-app-1/node_modules")).to.equal(false);
-        expect(fs.existsSync("./.build-test/my-app-2/package.json")).to.equal(true);
-        expect(fs.existsSync("./.build-test/my-app-2/node_modules")).to.equal(false);
-        done();
-    })
-    .catch(err => console.error("ERROR", err))
+    return node.download({ install: false }) // Default install is 'true'.
+      .then(result => {
+          expect(fs.existsSync("./.build-test/my-app-1/package.json")).to.equal(true);
+          expect(fs.existsSync("./.build-test/my-app-1/node_modules")).to.equal(false);
+          expect(fs.existsSync("./.build-test/my-app-2/package.json")).to.equal(true);
+          expect(fs.existsSync("./.build-test/my-app-2/node_modules")).to.equal(false);
+      });
   });
 });
