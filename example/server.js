@@ -1,17 +1,16 @@
 import appSync from "../src/main";
 
-const gateway = appSync({
+appSync({
   token: process.env.GITHUB_TOKEN,
   apiRoute: "*/api",
   manifest: "philcockfield/app-sync/example/manifest.yml:devel"
-});
-
-// gateway
-//   // .add("ui-harness", "philcockfield/ui-harness-site", "*")
-//   .add("two", "philcockfield/app-sync/example/app-2", "*", { branch: "devel" })
-//   .add("one", "philcockfield/app-sync/example/app-1", "*/1", { branch: "devel" });
-
+})
+.then(api => {
+  // api
+  //   .add("foo", "philcockfield/app-sync/example/app-2", "*", { branch: "devel" })
+  //   .add("bar", "philcockfield/app-sync/example/app-1", "*/bar", { branch: "devel" });
 
 
-gateway.start()
-  .catch(err => console.error("Error:", err));
+  api.start()
+    .catch(err => console.error("Error:", err));
+})

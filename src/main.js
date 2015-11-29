@@ -5,6 +5,7 @@ import app from "./app";
 import gateway from "./gateway";
 import log from "./log";
 import start from "./main-start";
+import manifest from "./manifest";
 import { promises } from "./util";
 import {
   DEFAULT_APP_PORT,
@@ -36,7 +37,7 @@ export default (settings = {}) => {
   const targetFolder = settings.targetFolder || DEFAULT_TARGET_FOLDER;
   const token = settings.token;
 
-  return {
+  const api = {
     apps: [],
     userAgent,
     targetFolder,
@@ -145,4 +146,15 @@ export default (settings = {}) => {
         });
     }
   };
+
+
+  return new Promise((resolve, reject) => {
+    Promise.coroutine(function*() {
+      // Add the manifest manager if a path to YAML file was specified.
+      if (settings.manifest) {
+        api.manifest = yield manifest(userAgent, token, settings.manifest, api).catch(err => reject(err));
+      }
+      resolve(api);
+    })();
+  });
 };
