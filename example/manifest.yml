@@ -1,5 +1,5 @@
 apps:
-  - foo
+  - foo:
     - repo: "philcockfield/app-sync/example/app-2"
     - route: "*"
     - branch: "devel"
