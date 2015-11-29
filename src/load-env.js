@@ -1,9 +1,8 @@
 import fsPath from "path";
-import minimist from "minimist";
 import appSync from "./main";
 import log from "./log";
 
-const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER, API_ROUTE } = process.env;
+const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER, API_ROUTE, MANIFEST } = process.env;
 
 // Check for required variables.
 if (!GITHUB_TOKEN) {
@@ -28,30 +27,20 @@ if (!GITHUB_USER_AGENT) {
 
 
 // Create gateway.
-const gateway = appSync({
+appSync({
   token: GITHUB_TOKEN,
   userAgent: GITHUB_USER_AGENT,
   targetFolder: TARGET_FOLDER,
-  apiRoute: API_ROUTE
-});
+  apiRoute: API_ROUTE,
+  manifest: MANIFEST
+})
+  .then(gateway => {
 
+      // Start the gateway.
+      log.info(`Apps downloaded to: ${ fsPath.resolve(gateway.targetFolder) }`);
+      gateway
+        .start()
+        .catch(err => log.error("Failed to start gateway:", err));
 
-log.info(`Apps downloaded to: ${ fsPath.resolve(gateway.targetFolder) }`);
-
-
-// Regsiter apps.
-Object.keys(process.env).forEach(key => {
-      if (key.startsWith("APP_")) {
-        const value = process.env[key];
-        const args = minimist(value.split(" "));
-        const { repo, route, branch } = args;
-        gateway.add(key, repo, route, { branch });
-      }
-    });
-
-
-
-// Start the gateway.
-gateway
-  .start()
-  .catch(err => log.error("Failed to start gateway:", err));
+  })
+  .catch(err => log.error("Failed to create gateway.", err));

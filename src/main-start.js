@@ -22,7 +22,7 @@ export default (apps, update, apiRoute) => {
     log.info("");
 
     if (apps.length === 0) {
-      log.warn("WARNING: No apps have been registered.");
+      log.warn("WARNING: No apps have been registered. Make sure a manifest has been set.");
 
     } else {
       Promise.coroutine(function*() {
