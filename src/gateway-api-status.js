@@ -6,7 +6,7 @@ import { promises } from "./util";
 import log from "./log";
 import packageJson from "../package.json";
 
-const HOST_NAME = process.env["HOSTNAME"] || "unknown";
+const HOST_NAME = process.env.HOSTNAME || "unknown";
 
 
 

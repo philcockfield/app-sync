@@ -33,7 +33,7 @@ export default (baseRoute, apps, middleware, manifest) => {
   const get = (path, handler) => register("get", path, handler);
   const post = (path, handler) => register("post", path, handler);
 
-  log.info("API:")
+  log.info("API:");
   get(":app", status.getAppStatus);
   get("", status.getStatuses);
   post("repo", webhook.post);

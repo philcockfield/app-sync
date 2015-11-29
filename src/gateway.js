@@ -23,7 +23,7 @@ const start = (apps, options = {}) => {
         const middleware = express().use(bodyParser.json());
 
         // Retrieve the API route from the manifest.
-        let apiRoute
+        let apiRoute;
         if (manifest) {
           if (!manifest.current) { yield manifest.get().catch(err => reject(err)); }
           apiRoute = manifest.current && manifest.current.api && manifest.current.api.route;
