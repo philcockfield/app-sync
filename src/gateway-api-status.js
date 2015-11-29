@@ -5,7 +5,7 @@ import prettyBytes from "pretty-bytes";
 import { promises } from "./util";
 import log from "./log";
 
-
+const HOST_NAME = process.env["HOSTNAME"] || "unknown";
 
 
 
@@ -71,7 +71,7 @@ export default (apps) => {
   return {
     getStatuses(req, res) {
       getRunningApps()
-        .then(appsStatus => res.send({ apps: appsStatus }))
+        .then(appsStatus => res.send({ host: HOST_NAME, apps: appsStatus }))
         .catch(err => {
             log.error(err);
             res.status(500).send({
