@@ -10,10 +10,10 @@ pm2.connect().then(() => isConnected = true);
 
 
 
-export default (baseRoute, apps, middleware) => {
+export default (baseRoute, apps, middleware, manifest) => {
   baseRoute = Route.parse(baseRoute);
   const status = gatewayApiStatus(apps);
-  const webhook = gatewayApiWebhook(apps);
+  const webhook = gatewayApiWebhook(apps, manifest);
 
   const isRouteMatch = (req) => {
         const domain = req.get("host").split(":")[0];

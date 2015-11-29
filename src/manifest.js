@@ -10,21 +10,16 @@ import github from "file-system-github";
  * @param {string} repoPath: The path to the `repo/file.yml:branch` to retrieve.
  * @return {Promise}
  */
-export const getManifest = (repo, repoPath) => {
+export const getManifest = (repo, repoPath, branch) => {
   return new Promise((resolve, reject) => {
     Promise.coroutine(function*() {
-      // Extract the path.
-      const parts = repoPath.trim().split(":");
-      const path = parts[0].trim();
-      const branch = (parts[1] || "master").trim();
-
       // Ensure a YAML file was specified.
-      if (!path.endsWith(".yml")) {
+      if (!repoPath.endsWith(".yml")) {
         return reject(new Error("A path to a YAML file must be specified (.yml)"));
       }
 
       // Pull file from the repo.
-      const download = yield repo.get(path, { branch }).catch(err => reject(err));
+      const download = yield repo.get(repoPath, { branch }).catch(err => reject(err));
       const files = download && download.files;
 
       // Parse and return the manifest.
@@ -42,17 +37,29 @@ export const getManifest = (repo, repoPath) => {
 
 
 
+
 /**
- * Manages
+ * Manages the manifest of applications.
  */
 export default (userAgent, token, repoPath, main) => {
   // Create the repo proxy.
-  const parts = repoPath.trim().split("/");
+  let parts = repoPath.trim().split("/");
   const repoName = R.take(2, parts).join("/");
   const repo = github.repo(userAgent, repoName, { token })
+
+  // Extract the path and branch.
   repoPath = R.takeLast(parts.length - 2, parts).join("/");
+  parts = repoPath.split(":");
+  repoPath = parts[0].trim();
+  const branch = (parts[1] || "master").trim();
 
   const api = {
+    repo: {
+      name: repoName,
+      path: repoPath,
+      branch
+    },
+
     /**
      * Connects to the remote manifest and syncs the local state with the
      * defined applications.
@@ -63,15 +70,19 @@ export default (userAgent, token, repoPath, main) => {
         Promise.coroutine(function*() {
 
           // Retrieve the manifest from the repo.
-          const manifest = yield getManifest(repo, repoPath).catch(err => reject(err));
+          const manifest = yield getManifest(repo, repoPath, branch).catch(err => reject(err));
           if (manifest) {
-            // Add each app.
+            // Remove apps that are no longer specified in the manifest.
+            // TODO:
+
+            // Add or update each app.
             for (let id of Object.keys(manifest.apps)) {
               const app = manifest.apps[id];
               if (!R.is(String, app.repo)) { throw new Error(`The app '${ id } does not have a repo, eg: user/repo/path'`); }
               if (!R.is(String, app.route)) { throw new Error(`The app '${ id } does not have a route, eg: www.domain.com/path'`); }
               main.add(id, app.repo, app.route, { branch: app.branch || "master" });
             }
+
           }
           resolve({ manifest });
         })();
@@ -79,11 +90,6 @@ export default (userAgent, token, repoPath, main) => {
     }
   };
 
-
-  // Return the API after an initial update has been run.
-  return new Promise((resolve, reject) => {
-    api.update()
-      .then(result => resolve(api))
-      .catch(err => reject(err));
-  });
+  // Finish up.
+  return api;
 };

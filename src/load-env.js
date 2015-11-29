@@ -24,23 +24,19 @@ if (!GITHUB_USER_AGENT) {
 
 
 
-
-
 // Create gateway.
-appSync({
+const gateway = appSync({
   token: GITHUB_TOKEN,
   userAgent: GITHUB_USER_AGENT,
   targetFolder: TARGET_FOLDER,
   apiRoute: API_ROUTE,
   manifest: MANIFEST
-})
-  .then(gateway => {
+});
 
-      // Start the gateway.
-      log.info(`Apps downloaded to: ${ fsPath.resolve(gateway.targetFolder) }`);
-      gateway
-        .start()
-        .catch(err => log.error("Failed to start gateway:", err));
 
-  })
-  .catch(err => log.error("Failed to create gateway.", err));
+
+// Start the gateway.
+log.info(`Apps downloaded to: ${ fsPath.resolve(gateway.targetFolder) }`);
+gateway
+  .start()
+  .catch(err => log.error("Failed to start gateway:", err));

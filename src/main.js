@@ -125,7 +125,8 @@ export default (settings = {}) => {
       return start(
         this.apps,
         (options) => this.update(options),
-        settings.apiRoute
+        settings.apiRoute,
+        this.manifest
       );
     },
 
@@ -147,14 +148,11 @@ export default (settings = {}) => {
     }
   };
 
+  // Configure the manifest, if one was set.
+  if (settings.manifest) {
+    api.manifest = manifest(userAgent, token, settings.manifest, api);
+  }
 
-  return new Promise((resolve, reject) => {
-    Promise.coroutine(function*() {
-      // Add the manifest manager if a path to YAML file was specified.
-      if (settings.manifest) {
-        api.manifest = yield manifest(userAgent, token, settings.manifest, api).catch(err => reject(err));
-      }
-      resolve(api);
-    })();
-  });
+  // Finish up.
+  return api;
 };

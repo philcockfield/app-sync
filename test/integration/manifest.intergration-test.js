@@ -16,14 +16,14 @@ const BRANCH = "devel";
 
 
 
-describe.only("manifest (integration)", function() {
+describe("manifest (integration)", function() {
   const repo = github.repo("test", "philcockfield/app-sync", { token: GITHUB_TOKEN });
 
   describe("getManifest", function() {
     it("retrieves a `manifest.yml`", () => {
-      return getManifest(repo, `/example/manifest.yml:${ BRANCH }`)
+      return getManifest(repo, `/example/manifest.yml`, BRANCH)
         .then(result => {
-          expect(result.apps).to.be.an.instanceof(Array);
+          expect(result.apps).to.be.an.instanceof(Object);
         });
     });
 
@@ -44,7 +44,7 @@ describe.only("manifest (integration)", function() {
     });
 
     it("fails to parse YAML", (done) => {
-      getManifest(repo, `/example/manifest-corrupt.yml:${ BRANCH }`)
+      getManifest(repo, `/example/manifest-corrupt.yml`, BRANCH)
         .then(result => {
           console.log("result", result);
         })
