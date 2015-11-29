@@ -29,6 +29,7 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
  *                               see: https://github.com/settings/tokens
  *          - targetFolder:   The path where apps are downloaded to.
  *          - apiRoute:       The route to the gateway API.
+ *          - manifest:       The <repo>/<path>:<branch> of the manifest YAML file.
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
