@@ -3,7 +3,6 @@ import Promise from "bluebird";
 import yaml from "js-yaml";
 import github from "file-system-github";
 import gateway from "./gateway";
-let lastManifest;
 
 
 /**
@@ -67,7 +66,7 @@ export default (userAgent, token, repoPath, main) => {
      * Retrieves the manfest.
      * @return {Promise}
      */
-    get() { return getManifest(repo, repoPath, branch); },
+    get() { return getManifest(repo, this.repo.path, this.repo.branch); },
 
 
     /**
@@ -86,10 +85,8 @@ export default (userAgent, token, repoPath, main) => {
           if (manifest) {
 
             // Check for global changes with the previous manifest.
-            if (lastManifest) {
-              if (lastManifest.api !== manifest.api) {
-                restart = true;
-              }
+            if (self.current) {
+              if (!R.equals(self.current.api, manifest.api)) { restart = true; }
             }
 
             const isChanged = (manifestApp, app) => {
@@ -143,9 +140,9 @@ export default (userAgent, token, repoPath, main) => {
               yield main.start();
             }
           }
-          lastManifest = manifest;
+          this.current = manifest; // Store for future refernce.
           resolve({ manifest });
-        })();
+        }).call(this);
       });
     }
   };
