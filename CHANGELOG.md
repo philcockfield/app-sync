@@ -5,7 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- Version of the `app-sync` module on API status.
 #### Changed
+- API as an object on manifest (eg. `api/route`).
+  This allows for more details (like `tokens`) to be associated with the API within the manifest.
 #### Deprecated
 #### Removed
 #### Fixed
