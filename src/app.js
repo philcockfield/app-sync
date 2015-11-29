@@ -146,27 +146,23 @@ export default (settings = {}) => {
 
     /**
      * Starts the app within the `pm2` process monitor.
-     * @param options
-     *            - download: Flag indicating if the repo should be downloaded
-     *                        even if it exists locally. Default: false.
      * @return {Promise}.
      */
-    start(options = {}) {
-      const download = options.download === undefined ? false : options.download;
+    start() {
       return new Promise((resolve, reject) => {
-        const start = () => {
-            shell.cd(localFolder);
-            shell.exec(`pm2 start . --name '${ id }:${ port }' --node-args '. --port ${ port }'`);
-            shell.cd(WORKING_DIRECTORY);
-          };
+        Promise.coroutine(function*() {
+          // Update and stop.
+          yield this.update({ start: false }).catch(err => reject(err));
+          yield this.stop().catch(err => reject(err));
 
-        this.download({ force: download })
-          .then(result => {
-              this.stop();
-              start();
-              resolve({ id, version: result.version || null, route: this.route, port: this.port });
-          })
-          .catch(err => reject(err));
+          // Start the app.
+          shell.cd(localFolder);
+          shell.exec(`pm2 start . --name '${ id }:${ port }' --node-args '. --port ${ port }'`);
+          shell.cd(WORKING_DIRECTORY);
+
+          // Finish.
+          resolve({ id, started: true, port: this.port, route: this.route });
+        }).call(this);
       });
     },
 
