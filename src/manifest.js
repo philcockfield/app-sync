@@ -75,15 +75,6 @@ export default (userAgent, token, repoPath, main) => {
           // Retrieve the manifest from the repo.
           const manifest = yield getManifest(repo, repoPath, branch).catch(err => reject(err));
           if (manifest) {
-            // Remove apps that are no longer specified in the manifest.
-            const manifestKeys = Object.keys(manifest.apps);
-            for (let app of main.apps) {
-              const isWithinManifest = R.any(key => key === app.id, manifestKeys);
-              if (!isWithinManifest) {
-                yield main.remove(app.id);
-                restart = true;
-              }
-            }
 
             const isChanged = (manifestApp, app) => {
                   let repo = app.repo;
@@ -98,6 +89,16 @@ export default (userAgent, token, repoPath, main) => {
                   main.add(id, manifestApp.repo, manifestApp.route, { branch: manifestApp.branch });
                 };
 
+
+            // Remove apps that are no longer specified in the manifest.
+            const manifestKeys = Object.keys(manifest.apps);
+            for (let app of main.apps) {
+              const isWithinManifest = R.any(key => key === app.id, manifestKeys);
+              if (!isWithinManifest) {
+                yield main.remove(app.id);
+                restart = true;
+              }
+            }
 
             // Add or update each app.
             for (let id of manifestKeys) {
