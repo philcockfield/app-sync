@@ -1,5 +1,5 @@
+api: "*/api"
 apps:
-  api: "*/api"
   foo:
     repo: "philcockfield/app-sync/example/app-2"
     route: "*"
