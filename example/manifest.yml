@@ -1,19 +1,11 @@
-# api:
-#   route: "*/api"
-# apps:
-#   foo:
-#     repo: "philcockfield/app-sync/example/app-2"
-#     route: "*"
-#     branch: "devel"
-#   bar:
-#     repo: "philcockfield/app-sync/example/app-1"
-#     route: "*/1"
-#     branch: "devel"
-
-
 api:
-  route: "admin.db.team/sites"
+  route: "*/api"
 apps:
-  trailTribe:
-    repo: "philcockfield/sites/trail-tribe"
-    route: "www.trailtribe.run"
+  foo:
+    repo: "philcockfield/app-sync/example/app-2"
+    route: "*"
+    branch: "devel"
+  bar:
+    repo: "philcockfield/app-sync/example/app-1"
+    route: "*/1"
+    branch: "devel"
