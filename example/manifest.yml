@@ -1,8 +1,8 @@
 apps:
   - foo:
-    - repo: philcockfield/app-sync/example/app-2
-    - route: *
-    - branch: devel
+    - repo: "philcockfield/app-sync/example/app-2"
+    - route: "*"
+    - branch: "devel"
   # - bar
   #   - repo: philcockfield/app-sync/example/app-1
   #   - route: */bar
