@@ -36,6 +36,20 @@ export const getManifest = (repo, repoPath, branch) => {
 };
 
 
+const toRepoObject = (repoPath) => {
+    let parts;
+    parts = repoPath.split(":");
+    repoPath = parts[0].trim();
+    const branch = (parts[1] || "master").trim();
+    parts = repoPath.split("/");
+    return {
+      name: R.take(2, parts).join("/"),
+      path: R.takeLast(parts.length - 2, parts).join("/"),
+      branch,
+      fullPath: repoPath
+    };
+  };
+
 
 
 /**
@@ -43,30 +57,26 @@ export const getManifest = (repo, repoPath, branch) => {
  */
 export default (userAgent, token, repoPath, main) => {
   // Create the repo proxy.
-  let parts = repoPath.trim().split("/");
-  const repoName = R.take(2, parts).join("/");
-  const repo = github.repo(userAgent, repoName, { token })
+  const repoObject = toRepoObject(repoPath);
+  const repo = github.repo(userAgent, repoObject.name, { token });
   const getApp = (id) => R.find(item => item.id === id, main.apps);
 
-  // Extract the path and branch.
-  repoPath = R.takeLast(parts.length - 2, parts).join("/");
-  parts = repoPath.split(":");
-  repoPath = parts[0].trim();
-  const branch = (parts[1] || "master").trim();
-
   const api = {
-    repo: {
-      name: repoName,
-      path: repoPath,
-      branch
-    },
+    repo: repoObject,
 
 
     /**
-     * Retrieves the manfest.
+     * Retrieves the latest version of the manifest, and stores is as `current`.
      * @return {Promise}
      */
-    get() { return getManifest(repo, this.repo.path, this.repo.branch); },
+    get() {
+      return new Promise((resolve, reject) => {
+        Promise.coroutine(function*() {
+          this.current = yield getManifest(repo, this.repo.path, this.repo.branch).catch(err => reject(err));;
+          resolve(this.current);
+        }).call(this);
+      });
+    },
 
 
     /**
@@ -75,24 +85,23 @@ export default (userAgent, token, repoPath, main) => {
      * @return {Promise}
      */
     update() {
-      const self = this;
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
+          const current = current;
           let restart = false;
 
+
           // Retrieve the manifest from the repo.
-          const manifest = yield self.get().catch(err => reject(err));
+          const manifest = yield this.get().catch(err => reject(err));
           if (manifest) {
 
             // Check for global changes with the previous manifest.
-            if (self.current) {
-              if (!R.equals(self.current.api, manifest.api)) { restart = true; }
+            if (current) {
+              if (!R.equals(current.api, manifest.api)) { restart = true; }
             }
 
-            const isChanged = (manifestApp, app) => {
-                  let repo = app.repo;
-                  if (!manifestApp.repo.startsWith(app.repo.name)) { return true; }
-                  if (app.repo.path && !manifestApp.repo.endsWith(app.repo.path)) { return true; }
+            const isAppChanged = (manifestApp, app) => {
+                  if (manifestApp.repo !== app.repo.fullPath) { return true; }
                   if (manifestApp.route !== app.route.toString()) { return true; }
                   if (manifestApp.branch !== app.branch) { return true; }
                   return false;
@@ -121,14 +130,14 @@ export default (userAgent, token, repoPath, main) => {
               manifestApp.branch = manifestApp.branch || "master";
               const app = getApp(id);
               if (app) {
-                if (isChanged(manifestApp, app)) {
-                  // The app has changed.  Replace it with the new definition.
+                if (isAppChanged(manifestApp, app)) {
+                  // The app has changed. Replace it with the new definition.
                   yield main.remove(id);
                   addApp(id, manifestApp);
                   restart = true;
                 }
               } else {
-                // The app has not yet been added.  Add it now.
+                // The app has not yet been added. Add it now.
                 addApp(id, manifestApp);
                 restart = true;
               }
@@ -140,7 +149,6 @@ export default (userAgent, token, repoPath, main) => {
               yield main.start();
             }
           }
-          this.current = manifest; // Store for future refernce.
           resolve({ manifest });
         }).call(this);
       });
