@@ -5,6 +5,7 @@ import app from "./app";
 import gateway from "./gateway";
 import log from "./log";
 import start from "./main-start";
+import manifest from "./manifest";
 import { promises } from "./util";
 import {
   DEFAULT_APP_PORT,
@@ -29,13 +30,14 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
  *                               see: https://github.com/settings/tokens
  *          - targetFolder:   The path where apps are downloaded to.
  *          - apiRoute:       The route to the gateway API.
+ *          - manifest:       The <repo>/<path>:<branch> of the manifest YAML file.
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
   const targetFolder = settings.targetFolder || DEFAULT_TARGET_FOLDER;
   const token = settings.token;
 
-  return {
+  const api = {
     apps: [],
     userAgent,
     targetFolder,
@@ -77,6 +79,36 @@ export default (settings = {}) => {
 
       // Finish up.
       return this;
+    },
+
+
+    /**
+     * Stops and removes the specified app.
+     * @param id: The unique identifier of the app.
+     * @return {Promise}
+     */
+    remove(id) {
+      const self = this;
+      return new Promise((resolve, reject) => {
+        Promise.coroutine(function*() {
+          const app = R.find(item => item.id === id, self.apps);
+          if (!app) {
+            reject(new Error(`An app with the id '#{ id }' does not exist.`));
+          } else {
+            log.info(`Removing app '${ id }'`);
+
+            // Stop the app if it's running.
+            yield app.stop();
+
+            // Remove the app from the list.
+            const index = R.findIndex(item => item.id == id, self.apps);
+            self.apps.splice(index, 1);
+
+            // Finish up.
+            resolve({});
+          }
+        })();
+      });
     },
 
 
@@ -123,7 +155,8 @@ export default (settings = {}) => {
       return start(
         this.apps,
         (options) => this.update(options),
-        settings.apiRoute
+        settings.apiRoute,
+        this.manifest
       );
     },
 
@@ -144,4 +177,12 @@ export default (settings = {}) => {
         });
     }
   };
+
+  // Configure the manifest, if one was set.
+  if (settings.manifest) {
+    api.manifest = manifest(userAgent, token, settings.manifest, api);
+  }
+
+  // Finish up.
+  return api;
 };

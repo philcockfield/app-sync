@@ -90,4 +90,19 @@ describe("api (module)", () => {
       expect(node.apps[1].port).to.equal(5001);
     });
   });
+
+  describe("remove", function() {
+    let node;
+    beforeEach(() => {
+      node = appSync();
+    });
+
+    it("removes the specified app", () => {
+      node.add("my-app-1", "user/my-repo", "*/foo-1");
+      return node.remove("my-app-1")
+      .then(result => {
+        expect(node.apps.length).to.equal(0);
+      });
+    });
+  });
 });

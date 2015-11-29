@@ -5,7 +5,7 @@ import prettyBytes from "pretty-bytes";
 import { promises } from "./util";
 import log from "./log";
 
-
+const HOST_NAME = process.env["HOSTNAME"] || "unknown";
 
 
 
@@ -39,10 +39,10 @@ export default (apps) => {
           gettingVersion.then(version => {
               status.version = {
                 local: version.local,
-                remote: version.remote,
-                isUpdateRequired: version.isUpdateRequired,
-                isDependenciesChanged: version.isDependenciesChanged
+                remote: version.remote
               };
+              if (version.isUpdateRequired) { status.version.isUpdateRequired = true; }
+              if (version.isDependenciesChanged) { status.version.isDependenciesChanged = true; }
               if (version.isDownloading) {
                 status.status += `, updating to v${ version.remote }`;
                 status.version.isDownloading = true;
@@ -71,7 +71,7 @@ export default (apps) => {
   return {
     getStatuses(req, res) {
       getRunningApps()
-        .then(appsStatus => res.send({ apps: appsStatus }))
+        .then(appsStatus => res.send({ host: HOST_NAME, apps: appsStatus }))
         .catch(err => {
             log.error(err);
             res.status(500).send({
