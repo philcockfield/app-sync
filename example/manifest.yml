@@ -1,4 +1,4 @@
-api: "*/api1"
+api: "*/api"
 apps:
   foo:
     repo: "philcockfield/app-sync/example/app-2"
