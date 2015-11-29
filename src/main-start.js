@@ -49,7 +49,7 @@ export default (apps, update, apiRoute, manifest) => {
         log.info("");
         log.info(`Environment: ${ process.env.NODE_ENV || "development" }`);
         log.info(`Gateway running on port:${ GATEWAY_PORT }`);
-        console.log("");
+        log.info("");
         items.forEach(item => {
             const version = item.version ? ` (v${ item.version })` : "";
             log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);

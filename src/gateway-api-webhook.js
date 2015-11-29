@@ -6,9 +6,6 @@ import log from "./log";
  * Handles web-hook calls from Github.
  */
 export default (apps, manifest) => {
-
-  console.log("manifest", manifest);
-
   return {
     post(req, res) {
       // Extract data.

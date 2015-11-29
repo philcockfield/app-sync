@@ -6,6 +6,7 @@ import fsPath from "path";
 import github from "file-system-github";
 import Route from "./route";
 import { isEmpty } from "./util";
+import log from "./log";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
 import appInstall from "./app-install";
@@ -152,7 +153,7 @@ export default (settings = {}) => {
       return new Promise((resolve, reject) => {
         const start = () => {
             shell.cd(localFolder);
-            shell.exec(`pm2 start . --name ${ id }:${ port } --node-args '. --port ${ port }'`);
+            shell.exec(`pm2 start . --name '${ id }:${ port }' --node-args '. --port ${ port }'`);
             shell.cd(WORKING_DIRECTORY);
           };
 
@@ -173,7 +174,7 @@ export default (settings = {}) => {
      */
     stop() {
       return new Promise((resolve) => {
-          shell.exec(`pm2 stop ${ id }`);
+          shell.exec(`pm2 stop '${ id }:${ port }'`);
           resolve({ id });
       });
     }

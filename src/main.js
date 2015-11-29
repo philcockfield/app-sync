@@ -83,6 +83,36 @@ export default (settings = {}) => {
 
 
     /**
+     * Stops and removes the specified app.
+     * @param id: The unique identifier of the app.
+     * @return {Promise}
+     */
+    remove(id) {
+      const self = this;
+      return new Promise((resolve, reject) => {
+        Promise.coroutine(function*() {
+          const app = R.find(item => item.id === id, self.apps);
+          if (!app) {
+            reject(new Error(`An app with the id '#{ id }' does not exist.`));
+          } else {
+            log.info(`Removing app '${ id }'`);
+
+            // Stop the app if it's running.
+            yield app.stop();
+
+            // Remove the app from the list.
+            const index = R.findIndex(item => item.id == id, self.apps);
+            self.apps.splice(index, 1);
+
+            // Finish up.
+            resolve({});
+          }
+        })();
+      });
+    },
+
+
+    /**
      * Downloads all registered apps.
      * @param options:
      *            - install: Flag indicating if `npm install` should be run on the directory.

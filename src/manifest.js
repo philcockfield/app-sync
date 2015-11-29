@@ -2,6 +2,7 @@ import R from "ramda";
 import Promise from "bluebird";
 import yaml from "js-yaml";
 import github from "file-system-github";
+import gateway from "./gateway";
 
 
 
@@ -46,6 +47,7 @@ export default (userAgent, token, repoPath, main) => {
   let parts = repoPath.trim().split("/");
   const repoName = R.take(2, parts).join("/");
   const repo = github.repo(userAgent, repoName, { token })
+  const getApp = (id) => R.find(item => item.id === id, main.apps);
 
   // Extract the path and branch.
   repoPath = R.takeLast(parts.length - 2, parts).join("/");
@@ -68,21 +70,61 @@ export default (userAgent, token, repoPath, main) => {
     update() {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
+          let restart = false;
 
           // Retrieve the manifest from the repo.
           const manifest = yield getManifest(repo, repoPath, branch).catch(err => reject(err));
           if (manifest) {
             // Remove apps that are no longer specified in the manifest.
-            // TODO:
-
-            // Add or update each app.
-            for (let id of Object.keys(manifest.apps)) {
-              const app = manifest.apps[id];
-              if (!R.is(String, app.repo)) { throw new Error(`The app '${ id } does not have a repo, eg: user/repo/path'`); }
-              if (!R.is(String, app.route)) { throw new Error(`The app '${ id } does not have a route, eg: www.domain.com/path'`); }
-              main.add(id, app.repo, app.route, { branch: app.branch || "master" });
+            const manifestKeys = Object.keys(manifest.apps);
+            for (let app of main.apps) {
+              const isWithinManifest = R.any(key => key === app.id, manifestKeys);
+              if (!isWithinManifest) {
+                yield main.remove(app.id);
+                restart = true;
+              }
             }
 
+            const isChanged = (manifestApp, app) => {
+                  let repo = app.repo;
+                  if (!manifestApp.repo.startsWith(app.repo.name)) { return true; }
+                  if (app.repo.path && !manifestApp.repo.endsWith(app.repo.path)) { return true; }
+                  if (manifestApp.route !== app.route.toString()) { return true; }
+                  if (manifestApp.branch !== app.branch) { return true; }
+                  return false;
+                };
+
+            const addApp = (id, manifestApp) => {
+                  main.add(id, manifestApp.repo, manifestApp.route, { branch: manifestApp.branch });
+                };
+
+
+            // Add or update each app.
+            for (let id of manifestKeys) {
+              const manifestApp = manifest.apps[id];
+              if (!R.is(String, manifestApp.repo)) { throw new Error(`The app '${ id } does not have a repo, eg: user/repo/path'`); }
+              if (!R.is(String, manifestApp.route)) { throw new Error(`The app '${ id } does not have a route, eg: www.domain.com/path'`); }
+              manifestApp.branch = manifestApp.branch || "master";
+              const app = getApp(id);
+              if (app) {
+                if (isChanged(manifestApp, app)) {
+                  // The app has changed.  Replace it with the new definition.
+                  yield main.remove(id);
+                  addApp(id, manifestApp);
+                  restart = true;
+                }
+              } else {
+                // The app has not yet been added.  Add it now.
+                addApp(id, manifestApp);
+                restart = true;
+              }
+            }
+
+            // Restart the gateway if a change occured (and it's already running)
+            if (gateway.isRunning() && restart) {
+              yield main.stop();
+              yield main.start();
+            }
           }
           resolve({ manifest });
         })();

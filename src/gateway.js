@@ -6,7 +6,6 @@ import gatewayAppRouter from "./gateway-app-router";
 import { DEFAULT_GATEWAY_PORT } from "./const";
 
 let server;
-const middleware = express().use(bodyParser.json());
 
 
 
@@ -20,6 +19,7 @@ const middleware = express().use(bodyParser.json());
 const start = (apps, options = {}) => {
     return new Promise((resolve, reject) => {
         const { apiRoute, manifest } = options;
+        const middleware = express().use(bodyParser.json());
 
         // Ensure the gatway is not already running.
         if (server) {
@@ -47,8 +47,13 @@ const stop = () => {
     if (server) {
       server.close();
     }
+    server = undefined;
   };
 
 
 
-export default { start, stop };
+export default {
+  start,
+  stop,
+  isRunning: () => server !== undefined
+};
