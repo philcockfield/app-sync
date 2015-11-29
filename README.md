@@ -30,8 +30,6 @@ Pass the following environment variables into the [docker container](https://hub
     Optional:
       TARGET_FOLDER         # The path where apps are downloaded to.
                             # NB: Use this if you need to change it to a shared container volume.
-      API_ROUTE             # Optional The <domain/path> for the REST API.
-                            # For example: */api
                             # If not specified the API is not exposed.
       MANIFEST              # <repo>/path/manifest.yml
 
@@ -40,6 +38,7 @@ Pass the following environment variables into the [docker container](https://hub
 The `MANIFEST` points to a YAML file that declares the applications to run.  The YAML files takes for form of:
 
 ```yaml
+api: <domain>/<path>
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
@@ -50,7 +49,9 @@ apps:
     route: "*/bar"
 ```
 
-If the `branch` is omitted the default `master` is used.
+- The `api` is an optional route that the REST API is exposed on.  If omitted the API is not exposed.  Example: `*/api`
+- If the `branch` is omitted the default `master` is used.
+
 
 
 
@@ -83,7 +84,6 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
     - `GITHUB_TOKEN`
     - `GITHUB_USER_AGENT`
     - `TARGET_FOLDER: /opt/downloads` (or whatever volume you wish to use)
-    - `API_ROUTE`
     - `MANIFEST`
 5. Add volume ⇨ Container path: `/opt/downloads` (leave host path blank)
 6. Create and deploy.
@@ -109,11 +109,12 @@ If you have set the `API_ROUTE` the following API is available for the gateway:
 Commits to application repositories are monitored via [Github webhooks](https://developer.github.com/webhooks/).  If the commit is on the registered branch, and the package version number has increased the app is downloaded and restarted.
 
 #### Setup
-1. Ensure the `API_ROUTE` has been set so that the API is exposed.
+1. Ensure the `api:` field has been set in the manifest so that the API is exposed.
 2. Within the Github repository settings, select `Webhooks & Services` and click `Add Webhook`
 3. Settings:
-    - Payload URL: `<API_ROUTE>/repo` for example: `https://foo.com/api/repo`
+    - Payload URL: `<api-route>/repo` for example: `https://foo.com/api/repo`
     - Content type: `application/json`
+
 
 ## Run Example
     npm install

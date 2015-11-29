@@ -3,7 +3,7 @@ import Promise from "bluebird";
 import yaml from "js-yaml";
 import github from "file-system-github";
 import gateway from "./gateway";
-
+let lastManifest;
 
 
 /**
@@ -62,19 +62,35 @@ export default (userAgent, token, repoPath, main) => {
       branch
     },
 
+
+    /**
+     * Retrieves the manfest.
+     * @return {Promise}
+     */
+    get() { return getManifest(repo, repoPath, branch); },
+
+
     /**
      * Connects to the remote manifest and syncs the local state with the
      * defined applications.
      * @return {Promise}
      */
     update() {
+      const self = this;
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
           let restart = false;
 
           // Retrieve the manifest from the repo.
-          const manifest = yield getManifest(repo, repoPath, branch).catch(err => reject(err));
+          const manifest = yield self.get().catch(err => reject(err));
           if (manifest) {
+
+            // Check for global changes with the previous manifest.
+            if (lastManifest) {
+              if (lastManifest.api !== manifest.api) {
+                restart = true;
+              }
+            }
 
             const isChanged = (manifestApp, app) => {
                   let repo = app.repo;
@@ -127,6 +143,7 @@ export default (userAgent, token, repoPath, main) => {
               yield main.start();
             }
           }
+          lastManifest = manifest;
           resolve({ manifest });
         })();
       });

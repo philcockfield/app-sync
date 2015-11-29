@@ -16,7 +16,11 @@ export default (apps, manifest) => {
 
       const isManifestMatch = R.any(path => path === manifest.repo.path, modified)
       if (isManifestMatch) {
-        manifest.update();
+        manifest.update()
+          .catch(err => {
+            log.error(`Failed while updating manifest.`);
+            log.error((err));
+          });
       } else {
         // Match apps that reside within the repo that Github posted.
         const isRepoMatch = (app) => app.repo.name === repo && app.branch === branch;

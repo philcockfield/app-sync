@@ -18,8 +18,18 @@ let server;
  */
 const start = (apps, options = {}) => {
     return new Promise((resolve, reject) => {
-        const { apiRoute, manifest } = options;
+      Promise.coroutine(function*() {
+        const { manifest } = options;
         const middleware = express().use(bodyParser.json());
+
+        // Retrieve the API route from the manifest.
+        let apiRoute
+        if (manifest) {
+          const manifestYaml = yield manifest.get().catch(err => reject(err));
+          if (manifestYaml) {
+            apiRoute = manifestYaml.api
+          }
+        }
 
         // Ensure the gatway is not already running.
         if (server) {
@@ -35,6 +45,7 @@ const start = (apps, options = {}) => {
         server = middleware.listen(port, () => {
           resolve({ port });
         });
+      })();
     });
   };
 

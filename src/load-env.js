@@ -2,7 +2,7 @@ import fsPath from "path";
 import appSync from "./main";
 import log from "./log";
 
-const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER, API_ROUTE, MANIFEST } = process.env;
+const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER, MANIFEST } = process.env;
 
 // Check for required variables.
 if (!GITHUB_TOKEN) {
@@ -29,7 +29,6 @@ const gateway = appSync({
   token: GITHUB_TOKEN,
   userAgent: GITHUB_USER_AGENT,
   targetFolder: TARGET_FOLDER,
-  apiRoute: API_ROUTE,
   manifest: MANIFEST
 });
 
