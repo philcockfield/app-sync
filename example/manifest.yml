@@ -1,11 +1,25 @@
+# api:
+#   route: "*/api"
+# apps:
+#   foo:
+#     repo: "philcockfield/app-sync/example/app-2"
+#     route: "*"
+#     branch: "devel"
+#   bar:
+#     repo: "philcockfield/app-sync/example/app-1"
+#     route: "*/1"
+#     branch: "devel"
+
+
 api:
   route: "*/api"
 apps:
-  foo:
-    repo: "philcockfield/app-sync/example/app-2"
-    route: "*"
-    branch: "devel"
-  bar:
-    repo: "philcockfield/app-sync/example/app-1"
-    route: "*/1"
-    branch: "devel"
+  ooooby:
+    repo: "repo philcockfield/sites/ooooby"
+    route: "ooooby.db.team"
+  trailTribe:
+    repo: "philcockfield/sites/trail-tribe"
+    route: "www.trailtribe.run"
+  uiharness:
+    repo: "philcockfield/ui-harness-site"
+    route: "www.uiharness.com"
