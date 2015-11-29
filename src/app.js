@@ -48,6 +48,8 @@ export default (settings = {}) => {
   const statusCache = fileSystemCache({ basePath: `${ targetFolder }/.status` });
 
   // Extract the repo and sub-path.
+  console.log("repo", repo);
+  const fullPath = repo;
   let parts = repo.split("/");
   if (parts.length < 2) { throw new Error(`A repo must have a 'user-name' and 'repo-name', eg 'username/repo'.`); }
   const repoUser = parts[0];
@@ -57,6 +59,9 @@ export default (settings = {}) => {
   const repoSubFolder = parts.join("/");
   const localFolder = fsPath.resolve(fsPath.join(targetFolder, id));
   repo.path = repoSubFolder;
+  repo.fullPath = fullPath;
+
+  console.log("repo", repo);
 
   // Store values.
   const app = {

@@ -7,5 +7,5 @@ apps:
     branch: "devel"
   bar:
     repo: "philcockfield/app-sync/example/app-1"
-    route: "*/one"
+    route: "*/one1"
     branch: "devel"
