@@ -12,7 +12,7 @@ import { getManifest } from "../../src/manifest";
 //          https://github.com/settings/tokens
 //
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
-const BRANCH = "manifest"; // TODO: Change branch to "devel"
+const BRANCH = "devel";
 
 
 
