@@ -1,4 +1,5 @@
-api: "*/api"
+api:
+  route: "*/api"
 apps:
   foo:
     repo: "philcockfield/app-sync/example/app-2"
@@ -6,5 +7,5 @@ apps:
     branch: "devel"
   bar:
     repo: "philcockfield/app-sync/example/app-1"
-    route: "*/one"
+    route: "*/1"
     branch: "devel"

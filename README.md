@@ -26,19 +26,20 @@ Pass the following environment variables into the [docker container](https://hub
     Required:
       GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
       GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
+      MANIFEST              # <user/repo>/path/manifest.yml
 
     Optional:
       TARGET_FOLDER         # The path where apps are downloaded to.
                             # NB: Use this if you need to change it to a shared container volume.
                             # If not specified the API is not exposed.
-      MANIFEST              # <repo>/path/manifest.yml
 
 
 #### Applications Manifest
 The `MANIFEST` points to a YAML file that declares the applications to run.  The YAML files takes for form of:
 
 ```yaml
-api: <domain>/<path>
+api:
+  route: <domain>/<path>
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
@@ -50,7 +51,7 @@ apps:
 ```
 
 - The `api` is an optional route that the REST API is exposed on.  If omitted the API is not exposed.  Example: `*/api`
-- If the `branch` is omitted the default `master` is used.
+- If the `branch` is omitted the default of `master` is used.
 
 
 

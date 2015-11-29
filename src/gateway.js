@@ -25,10 +25,8 @@ const start = (apps, options = {}) => {
         // Retrieve the API route from the manifest.
         let apiRoute
         if (manifest) {
-          const manifestYaml = yield manifest.get().catch(err => reject(err));
-          if (manifestYaml) {
-            apiRoute = manifestYaml.api
-          }
+          if (!manifest.current) { yield manifest.get().catch(err => reject(err)); }
+          apiRoute = manifest.current && manifest.current.api && manifest.current.api.route;
         }
 
         // Ensure the gatway is not already running.
