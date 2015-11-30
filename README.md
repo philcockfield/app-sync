@@ -117,9 +117,9 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
     - `NODE_ENV: production`
     - `GITHUB_TOKEN`
     - `GITHUB_USER_AGENT`
-    - `TARGET_FOLDER: /opt/downloads` (or whatever volume you wish to use)
     - `MANIFEST`
-5. Add volume ⇨ Container path: `/opt/downloads` (leave host path blank)
+    - `TARGET_FOLDER: /opt/downloads` (Optional. Whatever volume you wish to use.)
+5. Optional. Add volume ⇨ Container path: `/opt/downloads` (leave host path blank)
 6. Create and deploy.
 
 
