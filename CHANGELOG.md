@@ -12,6 +12,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Security
 
 
+## [1.0.6] - 2015-11-30
+#### Added
+- Reading `targetFolder` from manifest.
+- Run `CMD` added to `Dockerfile`.
+#### Removed
+- The `TARGET_FOLDER` environment variable.
+
+
 ## [1.0.1] - 2015-11-30
 #### Added
 - Version of the `app-sync` module on API status.
