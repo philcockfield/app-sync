@@ -72,7 +72,7 @@ export default (userAgent, token, repoPath, main) => {
     get() {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
-          this.current = yield getManifest(repo, this.repo.path, this.repo.branch).catch(err => reject(err));;
+          this.current = yield getManifest(repo, this.repo.path, this.repo.branch).catch(err => reject(err));
           resolve(this.current);
         }).call(this);
       });
@@ -111,12 +111,11 @@ export default (userAgent, token, repoPath, main) => {
                   main.add(id, manifestApp.repo, manifestApp.route, { branch: manifestApp.branch });
                 };
 
-
             // Remove apps that are no longer specified in the manifest.
             const manifestKeys = Object.keys(manifest.apps);
+            const isWithinManifest = (app) => R.any(key => key === app.id, manifestKeys);
             for (let app of main.apps) {
-              const isWithinManifest = R.any(key => key === app.id, manifestKeys);
-              if (!isWithinManifest) {
+              if (!isWithinManifest(app)) {
                 yield main.remove(app.id);
                 restart = true;
               }

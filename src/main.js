@@ -88,26 +88,25 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     remove(id) {
-      const self = this;
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
-          const app = R.find(item => item.id === id, self.apps);
-          if (!app) {
+          const removeApp = R.find(item => item.id === id, this.apps);
+          if (!removeApp) {
             reject(new Error(`An app with the id '#{ id }' does not exist.`));
           } else {
             log.info(`Removing app '${ id }'`);
 
             // Stop the app if it's running.
-            yield app.stop();
+            yield removeApp.stop();
 
             // Remove the app from the list.
-            const index = R.findIndex(item => item.id == id, self.apps);
-            self.apps.splice(index, 1);
+            const index = R.findIndex(item => item.id === id, this.apps);
+            this.apps.splice(index, 1);
 
             // Finish up.
             resolve({});
           }
-        })();
+        }).call(this);
       });
     },
 

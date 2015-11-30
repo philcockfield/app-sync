@@ -14,7 +14,7 @@ export default (apps, manifest) => {
       const repo = data.repository.full_name;
       const modified = (data.head_commit && data.head_commit.modified) || [];
 
-      const isManifestMatch = R.any(path => path === manifest.repo.path, modified)
+      const isManifestMatch = R.any(path => path === manifest.repo.path, modified);
       if (isManifestMatch) {
         manifest.update()
           .catch(err => {

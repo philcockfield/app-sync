@@ -6,7 +6,6 @@ import fsPath from "path";
 import github from "file-system-github";
 import Route from "./route";
 import { isEmpty } from "./util";
-import log from "./log";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
 import appInstall from "./app-install";
