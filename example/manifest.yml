@@ -1,4 +1,4 @@
-targetFolder: ".build"
+targetFolder: "./.foo"
 api:
   route: "*/api"
 apps:
