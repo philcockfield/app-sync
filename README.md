@@ -126,8 +126,5 @@ Commits to application repositories are monitored via [Github webhooks](https://
     npm test
 
 
-## TODO
-- Rotate logs: https://github.com/pm2-hive/pm2-logrotate
-
 ---
 ### License: MIT
