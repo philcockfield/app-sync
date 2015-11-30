@@ -9,7 +9,7 @@
     "watch": "nodemon ./example -e js,jsx --ignore .build",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
-    "prepublish": "gulp lint && gulp build",
+    "prepublish": "gulp lint",
     "dbuild": "sh ./sh/docker-build.sh",
     "drun": "sh ./sh/test-docker-run.sh",
     "dstop": "docker stop app-sync",
