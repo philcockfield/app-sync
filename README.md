@@ -78,6 +78,8 @@ The `route:` field describes a URL pattern to match for the app.  The pattern ta
     *
 
 
+
+
 ## Application Port
 Each application that runs within `app-sync` is assigned an automatically generated port that is passed in via the `--port` startup parameter.  Listen on this port for requests.  You may wish to use [minimist](https://www.npmjs.com/package/minimist) to extract the port value, for example:
 
@@ -87,12 +89,17 @@ app.listen(argv.port);
 ```
 
 
+
+
 ## REST API
 If you have set the `api/route` field set within the `MANIFEST` the following API is available:
 
     GET:  /api/            # Status of all running apps
     GET:  /api/:appId      # Status of the specified app.
     POST: /api/repo        # "Push" web-hook from Github repositories.
+
+
+
 
 
 ## Github Webhook
@@ -104,6 +111,8 @@ Commits to application repositories are monitored via [Github webhooks](https://
 3. Settings:
     - Payload URL: `<api-route>/repo` for example: `https://foo.com/api/repo`
     - Content type: `application/json`
+
+
 
 
 
@@ -125,9 +134,12 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
 
 
 
+
 ## Run Example
     npm install
     npm run example
+
+
 
 
 ## Tests
