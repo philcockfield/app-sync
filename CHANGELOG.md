@@ -5,9 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- Reading `targetFolder` from manifest.
+- Run `CMD` added to `Dockerfile`.
 #### Changed
 #### Deprecated
 #### Removed
+- The `TARGET_FOLDER` environment variable.
 #### Fixed
 #### Security
 

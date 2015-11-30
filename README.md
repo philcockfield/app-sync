@@ -28,11 +28,6 @@ Pass the following environment variables into the [docker container](https://hub
         GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
         MANIFEST              # <user/repo>/path/manifest.yml
 
-    Optional:
-        TARGET_FOLDER         # The path where apps are downloaded to.
-                              #   NB: Use this if you need to change it to a shared container volume.
-                              #       More efficient when load-balancing across multiple containers
-                              #       as the node modules are only downloaded once.
 
 
 #### Manifest
@@ -41,6 +36,7 @@ The `MANIFEST` points to a YAML file that declares global configuration settings
 ```yaml
 api:
   route: <domain>/<path>
+targetFolder: "/opt/downloads"
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
@@ -54,7 +50,11 @@ apps:
 - The `api` is an optional route that the REST API is exposed on.  
     - If omitted the API is not exposed.
     - Example: `*/api`
-- If the `branch` is omitted the default of `master` is used.
+- The optional `targetFolder` specifies where apps are downloaded to.
+    - If omitted a default path is used.
+    - Use this if you need to change it to a shared container volume.
+      This is more efficient when load-balancing across multiple containers as each container shares the single app download.
+- If the `branch` of an app is omitted the default of `master` is used.
 
 
 
@@ -121,14 +121,12 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
 
 1. Services ⇨ Create Service
 2. Image selection ⇨ Public repositories ⇨ `philcockfield/app-sync`
-3. Service configuration ⇨ Run command ⇨ `npm start`
-4. Main environment variables ([ref](https://github.com/philcockfield/app-sync#main)):
+4. Add environment variables ([ref](https://github.com/philcockfield/app-sync#main)):
     - `NODE_ENV: production`
     - `GITHUB_TOKEN`
     - `GITHUB_USER_AGENT`
     - `MANIFEST`
-    - `TARGET_FOLDER: /opt/downloads` (Optional. Whatever volume you wish to use.)
-5. Optional. Add volume ⇨ Container path: `/opt/downloads` (leave host path blank)
+5. Optional. Add volume ⇨ Container path: `/opt/downloads` (leave host path blank).  This value should be declared within the manifest.
 6. Create and deploy.
 
 

@@ -2,7 +2,7 @@ import fsPath from "path";
 import appSync from "./main";
 import log from "./log";
 
-const { GITHUB_TOKEN, GITHUB_USER_AGENT, TARGET_FOLDER, MANIFEST } = process.env;
+const { GITHUB_TOKEN, GITHUB_USER_AGENT, MANIFEST } = process.env;
 
 // Check for required variables.
 if (!GITHUB_TOKEN) {
@@ -21,21 +21,27 @@ if (!GITHUB_USER_AGENT) {
   log.warn("-------------------------------------------");
   log.warn();
 }
-
+if (!MANIFEST) {
+  log.warn(`WARNING - a manifest YAML file has not been specified.`);
+  log.warn(`example:`);
+  log.warn(`   export MANIFEST="username/my-repo/manifest.yml"`);
+  log.warn("-------------------------------------------");
+}
 
 
 // Create gateway.
-const gateway = appSync({
+appSync({
   token: GITHUB_TOKEN,
   userAgent: GITHUB_USER_AGENT,
-  targetFolder: TARGET_FOLDER,
   manifest: MANIFEST
-});
+})
+.then(gateway => {
 
+    // Start the gateway server.
+    log.info(`Apps downloaded to: ${ fsPath.resolve(gateway.targetFolder) }`);
+    gateway
+      .start()
+      .catch(err => log.error("Failed to start gateway:", err));
 
-
-// Start the gateway.
-log.info(`Apps downloaded to: ${ fsPath.resolve(gateway.targetFolder) }`);
-gateway
-  .start()
-  .catch(err => log.error("Failed to start gateway:", err));
+})
+.catch(err => log.error("Failed while creating gateway:", err.message));

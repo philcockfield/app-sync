@@ -34,13 +34,12 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
-  const targetFolder = settings.targetFolder || DEFAULT_TARGET_FOLDER;
   const token = settings.token;
 
   const api = {
     apps: [],
     userAgent,
-    targetFolder,
+    targetFolder: DEFAULT_TARGET_FOLDER,
 
     /**
      * Adds a new application to run.
@@ -68,7 +67,7 @@ export default (settings = {}) => {
       const item = app({
         userAgent,
         token,
-        targetFolder,
+        targetFolder: this.targetFolder,
         id,
         repo,
         route,
@@ -177,11 +176,25 @@ export default (settings = {}) => {
     }
   };
 
-  // Configure the manifest, if one was set.
-  if (settings.manifest) {
-    api.manifest = manifest(userAgent, token, settings.manifest, api);
-  }
+  return new Promise((resolve, reject) => {
+    Promise.coroutine(function*() {
 
-  // Finish up.
-  return api;
+      // Download the manifest, if one was set.
+      if (settings.manifest) {
+        api.manifest = manifest(userAgent, token, settings.manifest, api);
+        log.info(`Reading manifest from: ${ api.manifest.repo.fullPath }`);
+        yield api.manifest.get().catch(err => reject(err));
+
+        // Read out global settings.
+        const current = api.manifest.current;
+        if (current && current.targetFolder) {
+          api.targetFolder = current.targetFolder;
+        }
+      }
+
+      // Finish up.
+      resolve(api);
+
+    }).call(this);
+  });
 };
