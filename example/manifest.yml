@@ -1,4 +1,4 @@
-targetFolder: "./.foo"
+# targetFolder: "./.foo"
 api:
   route: "*/api"
 apps:
