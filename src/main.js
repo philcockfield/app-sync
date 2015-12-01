@@ -39,7 +39,7 @@ export default (settings = {}) => {
   const api = {
     apps: [],
     userAgent,
-    targetFolder: DEFAULT_TARGET_FOLDER,
+    targetFolder: settings.targetFolder || DEFAULT_TARGET_FOLDER,
 
     /**
      * Adds a new application to run.

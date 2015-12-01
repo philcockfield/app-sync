@@ -1,7 +1,8 @@
 import pm2 from "./pm2";
 import Route from "./route";
-import gatewayApiStatus from "./gateway-api-status";
-import gatewayApiWebhook from "./gateway-api-webhook";
+import apiStatus from "./gateway-api-status";
+import apiWebHook from "./gateway-api-webhook";
+
 import log from "./log";
 
 
@@ -12,8 +13,8 @@ pm2.connect().then(() => isConnected = true);
 
 export default (baseRoute, apps, middleware, manifest) => {
   baseRoute = Route.parse(baseRoute);
-  const status = gatewayApiStatus(apps);
-  const webhook = gatewayApiWebhook(apps, manifest);
+  const status = apiStatus(apps);
+  const webhook = apiWebHook(apps, manifest);
 
   const isRouteMatch = (req) => {
         const domain = req.get("host").split(":")[0];
@@ -35,6 +36,7 @@ export default (baseRoute, apps, middleware, manifest) => {
 
   log.info("API:");
   get(":app", status.getAppStatus);
+  get(":app/restart", status.getAppStatus);
   get("", status.getStatuses);
   post("repo", webhook.post);
   log.info("");

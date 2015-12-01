@@ -17,6 +17,7 @@ const BRANCH = "devel";
 
 
 describe("manifest (integration)", function() {
+  this.timeout(30 * 1000);
   const repo = github.repo("test", "philcockfield/app-sync", { token: GITHUB_TOKEN });
 
   describe("getManifest", function() {
