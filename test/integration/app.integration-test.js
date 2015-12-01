@@ -35,11 +35,11 @@ const APP_SETTINGS = {
 
 
 describe("app (integration)", function() {
-  this.timeout(25 * 1000);
+  this.timeout(30 * 1000);
 
   before(() => {
       const app = App(APP_SETTINGS);
-      return app.update()
+      return app.update();
   });
   beforeEach(() => {
     fs.removeSync(fsPath.join(BUILD_PATH, ".status"));

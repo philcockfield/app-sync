@@ -1,4 +1,5 @@
 "use strict";
+import Promise from "bluebird";
 import { expect } from "chai";
 import fsPath from "path";
 import appSync from "../src/main";
@@ -7,33 +8,33 @@ import appSync from "../src/main";
 
 
 describe("api (module)", () => {
+  let api;
+  beforeEach(() => {
+    Promise.coroutine(function*() {
+      api = yield appSync();
+    }).call(this);
+  });
+
   describe("init", function() {
     it("initializes with default values", () => {
-      const node = appSync();
-      expect(node.userAgent).to.equal("app-syncer");
+      expect(api.userAgent).to.equal("app-syncer");
     });
 
     it("has default values", () => {
-      const node = appSync();
-      expect(node.apps).to.eql([]);
-      expect(node.targetFolder).to.equal("./.build");
+      expect(api.apps).to.eql([]);
+      expect(api.targetFolder).to.equal("./.build");
     });
   });
 
 
   describe("add", function() {
-    let node;
-    beforeEach(() => {
-      node = appSync();
-    });
-
     it("has no apps", () => {
-      expect(node.apps).to.eql([]);
+      expect(api.apps).to.eql([]);
     });
 
     it("adds an app (root of repo)", () => {
-      node.add("my-app", "philcockfield/app-sync", "*/foo");
-      const app = node.apps[0];
+      api.add("my-app", "philcockfield/app-sync", "*/foo");
+      const app = api.apps[0];
       expect(app.id).to.equal("my-app");
       expect(app.repo.name).to.equal("philcockfield/app-sync");
       expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
@@ -42,66 +43,61 @@ describe("api (module)", () => {
     });
 
     it("adds an app with a path to a sub-folder within the repo", () => {
-      node.add("my-app", "philcockfield/app-sync/example/app-1", "*/foo");
-      const app = node.apps[0];
+      api.add("my-app", "philcockfield/app-sync/example/app-1", "*/foo");
+      const app = api.apps[0];
       expect(app.id).to.equal("my-app");
       expect(app.repo.name).to.equal("philcockfield/app-sync");
       expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
     });
 
     it("adds an app with default values", () => {
-      node.add("my-app", "philcockfield/app-sync/example/app-1", "*/foo");
-      const app = node.apps[0];
+      api.add("my-app", "philcockfield/app-sync/example/app-1", "*/foo");
+      const app = api.apps[0];
       expect(app.branch).to.equal("master");
     });
 
     it("throws if the 'id' 'repo' or 'route' are not specified", () => {
-      expect(() => node.add(undefined, "user/my-repo", "*/foo")).to.throw();
-      expect(() => node.add("name", null, "*/foo")).to.throw();
-      expect(() => node.add("name", "user/repo")).to.throw();
+      expect(() => api.add(undefined, "user/my-repo", "*/foo")).to.throw();
+      expect(() => api.add("name", null, "*/foo")).to.throw();
+      expect(() => api.add("name", "user/repo")).to.throw();
     });
 
     it("throws if the repo is not two parts (username/repo-name)", () => {
-      expect(() => node.add("my-app", "fail", "*/foo")).to.throw();
+      expect(() => api.add("my-app", "fail", "*/foo")).to.throw();
     });
 
     it("throws if a 'id' is repeated", () => {
-      node.add("my-app", "user/my-repo-1", "*/foo-1");
+      api.add("my-app", "user/my-repo-1", "*/foo-1");
       let fn = () => {
-        node.add("my-app", "user/my-repo-2", "*/foo-2");
+        api.add("my-app", "user/my-repo-2", "*/foo-2");
       };
       expect(fn).to.throw();
     });
 
 
     it("throws if a route is repeated", () => {
-      node.add("my-app-1", "user/my-repo-1", "*/foo");
+      api.add("my-app-1", "user/my-repo-1", "*/foo");
       let fn = () => {
-        node.add("my-app-2", "user/my-repo-2", "*/foo");
+        api.add("my-app-2", "user/my-repo-2", "*/foo");
       };
       expect(fn).to.throw();
     });
 
 
     it("auto-assigns port numbers", () => {
-      node.add("my-app-1", "user/my-repo", "*/foo-1");
-      node.add("my-app-2", "user/my-repo", "*/foo-2");
-      expect(node.apps[0].port).to.equal(5000);
-      expect(node.apps[1].port).to.equal(5001);
+      api.add("my-app-1", "user/my-repo", "*/foo-1");
+      api.add("my-app-2", "user/my-repo", "*/foo-2");
+      expect(api.apps[0].port).to.equal(5000);
+      expect(api.apps[1].port).to.equal(5001);
     });
   });
 
   describe("remove", function() {
-    let node;
-    beforeEach(() => {
-      node = appSync();
-    });
-
     it("removes the specified app", () => {
-      node.add("my-app-1", "user/my-repo", "*/foo-1");
-      return node.remove("my-app-1")
+      api.add("my-app-1", "user/my-repo", "*/foo-1");
+      return api.remove("my-app-1")
       .then(result => {
-        expect(node.apps.length).to.equal(0);
+        expect(api.apps.length).to.equal(0);
       });
     });
   });
