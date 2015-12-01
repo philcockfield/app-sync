@@ -1,6 +1,6 @@
 {
   "name": "app-sync",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Runs one or more node-apps keeping them in sync with Github.",
   "main": "./index.js",
   "scripts": {
