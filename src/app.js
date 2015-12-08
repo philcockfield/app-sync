@@ -49,7 +49,7 @@ export default (settings = {}) => {
   // Extract the repo and sub-path.
   const fullPath = repo;
   let parts = repo.split("/");
-  if (parts.length < 2) { throw new Error(`A repo must have a 'user-name' and 'repo-name', eg 'username/repo'.`); }
+  if (parts.length < 2) { throw new Error(`A repo must have a 'username' and 'repo-name', eg 'username/repo'.`); }
   const repoUser = parts[0];
   const repoName = parts[1];
   repo = github.repo(userAgent, `${ repoUser }/${ repoName }`, { token });
