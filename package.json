@@ -11,9 +11,7 @@
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
     "prepublish": "gulp lint",
     "dbuild": "sh ./sh/docker-build.sh",
-    "drun": "sh ./sh/test-docker-run.sh",
-    "dstop": "docker stop app-sync",
-    "shenv": "sh ./sh/test-start-env.sh"
+    "drun": "sh ./sh/test-docker-run.sh"
   },
   "dependencies": {
     "bluebird": "^3.0.5",
