@@ -148,7 +148,7 @@ export default (settings = {}) => {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
           // Update and stop.
-          yield this.update({ start: false }).catch(err => reject(err));
+          const status = yield this.update({ start: false }).catch(err => reject(err));
           yield this.stop().catch(err => reject(err));
 
           // Start the app.
@@ -157,7 +157,7 @@ export default (settings = {}) => {
           shell.cd(WORKING_DIRECTORY);
 
           // Finish.
-          resolve({ id, started: true, port: this.port, route: this.route });
+          resolve({ id, started: true, port: this.port, route: this.route, version: status.version });
         }).call(this);
       });
     },
