@@ -1,4 +1,5 @@
 import R from "ramda";
+import uuid from "uuid";
 import Promise from "bluebird";
 import shell from "shelljs";
 import fsPath from "path";
@@ -61,6 +62,7 @@ export default (settings = {}) => {
   // Store values.
   const app = {
     id,
+    uid: uuid.v4().toString(),
     repo,
     route,
     port,
