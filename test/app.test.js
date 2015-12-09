@@ -13,7 +13,7 @@ const DEFAULT_PARAMS = {
 };
 
 
-describe.only("app", function() {
+describe("app", function() {
   it("has a default branch ('master')", () => {
     expect(app(DEFAULT_PARAMS).branch).to.equal("master");
   });
