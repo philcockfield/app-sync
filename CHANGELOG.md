@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] - YYYY-MM-DD
 #### Added
 #### Changed
+- Apps running within different containers are restarted when updated via inter-module communication using RabbitMQ (pub/sub).
 #### Deprecated
 #### Removed
 - Removed the use of the `file-system-cache` as a means of communicating when other instances are downloading an app.
