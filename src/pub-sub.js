@@ -50,12 +50,16 @@ export default (uid, apps, url) => {
     listen(channel, EXCHANGE, (msg) => {
       const payload = JSON.parse(msg.content.toString());
       if (payload.uid !== uid) {
-
-        console.log("payload.uid", payload.uid);
-        console.log("payload.data", payload.data);
-        console.log("TODO - restart the corresponding app on event 'app:updated'");
-        console.log("");
-
+        // const data = payload.data;
+        switch (payload.event) {
+          case "app:updated":
+            // The app was updated within another container, restart it now.
+            const app = R.find(item => item.id === payload.data.id, apps)
+            if (app) {
+              app.start();
+            }
+            break;
+        }
       }
     });
   }).call(this);
