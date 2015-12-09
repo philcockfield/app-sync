@@ -11,7 +11,7 @@ let server;
 
 /**
  * Starts the gateway.
- * @param main: The main API of the module.
+ * @param apps: The array of applications.
  * @param options:
  *           - port: The port to use.
  *           - manifest: The manifest to add apps from.

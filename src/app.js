@@ -1,5 +1,4 @@
 import R from "ramda";
-import uuid from "uuid";
 import Promise from "bluebird";
 import shell from "shelljs";
 import fsPath from "path";
@@ -31,10 +30,11 @@ import { getLocalPackage, getRemotePackage } from "./app-package";
  *                                 'username/repo/my/sub/path'
  *            - port:          The port the app runs on.
  *            - branch:        The branch to query. Default: "master".
+ *            - publishEvent:       A function that publishes an event to all other instances.
  */
 export default (settings = {}) => {
   // Setup initial conditions.
-  let { userAgent, token, targetFolder, id, repo, port, branch, route } = settings;
+  let { userAgent, token, targetFolder, id, repo, port, branch, route, publishEvent } = settings;
   if (isEmpty(id)) { throw new Error(`'id' for the app is required`); }
   if (isEmpty(repo)) { throw new Error(`'repo' name required, eg. 'username/my-repo'`); }
   if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
@@ -58,11 +58,9 @@ export default (settings = {}) => {
   repo.path = repoSubFolder;
   repo.fullPath = fullPath;
 
-
   // Store values.
   const app = {
     id,
-    uid: uuid.v4().toString(),
     repo,
     route,
     port,
@@ -121,9 +119,11 @@ export default (settings = {}) => {
      * @param options
      *          - start: Flag indicating if the app should be started after an update.
      *                   Default: true.
+     * @return {Promise}.
      */
     update(options = {}) {
-      return appUpdate(
+      // Start the update process.
+      const updating = appUpdate(
           id,
           localFolder,
           () => this.version(),
@@ -131,6 +131,19 @@ export default (settings = {}) => {
           (args) => this.start(args),
           options
         );
+
+      // If the app has been updated alert other containers.
+      updating.then(result => {
+          if (publishEvent && result.updated) {
+            publishEvent("app:updated", {
+              id: this.id,
+              version: result.version
+            });
+          }
+        });
+
+      // Finish up.
+      return updating;
     },
 
 

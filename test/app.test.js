@@ -25,8 +25,4 @@ describe.only("app", function() {
   it("has a default target folder", () => {
     expect(app(DEFAULT_PARAMS).localFolder).to.equal(fsPath.resolve("./.build/my-app"));
   });
-
-  it("has a unique ID (uid)", () => {
-    expect(app(DEFAULT_PARAMS).uid).not.to.equal(undefined);
-  });
 });
