@@ -10,22 +10,6 @@ const fsReadDir = Promise.promisify(fs.readdir);
 
 
 
-const waitForDownload = (id, statusCache) => {
-  return new Promise((resolve, reject) => {
-      const checkDownloadState = () => {
-        Promise.coroutine(function*() {
-          const { isDownloading } = yield statusCache.get(id).catch(err => reject(err));
-          if (isDownloading) {
-            setTimeout(() => checkDownloadState(), 1000); // <== Delayed recursion.
-          } else {
-            resolve();
-          }
-        })();
-      };
-      checkDownloadState();
-  });
-};
-
 
 
 
@@ -37,7 +21,6 @@ const waitForDownload = (id, statusCache) => {
  * @param repo:         The repository to pull from.
  * @param subFolder:    The sub-folder into the repo (if there is one).
  * @param branch:       The branch to query.
- * @param statusCache:  A file-system-cache for storing status about the app.
  * @param options:
  *            - force:   Flag indicating if the repository should be downloaded if
  *                       is already present on the local disk.
@@ -45,7 +28,7 @@ const waitForDownload = (id, statusCache) => {
  *
  * @return {Promise}.
  */
-export default (id, localFolder, repo, subFolder, branch, statusCache, options = {}) => {
+export default (id, localFolder, repo, subFolder, branch, options = {}) => {
   const force = options.force === undefined ? true : options.force;
 
   return new Promise((resolve, reject) => {
@@ -58,7 +41,6 @@ export default (id, localFolder, repo, subFolder, branch, statusCache, options =
               result.version = local.json.version;
               if (wasDownloaded) {
                 log.info(`...downloaded '${ id }'.`);
-                yield statusCache.set(id, { isDownloading: false }).catch(err => reject(err));
               }
               resolve(result);
           })();
@@ -68,18 +50,8 @@ export default (id, localFolder, repo, subFolder, branch, statusCache, options =
     const download = () => {
         // Check whether another process is already downloading the repo.
         Promise.coroutine(function*() {
-          const { isDownloading } = yield statusCache.get(id, { isDownloading: false }).catch(err => reject(err));
-          if (isDownloading) {
-
-            // Another process is already downloading - wait for it to complete.
-            yield waitForDownload(id, statusCache).catch(err => reject(err));
-            onComplete(true, { id, downloadedByAnotherProcess: true });
-
-          } else {
-
             // Download files.
             log.info(`Downloading '${ id }'...`);
-            yield statusCache.set(id, { isDownloading: true });
             const files = yield repo.get(subFolder, { branch }).catch(err => reject(err));
 
             // Delete the old files.
@@ -99,7 +71,6 @@ export default (id, localFolder, repo, subFolder, branch, statusCache, options =
 
             // Finish up.
             onComplete(true, { id });
-          }
         })();
       };
 
