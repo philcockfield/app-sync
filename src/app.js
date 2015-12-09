@@ -1,5 +1,4 @@
 import R from "ramda";
-import fileSystemCache from "file-system-cache";
 import Promise from "bluebird";
 import shell from "shelljs";
 import fsPath from "path";
@@ -44,7 +43,6 @@ export default (settings = {}) => {
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
   const WORKING_DIRECTORY = process.cwd();
-  const statusCache = fileSystemCache({ basePath: `${ targetFolder }/.status` });
 
   // Extract the repo and sub-path.
   const fullPath = repo;
@@ -68,7 +66,6 @@ export default (settings = {}) => {
     port,
     branch,
     localFolder,
-    statusCache,
 
 
     /**
@@ -89,7 +86,7 @@ export default (settings = {}) => {
      * Gets the local and remote versions.
      * @return {Promise}
      */
-    version() { return appVersion(id, this.localPackage(), this.remotePackage(), statusCache); },
+    version() { return appVersion(id, this.localPackage(), this.remotePackage()); },
 
 
     /**
@@ -107,7 +104,7 @@ export default (settings = {}) => {
       if (this.downloading) { return this.downloading; }
 
       // Start the download process.
-      this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, statusCache, options)
+      this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, options)
         .then(result => {
             this.isDownloading = false;
             delete this.downloading;

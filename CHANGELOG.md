@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Changed
 #### Deprecated
 #### Removed
+- Removed the use of the `file-system-cache` as a means of communicating when other instances are downloading an app.
 #### Fixed
 #### Security
 
