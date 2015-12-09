@@ -4,7 +4,6 @@ import log from "./log";
 import pm2 from "./pm2";
 import { promises, sortAppsByRoute } from "./util";
 import { DEFAULT_GATEWAY_PORT } from "./const";
-const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
 
 
 
@@ -15,14 +14,17 @@ const GATEWAY_PORT = DEFAULT_GATEWAY_PORT;
  * @param update: Function that invokes the update method.
  * @param apiRoute: The route to explose the API on.
  * @param manifest: A manifest object.
+ * @param options
+ *            - port: The port to start the gateway on.
  * @return {Promise}
  */
-export default (apps, update, apiRoute, manifest) => {
+export default (apps, update, apiRoute, manifest, options = {}) => {
   return new Promise((resolve, reject) => {
     Promise.coroutine(function*() {
       // Setup initial conditions.
       log.info("Starting...");
       log.info("");
+      const GATEWAY_PORT = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
 
       // Add apps from the manifest.
       if (manifest) {

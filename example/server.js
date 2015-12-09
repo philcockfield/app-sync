@@ -1,15 +1,16 @@
+var argv = require("minimist")(process.argv.slice(2));
 import appSync from "../src/main";
 
-const api = appSync({
+
+// Initialize the module.
+appSync({
   token: process.env.GITHUB_TOKEN,
   manifest: "philcockfield/app-sync/example/manifest.yml:devel"
 })
 .then(api => {
-  // api
-  //   .add("foo", "philcockfield/app-sync/example/app-2", "*", { branch: "devel" })
-  //   .add("bar", "philcockfield/app-sync/example/app-1", "*/bar", { branch: "devel" });
 
-  api.start()
+  // Start the gateway server.
+  api.start({ port: argv.port })
     .catch(err => console.error("Error while starting:", err));
 
 });

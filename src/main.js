@@ -147,14 +147,17 @@ export default (settings = {}) => {
 
     /**
      * Starts the gateway and apps.
+     * @param options
+     *            - port: The port to start the gateway on.
      * @return {Promise}
      */
-    start() {
+    start(options = {}) {
       return start(
         this.apps,
         (options) => this.update(options),
         settings.apiRoute,
-        this.manifest
+        this.manifest,
+        options
       );
     },
 
