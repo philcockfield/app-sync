@@ -2,17 +2,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-
 ## [Unreleased] - YYYY-MM-DD
 #### Added
 #### Changed
-- Apps running within different containers are restarted when updated via inter-module communication using RabbitMQ (pub/sub).
-- Updated pub/sub to use the `mq-pubsub` module (https://github.com/philcockfield/mq-pubsub)
 #### Deprecated
 #### Removed
-- Removed the use of the `file-system-cache` as a means of communicating when other instances are downloading an app.
 #### Fixed
 #### Security
+
+
+## [1.1.0] - 2015-12-14
+#### Changed
+- Apps running within different containers are restarted when updated via inter-module communication using RabbitMQ (pub/sub).
+- Updated pub/sub to use the `mq-pubsub` module (https://github.com/philcockfield/mq-pubsub)
+#### Removed
+- Removed the use of the `file-system-cache` as a means of communicating when other instances are downloading an app.  Now using RabbitMQ and pub/sub for inter-container communication.
 
 
 ## [1.0.6] - 2015-11-30
