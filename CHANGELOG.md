@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- Added secret `tokens` for locking down the API (specified within `manifest.yml`).
 #### Changed
 #### Deprecated
 #### Removed

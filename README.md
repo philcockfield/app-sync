@@ -45,6 +45,7 @@ targetFolder: "/opt/downloads"
 rabbitMQ: "amqp://rabbitmq"
 api:
   route: <domain>/<path>
+  tokens: [<token>, <token>, ...]
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
@@ -63,6 +64,7 @@ apps:
 - The optional `api` contains details about the REST-API.
     - If omitted the API is not exposed.
     - `route`: The base route that the API is exposed upon, for example: `*/api`
+    - `tokens`: An optional array of passwords to lock the API with. Pass the `token` in the query string.
 - If the `branch` of an app is omitted the default of `master` is used.
 
 
