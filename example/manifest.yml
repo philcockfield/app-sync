@@ -3,8 +3,8 @@ rabbitMQ: "amqp://docker"
 api:
   route: "*/api"
   tokens:
-    - secret-1
-    - secret-2
+    - secret1
+    - secret2
 apps:
   foo:
     repo: "philcockfield/app-sync/example/app-2"
