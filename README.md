@@ -5,6 +5,8 @@
 Pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
 
 
+
+
 ## Setup
 
     npm install app-sync --save
@@ -26,7 +28,12 @@ Pass the following environment variables into the [docker container](https://hub
     Required:
         GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
         GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
-        MANIFEST              # <user/repo>/path/manifest.yml
+        MANIFEST              # <user/repo>/path/manifest.yml:<branch>
+
+The following environment variables, if present, will override their corresponding values in the `manifest.yml`:
+
+    Overrides:
+        RABBIT_MQ             # URL to the RabbitMQ/AMQP server.
 
 
 
@@ -34,9 +41,10 @@ Pass the following environment variables into the [docker container](https://hub
 The `MANIFEST` points to a YAML file that declares global configuration settings along with the node applications to run.  The YAML files takes for form of:
 
 ```yaml
+targetFolder: "/opt/downloads"
+rabbitMQ: "amqp://rabbitmq"
 api:
   route: <domain>/<path>
-targetFolder: "/opt/downloads"
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
@@ -47,13 +55,14 @@ apps:
     route: "*/bar"
 ```
 
-- The `api` is an optional route that the REST API is exposed on.  
-    - If omitted the API is not exposed.
-    - Example: `*/api`
 - The optional `targetFolder` specifies where apps are downloaded to.
     - If omitted a default path is used.
     - Use this if you need to change it to a shared container volume.
       This is more efficient when load-balancing across multiple containers as each container shares the single app download.
+- The optional `rabbitMQ` is the URL to a [RabbitMQ](https://www.rabbitmq.com/) server used to communicate between multiple instances of the module running within different containers.
+- The optional `api` contains details about the REST-API.
+    - If omitted the API is not exposed.
+    - `route`: The base route that the API is exposed upon, for example: `*/api`
 - If the `branch` of an app is omitted the default of `master` is used.
 
 
@@ -132,10 +141,25 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
 
 
 
-
 ## Run Example
+
     npm install
     npm run example
+
+To simulate a multi-container deployment ensure the `rabbitMQ` server URL is declared.  You can do this by setting the `RABBIT_MQ` environment variable, or point to a `manifest.yml` where the `rabbitMQ` field is set.
+
+In one console run:
+
+    npm run example1  
+
+then in a second console, run:
+
+    npm run example2
+
+To simulate a change, update and checkin the `package.json` version of either of the example apps (`app-1` or `app-2`).
+
+
+
 
 
 

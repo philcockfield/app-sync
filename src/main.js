@@ -1,5 +1,6 @@
 import R from "ramda";
 import Promise from "bluebird";
+import uuid from "uuid";
 import shell from "shelljs";
 import app from "./app";
 import gateway from "./gateway";
@@ -7,6 +8,7 @@ import log from "./log";
 import start from "./main-start";
 import manifest from "./manifest";
 import { promises } from "./util";
+import pubSub from "./pub-sub";
 import {
   DEFAULT_APP_PORT,
   DEFAULT_TARGET_FOLDER,
@@ -29,14 +31,23 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
  *                            restricted resources.
  *                               see: https://github.com/settings/tokens
  *          - targetFolder:   The path where apps are downloaded to.
- *          - apiRoute:       The route to the gateway API.
  *          - manifest:       The <repo>/<path>:<branch> of the manifest YAML file.
+ *
+ *   --- Manifest Overrides ---
+ *   The following fields, if present, will override their corresponding values
+ *   within the manifest:
+ *
+ *          - rabbitMQ:       The URL to the RabbitMQ/AMQP server.
+ *
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
   const token = settings.token;
+  let rabbitMQ = settings.rabbitMQ;
+  let publishEvent;
 
   const api = {
+    uid: uuid.v4().toString(),
     apps: [],
     userAgent,
     targetFolder: settings.targetFolder || DEFAULT_TARGET_FOLDER,
@@ -72,7 +83,8 @@ export default (settings = {}) => {
         repo,
         route,
         port,
-        branch: options.branch
+        branch: options.branch,
+        publishEvent
       });
       this.apps.push(item);
 
@@ -147,14 +159,17 @@ export default (settings = {}) => {
 
     /**
      * Starts the gateway and apps.
+     * @param options
+     *            - port: The port to start the gateway on.
      * @return {Promise}
      */
-    start() {
+    start(options = {}) {
       return start(
         this.apps,
-        (options) => this.update(options),
+        (args) => this.update(args),
         settings.apiRoute,
-        this.manifest
+        this.manifest,
+        options
       );
     },
 
@@ -187,8 +202,20 @@ export default (settings = {}) => {
 
         // Read out global settings.
         const current = api.manifest.current;
-        if (current && current.targetFolder) {
-          api.targetFolder = current.targetFolder;
+        if (current) {
+          // Target folder.
+          if (current.targetFolder) {
+            api.targetFolder = current.targetFolder;
+          }
+
+          // Start the RabbitMQ pub-sub module if a URL was specified.
+          if (!rabbitMQ && current.rabbitMQ) {
+            rabbitMQ = current.rabbitMQ;
+          }
+        }
+
+        if (rabbitMQ) {
+          publishEvent = pubSub(api.uid, api.apps, rabbitMQ).publish;
         }
       }
 

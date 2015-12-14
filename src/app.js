@@ -1,5 +1,4 @@
 import R from "ramda";
-import fileSystemCache from "file-system-cache";
 import Promise from "bluebird";
 import shell from "shelljs";
 import fsPath from "path";
@@ -31,10 +30,11 @@ import { getLocalPackage, getRemotePackage } from "./app-package";
  *                                 'username/repo/my/sub/path'
  *            - port:          The port the app runs on.
  *            - branch:        The branch to query. Default: "master".
+ *            - publishEvent:       A function that publishes an event to all other instances.
  */
 export default (settings = {}) => {
   // Setup initial conditions.
-  let { userAgent, token, targetFolder, id, repo, port, branch, route } = settings;
+  let { userAgent, token, targetFolder, id, repo, port, branch, route, publishEvent } = settings;
   if (isEmpty(id)) { throw new Error(`'id' for the app is required`); }
   if (isEmpty(repo)) { throw new Error(`'repo' name required, eg. 'username/my-repo'`); }
   if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
@@ -44,12 +44,11 @@ export default (settings = {}) => {
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
   const WORKING_DIRECTORY = process.cwd();
-  const statusCache = fileSystemCache({ basePath: `${ targetFolder }/.status` });
 
   // Extract the repo and sub-path.
   const fullPath = repo;
   let parts = repo.split("/");
-  if (parts.length < 2) { throw new Error(`A repo must have a 'user-name' and 'repo-name', eg 'username/repo'.`); }
+  if (parts.length < 2) { throw new Error(`A repo must have a 'username' and 'repo-name', eg 'username/repo'.`); }
   const repoUser = parts[0];
   const repoName = parts[1];
   repo = github.repo(userAgent, `${ repoUser }/${ repoName }`, { token });
@@ -59,7 +58,6 @@ export default (settings = {}) => {
   repo.path = repoSubFolder;
   repo.fullPath = fullPath;
 
-
   // Store values.
   const app = {
     id,
@@ -68,7 +66,6 @@ export default (settings = {}) => {
     port,
     branch,
     localFolder,
-    statusCache,
 
 
     /**
@@ -89,7 +86,7 @@ export default (settings = {}) => {
      * Gets the local and remote versions.
      * @return {Promise}
      */
-    version() { return appVersion(id, this.localPackage(), this.remotePackage(), statusCache); },
+    version() { return appVersion(id, this.localPackage(), this.remotePackage()); },
 
 
     /**
@@ -107,7 +104,7 @@ export default (settings = {}) => {
       if (this.downloading) { return this.downloading; }
 
       // Start the download process.
-      this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, statusCache, options)
+      this.downloading = appDownload(id, localFolder, repo, repoSubFolder, branch, options)
         .then(result => {
             this.isDownloading = false;
             delete this.downloading;
@@ -122,9 +119,11 @@ export default (settings = {}) => {
      * @param options
      *          - start: Flag indicating if the app should be started after an update.
      *                   Default: true.
+     * @return {Promise}.
      */
     update(options = {}) {
-      return appUpdate(
+      // Start the update process.
+      const updating = appUpdate(
           id,
           localFolder,
           () => this.version(),
@@ -132,6 +131,19 @@ export default (settings = {}) => {
           (args) => this.start(args),
           options
         );
+
+      // If the app has been updated alert other containers.
+      updating.then(result => {
+          if (publishEvent && result.updated) {
+            publishEvent("app:updated", {
+              id: this.id,
+              version: result.version
+            });
+          }
+        });
+
+      // Finish up.
+      return updating;
     },
 
 
@@ -151,7 +163,7 @@ export default (settings = {}) => {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
           // Update and stop.
-          yield this.update({ start: false }).catch(err => reject(err));
+          const status = yield this.update({ start: false }).catch(err => reject(err));
           yield this.stop().catch(err => reject(err));
 
           // Start the app.
@@ -160,7 +172,7 @@ export default (settings = {}) => {
           shell.cd(WORKING_DIRECTORY);
 
           // Finish.
-          resolve({ id, started: true, port: this.port, route: this.route });
+          resolve({ id, started: true, port: this.port, route: this.route, version: status.version });
         }).call(this);
       });
     },

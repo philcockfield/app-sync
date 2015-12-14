@@ -8,6 +8,14 @@ var app = express();
 app.use(express.static(__dirname + "/images"));
 
 
+
+// Kills the process so we can test PM2 restarting the app.
+app.get("/kill", function(req, res) {
+  process.exit(0);
+});
+
+
+
 var count = 0;
 app.get("*", function(req, res) {
     count += 1;
@@ -16,7 +24,6 @@ app.get("*", function(req, res) {
     html += "<img src='/moon.jpg' />";
     res.send(html);
 });
-
 
 
 

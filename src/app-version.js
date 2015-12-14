@@ -9,10 +9,9 @@ import semver from "semver";
  * @param {String} id: The unique identifier of the app.
  * @param {Promise} gettinglocalPackage.
  * @param {Promise} gettingRemotePackage.
- * @param {Object} statusCache: A file-system-cache for storing status about the app.
  * @return {Promise}
  */
-export default (id, gettinglocalPackage, gettingRemotePackage, statusCache) => {
+export default (id, gettinglocalPackage, gettingRemotePackage) => {
   return new Promise((resolve, reject) => {
       const isUpdateRequired = (localVersion, remoteVersion) => {
             return R.isNil(remoteVersion)
@@ -38,7 +37,6 @@ export default (id, gettinglocalPackage, gettingRemotePackage, statusCache) => {
 
       Promise.coroutine(function*() {
         // Retrieve async data.
-        let status = yield statusCache.get(id, {}).catch(err => reject(err));
         const localPackage = yield gettinglocalPackage.catch(err => reject(err));
         const remotePackage = yield gettingRemotePackage.catch(err => reject(err));
 
@@ -52,12 +50,6 @@ export default (id, gettinglocalPackage, gettingRemotePackage, statusCache) => {
           isUpdateRequired: isUpdateRequired(localVersion, remoteVersion),
           isDependenciesChanged: isDependenciesChanged(localPackage.json, remotePackage.json)
         };
-
-        // If versions match, ensure the cached downloading flag has been reset.
-        if (status.isDownloading && localVersion && remoteVersion && localVersion === remoteVersion) {
-          status = yield statusCache.set(id, { isDownloading: false }).catch(err => reject(err));
-        }
-        if (status.isDownloading) { result.isDownloading = true; }
 
         // Finish up.
         resolve(result);
