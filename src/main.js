@@ -31,12 +31,19 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
  *                            restricted resources.
  *                               see: https://github.com/settings/tokens
  *          - targetFolder:   The path where apps are downloaded to.
- *          - apiRoute:       The route to the gateway API.
  *          - manifest:       The <repo>/<path>:<branch> of the manifest YAML file.
+ *
+ *   --- Manifest Overrides ---
+ *   The following fields, if present, will override their corresponding values
+ *   within the manifest:
+ *
+ *          - rabbitMQ:       The URL to the RabbitMQ/AMQP server.
+ *
  */
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
   const token = settings.token;
+  let rabbitMQ = settings.rabbitMQ;
   let publishEvent;
 
   const api = {
@@ -202,9 +209,13 @@ export default (settings = {}) => {
           }
 
           // Start the RabbitMQ pub-sub module if a URL was specified.
-          if (current.rabbitMQ) {
-            publishEvent = pubSub(api.uid, api.apps, current.rabbitMQ).publish;
+          if (!rabbitMQ && current.rabbitMQ) {
+            rabbitMQ = current.rabbitMQ;
           }
+        }
+
+        if (rabbitMQ) {
+          publishEvent = pubSub(api.uid, api.apps, rabbitMQ).publish;
         }
       }
 

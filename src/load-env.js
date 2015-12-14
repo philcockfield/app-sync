@@ -2,7 +2,8 @@ import fsPath from "path";
 import appSync from "./main";
 import log from "./log";
 
-const { GITHUB_TOKEN, GITHUB_USER_AGENT, MANIFEST } = process.env;
+const { GITHUB_TOKEN, GITHUB_USER_AGENT, MANIFEST, RABBIT_MQ } = process.env;
+
 
 // Check for required variables.
 if (!GITHUB_TOKEN) {
@@ -33,7 +34,8 @@ if (!MANIFEST) {
 appSync({
   token: GITHUB_TOKEN,
   userAgent: GITHUB_USER_AGENT,
-  manifest: MANIFEST
+  manifest: MANIFEST,
+  rabbitMQ: RABBIT_MQ
 })
 .then(gateway => {
 

@@ -5,6 +5,8 @@
 Pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
 
 
+
+
 ## Setup
 
     npm install app-sync --save
@@ -26,7 +28,12 @@ Pass the following environment variables into the [docker container](https://hub
     Required:
         GITHUB_TOKEN          # Auth token: https://github.com/settings/tokens
         GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
-        MANIFEST              # <user/repo>/path/manifest.yml
+        MANIFEST              # <user/repo>/path/manifest.yml:<branch>
+
+The following environment variables, if present, will override their corresponding values in the `manifest.yml`:
+
+    Overrides:
+        RABBIT_MQ             # URL to the RabbitMQ/AMQP server.
 
 
 
@@ -134,10 +141,25 @@ To create an `app-sync` service on [Tutum](https://www.tutum.co/):
 
 
 
-
 ## Run Example
+
     npm install
     npm run example
+
+To simulate a multi-container deployment ensure the `rabbitMQ` server URL is declared.  You can do this by setting the `RABBIT_MQ` environment variable, or point to a `manifest.yml` where the `rabbitMQ` field is set.
+
+In one console run:
+
+    npm run example1  
+
+then in a second console, run:
+
+    npm run example2
+
+To simulate a change, update and checkin the `package.json` version of either of the example apps (`app-1` or `app-2`).
+
+
+
 
 
 
