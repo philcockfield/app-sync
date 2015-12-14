@@ -2,6 +2,9 @@ targetFolder: "./.build"
 rabbitMQ: "amqp://docker"
 api:
   route: "*/api"
+  tokens:
+    - secret-1
+    - secret-2
 apps:
   foo:
     repo: "philcockfield/app-sync/example/app-2"
