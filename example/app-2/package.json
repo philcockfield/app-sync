@@ -1,6 +1,6 @@
 {
   "name": "app-2",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "main": "./main.js",
   "dependencies": {
     "express": "^4.13.3",
