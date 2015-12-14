@@ -25,7 +25,7 @@ export default (uid, apps, url) => {
   appUpdatedEvent.subscribe(payload => {
         if (payload.uid !== uid) {
           // The app was updated within another container, restart it now.
-          const app = R.find(item => item.id === payload.data.id, apps)
+          const app = R.find(item => item.id === payload.data.id, apps);
           if (app) {
             app.start();
           }

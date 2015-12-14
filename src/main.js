@@ -166,7 +166,7 @@ export default (settings = {}) => {
     start(options = {}) {
       return start(
         this.apps,
-        (options) => this.update(options),
+        (args) => this.update(args),
         settings.apiRoute,
         this.manifest,
         options
