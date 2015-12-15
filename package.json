@@ -6,8 +6,8 @@
   "scripts": {
     "start": "pm2 start -x --no-daemon pm2.json",
     "example": "node ./example",
-    "example1": "node ./example --port 3000 --ignore .build",
-    "example2": "node ./example --port 3001 --ignore .build",
+    "example1": "nodemon ./example --port 3000 --ignore .build",
+    "example2": "nodemon ./example --port 3001 --ignore .build",
     "watch": "nodemon ./example --ignore .build",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
