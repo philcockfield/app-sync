@@ -3,6 +3,7 @@ var argv = require("minimist")(process.argv.slice(2));
 var packageJson = require("./package.json");
 var name = packageJson.name;
 
+var id = Math.floor(Math.random() * 10000);
 
 var app = express();
 app.use(express.static(__dirname + "/images"));
@@ -20,7 +21,7 @@ var count = 0;
 app.get("*", function(req, res) {
     count += 1;
     var html = "";
-    html += "<code>" + name + "@" + packageJson.version + ": Loaded: " + count + "</code><hr/>";
+    html += "<code>" + name + "@" + packageJson.version + ": Loaded: " + count + " | id: " + id + "</code><hr/>";
     html += "<img src='/moon.jpg' />";
     res.send(html);
 });
