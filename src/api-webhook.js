@@ -25,7 +25,7 @@ export default (settings = {}) => {
         manifest.update()
           .catch(err => {
             log.error(`Failed while updating manifest.`);
-            log.error((err));
+            log.error(err);
           });
       } else {
         // Match apps that reside within the repo that Github posted.

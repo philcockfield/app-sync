@@ -107,9 +107,10 @@ app.listen(argv.port);
 ## REST API
 If you have set the `api/route` field set within the `MANIFEST` the following API is available:
 
-    GET:  /api/                # Status of all running apps
-    GET:  /api/app/:appId      # Status of the specified app.
-    POST: /api/repo             # "Push" web-hook from Github repositories.
+    GET:  /api/                         # Status of all running apps
+    GET:  /api/apps/:appId              # Status of the specified app.
+    GET:  /api/apps/:appId/restart      # Restarts the specified app.
+    POST: /api/repo                     # "Push" web-hook from Github repositories.
 
 
 

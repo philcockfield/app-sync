@@ -15,6 +15,7 @@ const HOST_NAME = process.env.HOSTNAME || "unknown";
  *
  * @param {Object} settings:
  *                  - apps:       Collection of apps to start.
+ *
  */
 export default (settings = {}) => {
   const { apps } = settings;
