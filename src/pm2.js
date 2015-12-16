@@ -27,7 +27,7 @@ try {
   deleteP = Promise.promisify(pm2.delete);
 
 } catch (err) {
-  if (e.code === "MODULE_NOT_FOUND") {
+  if (err.code === "MODULE_NOT_FOUND") {
     // Ignore.
     // - PM2 is not installed. Use the fake promises.
 
