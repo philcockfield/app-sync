@@ -10,21 +10,25 @@ import { DEFAULT_GATEWAY_PORT } from "./const";
 
 /**
  * Starts the gateway and all registered apps.
- * @param apps: Collection of apps to start.
- * @param update: Function that invokes the update method.
- * @param apiRoute: The route to explose the API on.
- * @param manifest: A manifest object.
- * @param options
- *            - port: The port to start the gateway on.
+ *
+ * @param {Object} settings:
+ *                  - apps:           Collection of apps to start.
+ *                  - manifest:       A manifest object.
+ *                  - update:         Function that invokes the update method.
+ *                  - port:           The port to start the gateway on.
+ *                  - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
+ *
  * @return {Promise}
  */
-export default (apps, update, apiRoute, manifest, options = {}) => {
+export default (settings = {}) => {
+  let { apps, update, manifest, port, publishEvent } = settings;
+
   return new Promise((resolve, reject) => {
     Promise.coroutine(function*() {
       // Setup initial conditions.
       log.info("Starting...");
       log.info("");
-      const GATEWAY_PORT = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
+      const GATEWAY_PORT = port === undefined ? DEFAULT_GATEWAY_PORT : port;
 
       // Add apps from the manifest.
       if (manifest) {
@@ -44,7 +48,7 @@ export default (apps, update, apiRoute, manifest, options = {}) => {
 
         // Start the gateway and each app.
         apps = sortAppsByRoute(apps);
-        yield gateway.start(apps, { port: GATEWAY_PORT, apiRoute, manifest }).catch(err => reject(err));
+        yield gateway.start({ apps, port: GATEWAY_PORT, manifest, publishEvent }).catch(err => reject(err));
         const { results: items } = yield promises(apps.map(app => app.start().catch(err => reject(err))));
 
         // Log status.

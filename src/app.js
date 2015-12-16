@@ -4,6 +4,7 @@ import shell from "shelljs";
 import fsPath from "path";
 import github from "file-system-github";
 import Route from "./route";
+import pm2 from "./pm2";
 import { isEmpty } from "./util";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
@@ -57,6 +58,7 @@ export default (settings = {}) => {
   const localFolder = fsPath.resolve(fsPath.join(targetFolder, id));
   repo.path = repoSubFolder;
   repo.fullPath = fullPath;
+  const processName = `${ id }:${ port }`;
 
   // Store values.
   const app = {
@@ -162,17 +164,21 @@ export default (settings = {}) => {
     start() {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
-          // Update and stop.
-          const status = yield this.update({ start: false }).catch(err => reject(err));
-          yield this.stop().catch(err => reject(err));
+          try {
+            // Update and stop.
+            const status = yield this.update({ start: false });
+            yield this.stop();
 
-          // Start the app.
-          shell.cd(localFolder);
-          shell.exec(`pm2 start . --name '${ id }:${ port }' --node-args '. --port ${ port }'`);
-          shell.cd(WORKING_DIRECTORY);
+            // Start the app.
+            shell.cd(localFolder);
+            shell.exec(`pm2 start . --name '${ processName }' --node-args '. --port ${ port }'`);
+            shell.cd(WORKING_DIRECTORY);
 
-          // Finish.
-          resolve({ id, started: true, port: this.port, route: this.route, version: status.version });
+            // Finish.
+            resolve({ id, started: true, port: this.port, route: this.route, version: status.version });
+
+          } catch (err) { reject(err); }
+
         }).call(this);
       });
     },
@@ -183,13 +189,38 @@ export default (settings = {}) => {
      * @return {Promise}.
      */
     stop() {
-      return new Promise((resolve) => {
-          shell.exec(`pm2 stop '${ id }:${ port }'`);
-          resolve({ id });
+      return new Promise((resolve, reject) => {
+        Promise.coroutine(function*() {
+          try {
+            if (pm2.isInstalled) {
+              yield pm2.connect();
+              yield pm2.delete(processName);
+            }
+            resolve({ id, stopped: true });
+          } catch (err) { reject(err); }
+        }).call(this);
+      });
+    },
+
+
+    /**
+     * Restarts the application.
+     * @return {Promise}.
+     */
+    restart() {
+      return new Promise((resolve, reject) => {
+        Promise.coroutine(function*() {
+          try {
+
+            yield this.start();
+            publishEvent("app:restarted", { id: app.id });
+            resolve({ id, restarted: true });
+
+          } catch (err) { reject(err); }
+        }).call(this);
       });
     }
   };
-
 
   // Finish up.
   return app;

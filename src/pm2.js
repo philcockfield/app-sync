@@ -11,41 +11,59 @@
 import R from "ramda";
 import Promise from "bluebird";
 
-const stubPromise = () => new Promise(() => {});
+const stubPromise = () => new Promise(resolve => resolve());
 let pm2;
 let connectP = stubPromise;
 let listP = stubPromise;
 let deleteP = stubPromise;
+let isInstalled = false;
 
 // Attempt to access PM2.
 try {
   pm2 = require("pm2");
+  isInstalled = true;
 
   // Create promise versions of PM2 methods.
   connectP = Promise.promisify(pm2.connect);
   listP = Promise.promisify(pm2.list);
   deleteP = Promise.promisify(pm2.delete);
 
-} catch (e) {
-  if (e.code === "MODULE_NOT_FOUND") {
+} catch (err) {
+  if (err.code === "MODULE_NOT_FOUND") {
     // Ignore.
+    // - PM2 is not installed. Use the fake promises.
+
     /*eslint no-empty:0*/
-  } else {
-    throw e;
-  }
+
+  } else { throw err; }
 }
 
 
-export default {
-  // PM2 API.
-  connect: () => connectP(),
-  list: () => listP(),
-  delete: (id) => deleteP(id),
+let isConnected = false;
+const connect = () => {
+  return new Promise((resolve, reject) => {
+    Promise.coroutine(function*() {
+      try {
 
-  /**
-   * Retrieves processes of running apps.
-   */
-  apps(filter) {
+        if (isConnected) {
+          resolve(true);
+        } else {
+          yield connectP();
+          isConnected = true;
+          resolve(true);
+        }
+
+
+      } catch (err) { reject(err); }
+    }).call(this);
+  });
+};
+
+
+/**
+ * Retrieves processes of running apps.
+ */
+const apps = (filter) => {
     return new Promise((resolve) => {
       Promise.coroutine(function*() {
         let list = yield listP();
@@ -62,5 +80,53 @@ export default {
         resolve(list);
       })();
     });
-  }
+  };
+
+
+/**
+ * Determines whether an app with the given ID exists.
+ * @param {String} processName: The unique name of the PM2 process.
+ * @return {Promise}.
+ */
+const exists = (processName) => {
+  return new Promise((resolve, reject) => {
+    Promise.coroutine(function*() {
+      try {
+        const matchingApps = yield apps(item => item.name === processName);
+        resolve(matchingApps.length > 0);
+      } catch (err) { reject(err); }
+    }).call(this);
+  });
+};
+
+
+/**
+ * Kills and deletes the specified process.
+ * @param {String} processName: The unique name of the PM2 process.
+ * @return {Promise}.
+ */
+const deleteProcess = (processName) => {
+  return new Promise((resolve, reject) => {
+    Promise.coroutine(function*() {
+      try {
+        if (yield exists(processName)) {
+          yield deleteP(processName);
+          resolve({ deleted: true });
+        } else {
+          resolve({ deleted: false });
+        }
+      } catch (err) { reject(err); }
+    }).call(this);
+  });
+};
+
+
+// API.
+export default {
+  isInstalled,
+  connect: () => connect(),
+  list: () => listP(),
+  delete: (processName) => deleteProcess(processName),
+  apps: (filter) => apps(filter),
+  exists: (processName) => exists(processName)
 };

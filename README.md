@@ -2,14 +2,16 @@
 
 [![Build Status](https://travis-ci.org/philcockfield/app-sync.svg)](https://travis-ci.org/philcockfield/app-sync)
 
-Pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
+**Continuous deployment from Github.**  This module pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
 
+
+![Diagram](https://cloud.githubusercontent.com/assets/185555/11834849/e4a58274-a434-11e5-85b7-258f91182f69.png)
 
 
 
 ## Setup
 
-    npm install app-sync --save
+    npm install --save app-sync
 
 If you are not using the module within it's Docker container, then ensure that [`pm2`](http://pm2.keymetrics.io/) is installed within it's runtime environment:
 
@@ -45,6 +47,7 @@ targetFolder: "/opt/downloads"
 rabbitMQ: "amqp://rabbitmq"
 api:
   route: <domain>/<path>
+  tokens: [<token>, <token>, ...]
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
@@ -63,6 +66,7 @@ apps:
 - The optional `api` contains details about the REST-API.
     - If omitted the API is not exposed.
     - `route`: The base route that the API is exposed upon, for example: `*/api`
+    - `tokens`: An optional array of passwords to lock the API with. Pass the `token` in the query string.
 - If the `branch` of an app is omitted the default of `master` is used.
 
 
@@ -103,9 +107,11 @@ app.listen(argv.port);
 ## REST API
 If you have set the `api/route` field set within the `MANIFEST` the following API is available:
 
-    GET:  /api/            # Status of all running apps
-    GET:  /api/:appId      # Status of the specified app.
-    POST: /api/repo        # "Push" web-hook from Github repositories.
+    GET:  /api/                         # Status of all running apps
+    GET:  /api/apps/:appId              # Status of the specified app.
+    GET:  /api/apps/:appId/restart      # Restarts the specified app.
+    GET:  /api/apps/:appId/update       # Updates the specified app.
+    POST: /api/repo                     # "Push" web-hook from Github repositories.
 
 
 

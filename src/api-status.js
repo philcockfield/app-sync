@@ -10,7 +10,15 @@ const HOST_NAME = process.env.HOSTNAME || "unknown";
 
 
 
-export default (apps) => {
+/**
+ * Provides status details about the gateway and apps.
+ *
+ * @param {Object} settings:
+ *                  - apps:       Collection of apps to start.
+ *
+ */
+export default (settings = {}) => {
+  const { apps } = settings;
   const processNameToAppId = (name) => name.split(":")[0];
   const getApp = (id) => {
     id = processNameToAppId(id);

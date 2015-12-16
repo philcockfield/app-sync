@@ -100,23 +100,28 @@ export default (settings = {}) => {
      */
     remove(id) {
       return new Promise((resolve, reject) => {
+
         Promise.coroutine(function*() {
-          const removeApp = R.find(item => item.id === id, this.apps);
-          if (!removeApp) {
-            reject(new Error(`An app with the id '#{ id }' does not exist.`));
-          } else {
-            log.info(`Removing app '${ id }'`);
+          try {
 
-            // Stop the app if it's running.
-            yield removeApp.stop();
+            const appToRemove = R.find(item => item.id === id, this.apps);
+            if (!appToRemove) {
+              reject(new Error(`An app with the id '#{ id }' does not exist.`));
+            } else {
+              log.info(`Removing app '${ id }'`);
 
-            // Remove the app from the list.
-            const index = R.findIndex(item => item.id === id, this.apps);
-            this.apps.splice(index, 1);
+              // Stop the app if it's running.
+              yield appToRemove.stop();
 
-            // Finish up.
-            resolve({});
-          }
+              // Remove the app from the list.
+              const index = R.findIndex(item => item.id === id, this.apps);
+              this.apps.splice(index, 1);
+
+              // Finish up.
+              resolve({});
+            }
+
+          } catch (err) { reject(err); }
         }).call(this);
       });
     },
@@ -164,13 +169,13 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     start(options = {}) {
-      return start(
-        this.apps,
-        (args) => this.update(args),
-        settings.apiRoute,
-        this.manifest,
-        options
-      );
+      return start({
+        apps: this.apps,
+        update: (args) => this.update(args),
+        manifest: this.manifest,
+        port: options.port,
+        publishEvent
+      });
     },
 
 
