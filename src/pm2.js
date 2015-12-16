@@ -11,15 +11,17 @@
 import R from "ramda";
 import Promise from "bluebird";
 
-const stubPromise = () => new Promise(() => {});
+const stubPromise = () => new Promise(resolve => resolve());
 let pm2;
 let connectP = stubPromise;
 let listP = stubPromise;
 let deleteP = stubPromise;
+let isInstalled = false;
 
 // Attempt to access PM2.
 try {
   pm2 = require("pm2");
+  isInstalled = true;
 
   // Create promise versions of PM2 methods.
   connectP = Promise.promisify(pm2.connect);
@@ -35,6 +37,27 @@ try {
 
   } else { throw err; }
 }
+
+
+let isConnected = false;
+const connect = () => {
+  return new Promise((resolve, reject) => {
+    Promise.coroutine(function*() {
+      try {
+
+        if (isConnected) {
+          resolve(true)
+        } else {
+          yield connectP();
+          isConnected = true;
+          resolve(true);
+        }
+
+
+      } catch (err) { reject(err); }
+    }).call(this);
+  });
+};
 
 
 /**
@@ -100,7 +123,8 @@ const deleteProcess = (processName) => {
 
 // API.
 export default {
-  connect: () => connectP(),
+  isInstalled,
+  connect: () => connect(),
   list: () => listP(),
   delete: (processName) => deleteProcess(processName),
   apps: (filter) => apps(filter),

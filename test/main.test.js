@@ -7,7 +7,7 @@ import appSync from "../src/main";
 
 
 
-describe("api (module)", () => {
+describe("Main API (module)", () => {
   let api;
   beforeEach(() => {
     Promise.coroutine(function*() {
@@ -97,7 +97,7 @@ describe("api (module)", () => {
       api.add("my-app-1", "user/my-repo", "*/foo-1");
       return api.remove("my-app-1")
       .then(result => {
-        expect(api.apps.length).to.equal(0);
+          expect(api.apps.length).to.equal(0);
       });
     });
   });
