@@ -29,8 +29,6 @@ export default (settings = {}) => {
   const status = apiStatus({ apps });
   const webhook = apiWebhook({ apps, manifest });
 
-  console.log("-------------api", publishEvent);
-
   const tokens = R.pipe(
       R.reject(R.isNil),
       R.reject(R.isEmpty)
@@ -69,8 +67,8 @@ export default (settings = {}) => {
   const post = (path, handler) => register("post", path, handler);
 
   log.info("API:");
-  get(":app", status.getAppStatus);
-  get(":app/restart", status.getAppStatus);
+  get("apps/:app", status.getAppStatus);
+  // get("apps/:app/restart", status.getAppStatus);
   get("", status.getStatuses);
   post("repo", webhook.post);
   log.info("");

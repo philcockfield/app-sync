@@ -2,10 +2,7 @@
 
 [![Build Status](https://travis-ci.org/philcockfield/app-sync.svg)](https://travis-ci.org/philcockfield/app-sync)
 
-Continuous deployment from Github.
-
-
-This module pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
+**Continuous deployment from Github.**  This module pulls and runs node apps from Github, keeping them in sync with the remote repository using [Semantic Versioning](http://semver.org/).
 
 
 ![Diagram](https://cloud.githubusercontent.com/assets/185555/11830634/ef798eee-a40b-11e5-95cd-f295c0c28772.png)
@@ -14,7 +11,7 @@ This module pulls and runs node apps from Github, keeping them in sync with the 
 
 ## Setup
 
-    npm install app-sync --save
+    npm install --save app-sync
 
 If you are not using the module within it's Docker container, then ensure that [`pm2`](http://pm2.keymetrics.io/) is installed within it's runtime environment:
 
@@ -110,9 +107,9 @@ app.listen(argv.port);
 ## REST API
 If you have set the `api/route` field set within the `MANIFEST` the following API is available:
 
-    GET:  /api/            # Status of all running apps
-    GET:  /api/:appId      # Status of the specified app.
-    POST: /api/repo        # "Push" web-hook from Github repositories.
+    GET:  /api/                # Status of all running apps
+    GET:  /api/app/:appId      # Status of the specified app.
+    POST: /api/repo             # "Push" web-hook from Github repositories.
 
 
 
