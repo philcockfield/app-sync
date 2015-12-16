@@ -20,15 +20,14 @@ pm2.connect().then(() => isConnected = true);
  *                  - middleware:   The express middleware.
  *                  - manifest:     A manifest object.
  *                  - apiRoute:     The base URL to the API.
-  *                 - publishEvent: Function that publishes an event across all containers (via RabbitMQ).
 *
  */
 export default (settings = {}) => {
-  const { apiRoute, apps, middleware, manifest, publishEvent } = settings;
+  const { apiRoute, apps, middleware, manifest } = settings;
   const baseRoute = Route.parse(apiRoute);
   const status = apiStatus({ apps });
   const webhook = apiWebhook({ apps, manifest });
-  const actions = apiActions({ apps, publishEvent });
+  const actions = apiActions({ apps });
 
   const tokens = R.pipe(
       R.reject(R.isNil),

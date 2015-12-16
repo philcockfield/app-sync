@@ -46,7 +46,7 @@ const connect = () => {
       try {
 
         if (isConnected) {
-          resolve(true)
+          resolve(true);
         } else {
           yield connectP();
           isConnected = true;

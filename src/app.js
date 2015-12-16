@@ -189,7 +189,7 @@ export default (settings = {}) => {
      * @return {Promise}.
      */
     stop() {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
           try {
             if (pm2.isInstalled) {
@@ -212,7 +212,7 @@ export default (settings = {}) => {
         Promise.coroutine(function*() {
           try {
 
-            const result = yield this.start();
+            yield this.start();
             publishEvent("app:restarted", { id: app.id });
             resolve({ id, restarted: true });
 

@@ -1,5 +1,4 @@
 import R from "ramda";
-import Promise from "bluebird";
 import log from "./log";
 
 
@@ -10,11 +9,10 @@ import log from "./log";
  *
  * @param {Object} settings:
  *                  - apps:           Collection of apps to start.
- *                  - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
  *
  */
 export default (settings = {}) => {
-  const { apps, publishEvent } = settings;
+  const { apps } = settings;
 
   const getApp = (req, res) => {
         const id = req.params.app;

@@ -1,6 +1,5 @@
 import R from "ramda";
 import pubsubFactory from "mq-pubsub";
-import log from "./log";
 
 
 
