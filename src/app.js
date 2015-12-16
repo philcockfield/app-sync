@@ -192,12 +192,12 @@ export default (settings = {}) => {
       return new Promise(resolve => {
         Promise.coroutine(function*() {
           try {
+
             yield pm2.connect();
             yield pm2.delete(processName);
             resolve({ id, stopped: true });
 
           } catch (err) { reject(err); }
-
         }).call(this);
       });
     },

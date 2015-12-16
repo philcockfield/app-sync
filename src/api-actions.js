@@ -28,6 +28,9 @@ export default (settings = {}) => {
 
   // API.
   return {
+    /**
+     * Restarts the app on all containers.
+     */
     restart(req, res) {
       const app = getApp(req, res);
       if (app) {
@@ -36,6 +39,23 @@ export default (settings = {}) => {
           .then(result => {
               res.send({ app: app.id, restarted: true, version: result.version });
               log.info(`API:...Restarted app '${ app.id }'.`);
+          })
+          .catch(err => res.status(500).send({ message: err.message }));
+      }
+    },
+
+
+    /**
+     * Checks for updates for the app.
+     */
+    update(req, res) {
+      const app = getApp(req, res);
+      if (app) {
+        log.info(`API: Updating app '${ app.id }'...`);
+        app.update()
+          .then(result => {
+              res.send({ app: app.id, updated: result.updated, version: result.version });
+              log.info(`API:...Updated app '${ app.id }'.`);
           })
           .catch(err => res.status(500).send({ message: err.message }));
       }

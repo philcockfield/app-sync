@@ -70,6 +70,7 @@ export default (settings = {}) => {
   log.info("API:");
   get("apps/:app", status.getAppStatus);
   get("apps/:app/restart", actions.restart);
+  get("apps/:app/update", actions.update);
   get("", status.getStatuses);
   post("repo", webhook.post);
   log.info("");

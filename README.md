@@ -110,6 +110,7 @@ If you have set the `api/route` field set within the `MANIFEST` the following AP
     GET:  /api/                         # Status of all running apps
     GET:  /api/apps/:appId              # Status of the specified app.
     GET:  /api/apps/:appId/restart      # Restarts the specified app.
+    GET:  /api/apps/:appId/update       # Updates the specified app.
     POST: /api/repo                     # "Push" web-hook from Github repositories.
 
 
