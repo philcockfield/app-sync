@@ -2,14 +2,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
 ## [Unreleased] - YYYY-MM-DD
 #### Added
-- Added secret `tokens` for locking down the API (specified within `manifest.yml`).
 #### Changed
 #### Deprecated
 #### Removed
 #### Fixed
 #### Security
+
+
+## [1.2.0] - 2015-12-16
+#### Added
+- Added secret `tokens` for locking down the API (specified within `manifest.yml`).
+- API Action: Update
+- API Action: Restart
 
 
 ## [1.1.0] - 2015-12-14
