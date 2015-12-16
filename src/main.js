@@ -164,13 +164,12 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     start(options = {}) {
-      return start(
-        this.apps,
-        (args) => this.update(args),
-        settings.apiRoute,
-        this.manifest,
-        options
-      );
+      return start({
+        apps: this.apps,
+        update: (args) => this.update(args),
+        manifest: this.manifest,
+        port: options.port
+      });
     },
 
 

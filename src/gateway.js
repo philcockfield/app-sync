@@ -1,8 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
 import Promise from "bluebird";
-import gatewayApi from "./gateway-api";
-import gatewayAppRouter from "./gateway-app-router";
+import api from "./api";
+import gatewayRouter from "./gateway-router";
 import { DEFAULT_GATEWAY_PORT } from "./const";
 
 let server;
@@ -11,21 +11,28 @@ let server;
 
 /**
  * Starts the gateway.
- * @param apps: The array of applications.
  * @param options:
- *           - port: The port to use.
- *           - manifest: The manifest to add apps from.
+ *            - apps:       The array of applications.
+ *            - manifest:   The manifest to add apps from.
+ *            - port:       The port to use.
+ *
  */
-const start = (apps, options = {}) => {
+const start = (settings = {}) => {
     return new Promise((resolve, reject) => {
       Promise.coroutine(function*() {
-        const { manifest } = options;
+        const { apps, manifest } = settings;
+        const port = settings.port || DEFAULT_GATEWAY_PORT;
         const middleware = express().use(bodyParser.json());
 
         // Retrieve the API route from the manifest.
         let apiRoute;
         if (manifest) {
-          if (!manifest.current) { yield manifest.get().catch(err => reject(err)); }
+          try {
+            yield manifest.get().catch(err => reject(err));
+          } catch (err) {
+            reject(err);
+            return;
+          }
           apiRoute = manifest.current && manifest.current.api && manifest.current.api.route;
         }
 
@@ -35,11 +42,10 @@ const start = (apps, options = {}) => {
         }
 
         // Routes.
-        if (apiRoute) { gatewayApi(apiRoute, apps, middleware, manifest); }
-        gatewayAppRouter(apps, middleware);
+        if (apiRoute) { api({ apiRoute, apps, middleware, manifest }); }
+        gatewayRouter(apps, middleware);
 
         // Listen on the desired port.
-        const port = options.port || DEFAULT_GATEWAY_PORT;
         server = middleware.listen(port, () => {
           resolve({ port });
         });

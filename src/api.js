@@ -1,8 +1,9 @@
 import R from "ramda";
 import pm2 from "./pm2";
 import Route from "./route";
-import apiStatus from "./gateway-api-status";
-import apiWebHook from "./gateway-api-webhook";
+import apiStatus from "./api-status";
+import apiWebhook from "./api-webhook";
+import apiActions from "./api-actions";
 
 import log from "./log";
 
@@ -11,11 +12,22 @@ let isConnected = false;
 pm2.connect().then(() => isConnected = true);
 
 
+/**
+ * The API to the gateway service.
+ *
+ * @param {Object} settings:
+ *                  - apps:       Collection of apps to start.
+ *                  - middleware: The express middleware.
+ *                  - manifest:   A manifest object.
+ *                  - apiRoute:  The base URL to the API.
+ *
+ */
+export default (settings = {}) => {
+  const { apiRoute, apps, middleware, manifest } = settings;
+  const baseRoute = Route.parse(apiRoute);
+  const status = apiStatus({ apps });
+  const webhook = apiWebhook({ apps, manifest });
 
-export default (baseRoute, apps, middleware, manifest) => {
-  baseRoute = Route.parse(baseRoute);
-  const status = apiStatus(apps);
-  const webhook = apiWebHook(apps, manifest);
   const tokens = R.pipe(
       R.reject(R.isNil),
       R.reject(R.isEmpty)

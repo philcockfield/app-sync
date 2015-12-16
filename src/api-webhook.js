@@ -3,9 +3,15 @@ import log from "./log";
 
 
 /**
- * Handles web-hook calls from Github.
+ * Handles web-hook callbacks from Github.
+ *
+ * @param {Object} settings:
+ *                  - apps:       Collection of apps to start.
+ *                  - manifest:   A manifest object.
+ *
  */
-export default (apps, manifest) => {
+export default (settings = {}) => {
+  const { apps, manifest } = settings;
   return {
     post(req, res) {
       // Extract data.
