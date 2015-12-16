@@ -12,9 +12,10 @@ let server;
 /**
  * Starts the gateway.
  * @param options:
- *            - apps:       The array of applications.
- *            - manifest:   The manifest to add apps from.
- *            - port:       The port to use.
+ *            - apps:           The array of applications.
+ *            - manifest:       The manifest to add apps from.
+ *            - port:           The port to use.
+ *            - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
  *
  */
 const start = (settings = {}) => {
@@ -42,7 +43,7 @@ const start = (settings = {}) => {
         }
 
         // Routes.
-        if (apiRoute) { api({ apiRoute, apps, middleware, manifest }); }
+        if (apiRoute) { api({ apiRoute, apps, middleware, manifest, publishEvent }); }
         gatewayRouter(apps, middleware);
 
         // Listen on the desired port.

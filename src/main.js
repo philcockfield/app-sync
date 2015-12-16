@@ -168,7 +168,8 @@ export default (settings = {}) => {
         apps: this.apps,
         update: (args) => this.update(args),
         manifest: this.manifest,
-        port: options.port
+        port: options.port,
+        publishEvent
       });
     },
 
