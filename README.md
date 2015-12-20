@@ -113,7 +113,7 @@ If you have set the `api/route` field set within the `MANIFEST` the following AP
     GET:  /api/apps/:appId/update       # Updates the specified app.
     POST: /api/repo                     # "Push" web-hook from Github repositories.
 
-
+If you have `api/tokens` within your `manifest.yml` ensure your API url's have an `?token=<value>` query-string.
 
 
 
