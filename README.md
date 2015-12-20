@@ -43,11 +43,11 @@ The following environment variables, if present, will override their correspondi
 The `MANIFEST` points to a YAML file that declares global configuration settings along with the node applications to run.  The YAML files takes for form of:
 
 ```yaml
-targetFolder: "/opt/downloads"
-rabbitMQ: "amqp://rabbitmq"
-api:
+targetFolder: "/opt/downloads"    # Optional
+rabbitMQ: "amqp://rabbitmq"       # Optional
+api:                              # Optional
   route: <domain>/<path>
-  tokens: [<token>, <token>, ...]
+  tokens: [<token>, <token>, ...] # Optional
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
