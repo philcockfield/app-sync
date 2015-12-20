@@ -1,5 +1,5 @@
 targetFolder: "./.build"
-rabbitMQ: "amqp://docker"
+rabbitMQ: "amqp://rabbitmq"
 api:
   route: "*/api"
   tokens:
