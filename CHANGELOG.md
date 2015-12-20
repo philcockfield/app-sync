@@ -5,10 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- Logging auth failures.
 #### Changed
 #### Deprecated
 #### Removed
 #### Fixed
+- Ensure the system provides clear logs output when PM2 is not installed.
 #### Security
 
 
