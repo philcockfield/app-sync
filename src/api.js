@@ -4,7 +4,6 @@ import Route from "./route";
 import apiStatus from "./api-status";
 import apiWebhook from "./api-webhook";
 import apiActions from "./api-actions";
-
 import log from "./log";
 
 
@@ -47,12 +46,17 @@ export default (settings = {}) => {
         }
       };
 
+  const authFailed = (req, res) => {
+    log.warn(`API: Auth failed. The request to '${ req.url }' did not have a valid token.`);
+    res.status(403).send({ error: "A valid token was not specified" });
+  };
+
   const handleRequest = (req, res, next, handler) => {
       return isConnected
         ? isRouteMatch(req)
             ? isAuthenticated(req)
                 ? handler(req, res)
-                : res.status(403).send({ error: "A valid token was not specified" })
+                : authFailed(req, res)
             : next()
         : res.status(500).send({ isInitialized: false });
     };
