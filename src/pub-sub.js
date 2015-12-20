@@ -1,5 +1,6 @@
 import R from "ramda";
 import pubsubFactory from "mq-pubsub";
+import log from "./log";
 
 
 
@@ -21,6 +22,11 @@ export default (uid, apps, url) => {
   const pubsub = pubsubFactory(url);
   const appUpdatedEvent = pubsub.event("app:updated");
   const appRestartedEvent = pubsub.event("app:restarted");
+
+  // Log that connection is ready.
+  pubsub.ready().then(result => {
+    log.info(`Connected to RabbitMQ on '${ url }'\n`);
+  });
 
   const getApp = (payload) => {
         if (payload.uid !== uid) {

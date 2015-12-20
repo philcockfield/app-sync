@@ -27,7 +27,8 @@ export default (apps, middleware) => {
       };
 
   middleware.get("*", (req, res) => {
-      const domain = req.get("host").split(":")[0];
+      const host = req.get("host");
+      const domain = (host && host.split(":")[0]) || "*";
       const path = req.url;
       const app = findMatchingApp(domain, path);
       if (app) {
