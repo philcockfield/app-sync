@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Removed
 #### Fixed
 - Ensure the system provides clear logs output when PM2 is not installed.
+- Cleaned up repeat error logging on failure to connect to RabbitMQ.
 #### Security
 
 
