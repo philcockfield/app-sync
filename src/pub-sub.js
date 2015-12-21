@@ -24,9 +24,15 @@ export default (uid, apps, url) => {
   const appRestartedEvent = pubsub.event("app:restarted");
 
   // Log that connection is ready.
-  pubsub.ready().then(result => {
-    log.info(`Connected to RabbitMQ on '${ url }'\n`);
-  });
+  pubsub.ready()
+    .then(result => log.info(`Connected to RabbitMQ on '${ url }'\n`))
+    .catch(err => {
+        log.error(`Failed to connect to RabbitMQ on ${ url }`);
+        log.error(" - code:", err.code);
+        log.error(" - ip-address:", `${ err.address }:${ err.port }`);
+        log.error("");
+    });
+
 
   const getApp = (payload) => {
         if (payload.uid !== uid) {
@@ -41,7 +47,9 @@ export default (uid, apps, url) => {
           console.log(`App '${ app.id }' updated in another container - restarting it now...`);
           app.start();
         }
-      });
+      })
+      .catch(err => { if (err.code !== "ECONNREFUSED") { log.error("App Updated Event -", err); }});
+
 
   appRestartedEvent.subscribe(payload => {
         // The app was restarted within another container, restart it now.
@@ -50,10 +58,10 @@ export default (uid, apps, url) => {
           console.log(`App '${ app.id }' restarted in another container - restarting it now...`);
           app.start();
         }
-      });
+      })
+      .catch(err => { if (err.code !== "ECONNREFUSED") { log.error("App Restarted Event -", err); }});
 
-
-  // Api.
+  // API.
   return {
     /**
      * Publishes an event that all app-sync instances the
