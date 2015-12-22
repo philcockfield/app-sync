@@ -7,10 +7,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Logging auth failures.
 #### Changed
+- API webhook route changed from "api/repo" => "api/github"
 #### Deprecated
 #### Removed
 #### Fixed
 - Ensure the system provides clear logs output when PM2 is not installed.
+- Cleaned up repeat error logging on failure to connect to RabbitMQ.
 #### Security
 
 

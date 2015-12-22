@@ -75,6 +75,6 @@ export default (settings = {}) => {
   get("apps/:app/restart", actions.restart);
   get("apps/:app/update", actions.update);
   get("", status.getStatuses);
-  post("repo", webhook.post);
+  post("github", webhook.post);
   log.info("");
 };
