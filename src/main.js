@@ -12,6 +12,7 @@ import pubSub from "./pub-sub";
 import {
   DEFAULT_APP_PORT,
   DEFAULT_TARGET_FOLDER,
+  DEFAULT_GATEWAY_PORT
 } from "./const";
 
 
@@ -168,12 +169,31 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     start(options = {}) {
+      api.gatewayPort = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
       return start({
         apps: this.apps,
         update: (args) => this.update(args),
         manifest: this.manifest,
-        port: options.port,
+        port: api.gatewayPort,
         publishEvent
+      });
+    },
+
+
+    /**
+     * Restarts the gateway and all apps.
+     */
+    restart() {
+      return new Promise((resolve, reject) => {
+        Promise.coroutine(function*() {
+          try {
+
+              yield api.stop();
+              yield api.start({ port: api.gatewayPort });
+              resolve({ port: api.gatewayPort });
+
+          } catch (err) { reject(err); }
+        }).call(this);
       });
     },
 
@@ -199,7 +219,10 @@ export default (settings = {}) => {
     Promise.coroutine(function*() {
       // Start the RabbitMQ pub-sub module if a URL was specified.
       if (settings.rabbitMQ) {
-        publishEvent = pubSub(api.uid, api.apps, settings.rabbitMQ).publish;
+        publishEvent = pubSub({
+          url: settings.rabbitMQ,
+          mainApi: api
+        }).publish;
       }
 
       // Download the manifest if one was set.
