@@ -2,17 +2,20 @@ import R from "ramda";
 import log from "./log";
 
 
+const delay = (msecs, func) => global.setTimeout(func, msecs);
+
 
 
 /**
  * Manages actions that change the state of the service.
  *
  * @param {Object} settings:
- *                  - apps:           Collection of apps to start.
+ *                  - apps:     Collection of apps to start.
+ *                  - mainApi:  The main API.
  *
  */
 export default (settings = {}) => {
-  const { apps } = settings;
+  const { apps, mainApi } = settings;
 
   const getApp = (req, res) => {
         const id = req.params.app;
@@ -24,12 +27,27 @@ export default (settings = {}) => {
         }
       };
 
+
   // API.
   return {
     /**
-     * Restarts the app on all containers.
+     * Restarts the gateway and all apps.
      */
     restart(req, res) {
+      log.info(`API: Restarting the gateway and all apps.`);
+      res.send({ message: "Restarting..." });
+      delay(200, () => {
+        mainApi
+          .restart()
+          .catch(err => res.status(500).send({ message: err.message }));
+      });
+    },
+
+
+    /**
+     * Restarts the app on all containers.
+     */
+    restartApp(req, res) {
       const app = getApp(req, res);
       if (app) {
         log.info(`API: Restarting app '${ app.id }'...`);

@@ -56,9 +56,10 @@ const toRepoObject = (repoPath) => {
  * Manages the manifest of applications.
  *
  * @param {Object} settings:
- *            - userAgent:  The user-agent to connect to Github with.
- *            - token:      The Github authentication token.
- *            - repoPath:   The repo path to mainfest file.
+ *            - userAgent:      The user-agent to connect to Github with.
+ *            - token:          The Github authentication token.
+ *            - repoPath:       The repo path to mainfest file.
+ *            - mainApi:        The main API.
  *            - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
  *
  */

@@ -175,7 +175,8 @@ export default (settings = {}) => {
         update: (args) => this.update(args),
         manifest: this.manifest,
         port: api.gatewayPort,
-        publishEvent
+        publishEvent,
+        mainApi: api
       });
     },
 
@@ -223,6 +224,7 @@ export default (settings = {}) => {
           url: settings.rabbitMQ,
           mainApi: api
         }).publish;
+        api.publish = publishEvent;
       }
 
       // Download the manifest if one was set.
@@ -245,7 +247,6 @@ export default (settings = {}) => {
             api.targetFolder = current.targetFolder;
           }
         }
-
       }
 
       // Finish up.
