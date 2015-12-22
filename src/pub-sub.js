@@ -8,14 +8,16 @@ import log from "./log";
  * Handles the pub/sub events used to communicate between multiple instances
  * of app-sync running within different containers.
  *
- * @param {String}  uid:    The unique identifier of the main app-sync instance.
- * @param {Array}   apps:   The array containing the collection of apps.
- * @param {String}  url:    The URL to the RabbitMQ server.
+ * @param settings:
+ *          - url:      The URL to the RabbitMQ server.
+ *          - mainApi:  The main API.
  *
  * @return {Object} The internal pub/sub API.
  */
-export default (uid, apps, url) => {
+export default (settings = {}) => {
   // Setup initial conditions.
+  const { url, mainApi } = settings;
+  const { uid } = mainApi;
   if (!url) { throw new Error("A URL to the RabbitMQ server is required."); }
 
   // Setup the pub/sub event.
@@ -37,7 +39,7 @@ export default (uid, apps, url) => {
 
   const getApp = (payload) => {
         if (payload.uid !== uid) {
-          return R.find(item => item.id === payload.data.id, apps);
+          return R.find(item => item.id === payload.data.id, mainApi.apps);
         }
       };
 
@@ -70,9 +72,7 @@ export default (uid, apps, url) => {
   manifestUpdatedEvent.subscribe(payload => {
         // The manifest changed, restart all apps.
         console.log(`The manifest.yml changed in another container - restarting all apps now...`);
-        apps.forEach(app => {
-          app.start();
-        });
+        mainApi.manifest.update({ silent: true });
       })
       .catch(err => catchSubscribeError("App Restarted", err));
 

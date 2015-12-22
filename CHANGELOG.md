@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Logging auth failures.
 - Manifest path within API status.
+- Storing `gatewayPort` on the main API, and remembering it on a manifest restart.
+- `restart()` method to the main API.
 #### Changed
 - API webhook route changed from "api/repo" => "api/github".
 - RabbitMQ can only be specified as an environment variable (no longer declared within `manifest.yml`).

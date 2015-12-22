@@ -59,7 +59,6 @@ const toRepoObject = (repoPath) => {
  *            - userAgent:  The user-agent to connect to Github with.
  *            - token:      The Github authentication token.
  *            - repoPath:   The repo path to mainfest file.
- *            - mainApi:    The main API.
  *            - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
  *
  */
@@ -99,11 +98,17 @@ export default (settings = {}) => {
     /**
      * Connects to the remote manifest and syncs the local state with the
      * defined applications.
+     *
+     * @param {Object} options:
+     *                    - silent: Flag indicating if the "manifest:updated"
+     *                              should be fired.  Default: false.
+     *
      * @return {Promise}
      */
-    update() {
+    update(options = {}) {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
+          const silent = options.silent
           const current = R.clone(api.current);
           let restart = false;
 
@@ -161,9 +166,8 @@ export default (settings = {}) => {
 
             // Restart the gateway if a change occured (and it's already running)
             if (gateway.isRunning() && restart) {
-              yield mainApi.stop();
-              yield mainApi.start();
-              publishEvent("manifest:updated"); // Alert other containers.
+              yield mainApi.restart();
+              if (silent !== true) { publishEvent("manifest:updated"); } // Alert other containers.
             }
           }
           resolve({ manifest });

@@ -28,7 +28,6 @@ export default (settings = {}) => {
       // Setup initial conditions.
       log.info("Starting...");
       log.info("");
-      const GATEWAY_PORT = port === undefined ? DEFAULT_GATEWAY_PORT : port;
 
       // Add apps from the manifest.
       if (manifest) {
@@ -48,13 +47,13 @@ export default (settings = {}) => {
 
         // Start the gateway and each app.
         apps = sortAppsByRoute(apps);
-        yield gateway.start({ apps, port: GATEWAY_PORT, manifest, publishEvent }).catch(err => reject(err));
+        yield gateway.start({ apps, port, manifest, publishEvent }).catch(err => reject(err));
         const { results: items } = yield promises(apps.map(app => app.start().catch(err => reject(err))));
 
         // Log status.
         log.info("");
         log.info(`Environment: ${ process.env.NODE_ENV || "development" }`);
-        log.info(`Gateway running on port:${ GATEWAY_PORT }`);
+        log.info(`Gateway running on port:${ port }`);
         log.info("");
         items.forEach(item => {
             const version = item.version ? ` (v${ item.version })` : "";
