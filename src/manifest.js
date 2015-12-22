@@ -100,16 +100,11 @@ export default (settings = {}) => {
      * Connects to the remote manifest and syncs the local state with the
      * defined applications.
      *
-     * @param {Object} options:
-     *                    - silent: Flag indicating if the "manifest:updated"
-     *                              should be fired.  Default: false.
-     *
      * @return {Promise}
      */
-    update(options = {}) {
+    update() {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
-          const silent = options.silent
           const current = R.clone(api.current);
           let restart = false;
 
@@ -168,7 +163,6 @@ export default (settings = {}) => {
             // Restart the gateway if a change occured (and it's already running)
             if (gateway.isRunning() && restart) {
               yield mainApi.restart();
-              if (silent !== true) { publishEvent("manifest:updated"); } // Alert other containers.
             }
           }
           resolve({ manifest });

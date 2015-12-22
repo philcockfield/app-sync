@@ -73,11 +73,12 @@ export default (settings = {}) => {
   const post = (path, handler) => register("post", path, handler);
 
   log.info("API:");
-  get("apps/:app", status.getAppStatus);
+  get("apps", status.appsStatus);
+  get("apps/:app", status.appStatus);
   get("apps/:app/restart", actions.restartApp);
   get("apps/:app/update", actions.update);
   get("restart", actions.restart);
-  get("", status.getStatuses);
+  get("", status.rootStatus);
   post("github", webhook.post);
   log.info("");
 };

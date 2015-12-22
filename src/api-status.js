@@ -79,7 +79,7 @@ export default (settings = {}) => {
 
 
   return {
-    getStatuses(req, res) {
+    rootStatus(req, res) {
       getRunningApps()
         .then(appsStatus => res.send({
           host: HOST_NAME,
@@ -96,7 +96,21 @@ export default (settings = {}) => {
         });
     },
 
-    getAppStatus(req, res) {
+
+    appsStatus(req, res) {
+      getRunningApps()
+        .then(appsStatus => res.send(appsStatus))
+        .catch(err => {
+            log.error(err);
+            res.status(500).send({
+              error: "Failed while getting the status of running applications",
+              message: err.message
+            });
+        });
+    },
+
+
+    appStatus(req, res) {
       Promise.coroutine(function*() {
         const id = req.params.app;
         const app = getApp(id);

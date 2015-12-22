@@ -5,9 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- API: `/api/apps` listing of all the apps (subset of the root status data-set.  
+  Makes for a logically consistent API).
 #### Changed
 #### Deprecated
 #### Removed
+- Removed auto-restart when `manifest.yml` file changes.
+    - Was causing strange errors.
+    - Now when the manifest changes force a restart using the REST api: `/api/restart`
 #### Fixed
 #### Security
 
