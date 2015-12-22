@@ -19,14 +19,16 @@ pm2.connect().then(() => isConnected = true);
  *                  - middleware:   The express middleware.
  *                  - manifest:     A manifest object.
  *                  - apiRoute:     The base URL to the API.
-*
+ *                  - mainApi:      The main API.
+ *
  */
 export default (settings = {}) => {
-  const { apiRoute, apps, middleware, manifest } = settings;
+  const { apiRoute, apps, middleware, manifest, mainApi } = settings;
   const baseRoute = Route.parse(apiRoute);
+
   const status = apiStatus({ apps, manifest });
   const webhook = apiWebhook({ apps, manifest });
-  const actions = apiActions({ apps });
+  const actions = apiActions({ apps, mainApi });
 
   const tokens = R.pipe(
       R.reject(R.isNil),
@@ -72,8 +74,9 @@ export default (settings = {}) => {
 
   log.info("API:");
   get("apps/:app", status.getAppStatus);
-  get("apps/:app/restart", actions.restart);
+  get("apps/:app/restart", actions.restartApp);
   get("apps/:app/update", actions.update);
+  get("restart", actions.restart);
   get("", status.getStatuses);
   post("github", webhook.post);
   log.info("");

@@ -17,11 +17,12 @@ import { DEFAULT_GATEWAY_PORT } from "./const";
  *                  - update:         Function that invokes the update method.
  *                  - port:           The port to start the gateway on.
  *                  - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
+ *                  - mainApi:      The main API.
  *
  * @return {Promise}
  */
 export default (settings = {}) => {
-  let { apps, update, manifest, port, publishEvent } = settings;
+  let { apps, update, manifest, port, publishEvent, mainApi } = settings;
 
   return new Promise((resolve, reject) => {
     Promise.coroutine(function*() {
@@ -47,7 +48,7 @@ export default (settings = {}) => {
 
         // Start the gateway and each app.
         apps = sortAppsByRoute(apps);
-        yield gateway.start({ apps, port, manifest, publishEvent }).catch(err => reject(err));
+        yield gateway.start({ apps, port, manifest, publishEvent, mainApi }).catch(err => reject(err));
         const { results: items } = yield promises(apps.map(app => app.start().catch(err => reject(err))));
 
         // Log status.

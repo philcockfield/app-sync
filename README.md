@@ -109,6 +109,7 @@ If you have set the `api/route` field set within the `MANIFEST` the following AP
     GET:  /api/apps/:appId              # Status of the specified app.
     GET:  /api/apps/:appId/restart      # Restarts the specified app.
     GET:  /api/apps/:appId/update       # Updates the specified app.
+    GET:  /api/restart                  # Restarts the gateway and all apps.
     POST: /api/github                   # "Push" web-hook from Github repositories.
 
 If you have `api/tokens` within your `manifest.yml` ensure your API url's have an `?token=<value>` query-string.
