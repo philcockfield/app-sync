@@ -8,6 +8,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Changed
 #### Deprecated
 #### Removed
+- Removed auto-restart when `manifest.yml` file changes.
+    - Was causing strange errors.
+    - Now when the manifest changes force a restart using the REST api: `/api/restart`
 #### Fixed
 #### Security
 

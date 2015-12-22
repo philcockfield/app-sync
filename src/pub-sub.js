@@ -24,7 +24,6 @@ export default (settings = {}) => {
   const pubsub = pubsubFactory(url);
   const appUpdatedEvent = pubsub.event("app:updated");
   const appRestartedEvent = pubsub.event("app:restarted");
-  const manifestUpdatedEvent = pubsub.event("manifest:updated");
 
   // Log that connection is ready.
   pubsub.ready()
@@ -69,14 +68,6 @@ export default (settings = {}) => {
       .catch(err => catchSubscribeError("App Restarted", err));
 
 
-  manifestUpdatedEvent.subscribe(payload => {
-        // The manifest changed, restart all apps.
-        console.log(`The manifest.yml changed in another container - restarting all apps now...`);
-        mainApi.manifest.update({ silent: true });
-      })
-      .catch(err => catchSubscribeError("App Restarted", err));
-
-
 
   // API.
   return {
@@ -92,7 +83,6 @@ export default (settings = {}) => {
       switch (event) {
         case "app:updated": appUpdatedEvent.publish({ uid, data }); break;
         case "app:restarted": appRestartedEvent.publish({ uid, data }); break;
-        case "manifest:updated": manifestUpdatedEvent.publish({ uid, data }); break;
 
         default: throw new Error(`The '${ event }' event is not supported.`);
       }

@@ -67,6 +67,7 @@ apps:
     - `tokens`: An optional array of passwords to lock the API with. Pass the `token` in the query string.
 - If the `branch` of an app is omitted the default of `master` is used.
 
+Note - when you make and push changes to the `manifest.yml` file the running containers will not automatically update.  Use the `/api/restart` REST method to force a restart when you are ready.
 
 
 
