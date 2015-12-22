@@ -111,7 +111,7 @@ If you have set the `api/route` field set within the `MANIFEST` the following AP
     GET:  /api/apps/:appId              # Status of the specified app.
     GET:  /api/apps/:appId/restart      # Restarts the specified app.
     GET:  /api/apps/:appId/update       # Updates the specified app.
-    POST: /api/repo                     # "Push" web-hook from Github repositories.
+    POST: /api/github                   # "Push" web-hook from Github repositories.
 
 If you have `api/tokens` within your `manifest.yml` ensure your API url's have an `?token=<value>` query-string.
 
@@ -124,7 +124,7 @@ Commits to application repositories are monitored via [Github webhooks](https://
 1. Ensure the `api/route:` field has been set in the manifest YAML so that the API is exposed.
 2. Within the Github repository settings, select `Webhooks & Services` and click `Add Webhook`
 3. Settings:
-    - Payload URL: `<api-route>/repo` for example: `https://foo.com/api/repo`
+    - Payload URL: `<api-route>/github` for example: `https://foo.com/api/github`
     - Content type: `application/json`
 
 

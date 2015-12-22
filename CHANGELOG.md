@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Logging auth failures.
 #### Changed
+- API webhook route changed from "api/repo" => "api/github"
 #### Deprecated
 #### Removed
 #### Fixed
