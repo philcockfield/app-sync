@@ -5,7 +5,7 @@ api:
     - secret1
     - secret2
     - abc
-    - foo1
+    - foo12
 apps:
   foo:
     repo: "philcockfield/app-sync/example/app-2"
