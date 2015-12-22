@@ -43,7 +43,6 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
   const token = settings.token;
-  let rabbitMQ = settings.rabbitMQ;
   let publishEvent;
 
   const api = {
@@ -179,7 +178,6 @@ export default (settings = {}) => {
     },
 
 
-
     /**
      * Stops the gateway and all running apps.
      * @return {Promise}
@@ -196,12 +194,23 @@ export default (settings = {}) => {
     }
   };
 
+
   return new Promise((resolve, reject) => {
     Promise.coroutine(function*() {
+      // Start the RabbitMQ pub-sub module if a URL was specified.
+      if (settings.rabbitMQ) {
+        publishEvent = pubSub(api.uid, api.apps, settings.rabbitMQ).publish;
+      }
 
-      // Download the manifest, if one was set.
+      // Download the manifest if one was set.
       if (settings.manifest) {
-        api.manifest = manifest(userAgent, token, settings.manifest, api);
+        api.manifest = manifest({
+          userAgent,
+          token,
+          repoPath: settings.manifest,
+          mainApi: api,
+          publishEvent
+        });
         log.info(`Reading manifest from: ${ api.manifest.repo.fullPath }`);
         yield api.manifest.get().catch(err => reject(err));
 
@@ -212,16 +221,8 @@ export default (settings = {}) => {
           if (current.targetFolder) {
             api.targetFolder = current.targetFolder;
           }
-
-          // Start the RabbitMQ pub-sub module if a URL was specified.
-          if (!rabbitMQ && current.rabbitMQ) {
-            rabbitMQ = current.rabbitMQ;
-          }
         }
 
-        if (rabbitMQ) {
-          publishEvent = pubSub(api.uid, api.apps, rabbitMQ).publish;
-        }
       }
 
       // Finish up.

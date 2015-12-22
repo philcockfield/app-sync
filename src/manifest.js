@@ -54,15 +54,27 @@ const toRepoObject = (repoPath) => {
 
 /**
  * Manages the manifest of applications.
+ *
+ * @param {Object} settings:
+ *            - userAgent:  The user-agent to connect to Github with.
+ *            - token:      The Github authentication token.
+ *            - repoPath:   The repo path to mainfest file.
+ *            - mainApi:    The main API.
+ *            - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
+ *
  */
-export default (userAgent, token, repoPath, main) => {
+export default (settings = {}) => {
+  // Setup initial conditions.
+  const { userAgent, token, repoPath, mainApi, publishEvent } = settings;
+
   // Create the repo proxy.
   const repoObject = toRepoObject(repoPath);
   const repo = github.repo(userAgent, repoObject.name, { token });
-  const getApp = (id) => R.find(item => item.id === id, main.apps);
+  const getApp = (id) => R.find(item => item.id === id, mainApi.apps);
 
   const api = {
     repo: repoObject,
+    current: undefined,
 
 
     /**
@@ -70,10 +82,15 @@ export default (userAgent, token, repoPath, main) => {
      * @return {Promise}
      */
     get() {
+
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
-          this.current = yield getManifest(repo, this.repo.path, this.repo.branch).catch(err => reject(err));
-          resolve(this.current);
+            try {
+              this.current = yield getManifest(repo, this.repo.path, this.repo.branch)
+              resolve(this.current);
+            } catch (err) {
+              reject(err);
+            }
         }).call(this);
       });
     },
@@ -87,9 +104,8 @@ export default (userAgent, token, repoPath, main) => {
     update() {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
-          const current = current;
+          const current = R.clone(api.current);
           let restart = false;
-
 
           // Retrieve the manifest from the repo.
           const manifest = yield this.get().catch(err => reject(err));
@@ -98,6 +114,7 @@ export default (userAgent, token, repoPath, main) => {
             // Check for global changes with the previous manifest.
             if (current) {
               if (!R.equals(current.api, manifest.api)) { restart = true; }
+              if (!R.equals(current.targetFolder, manifest.targetFolder)) { restart = true; }
             }
 
             const isAppChanged = (manifestApp, app) => {
@@ -108,15 +125,15 @@ export default (userAgent, token, repoPath, main) => {
                 };
 
             const addApp = (id, manifestApp) => {
-                  main.add(id, manifestApp.repo, manifestApp.route, { branch: manifestApp.branch });
+                  mainApi.add(id, manifestApp.repo, manifestApp.route, { branch: manifestApp.branch });
                 };
 
             // Remove apps that are no longer specified in the manifest.
             const manifestKeys = Object.keys(manifest.apps);
             const isWithinManifest = (app) => R.any(key => key === app.id, manifestKeys);
-            for (let app of main.apps) {
+            for (let app of mainApi.apps) {
               if (!isWithinManifest(app)) {
-                yield main.remove(app.id);
+                yield mainApi.remove(app.id);
                 restart = true;
               }
             }
@@ -131,7 +148,7 @@ export default (userAgent, token, repoPath, main) => {
               if (app) {
                 if (isAppChanged(manifestApp, app)) {
                   // The app has changed. Replace it with the new definition.
-                  yield main.remove(id);
+                  yield mainApi.remove(id);
                   addApp(id, manifestApp);
                   restart = true;
                 }
@@ -144,8 +161,9 @@ export default (userAgent, token, repoPath, main) => {
 
             // Restart the gateway if a change occured (and it's already running)
             if (gateway.isRunning() && restart) {
-              yield main.stop();
-              yield main.start();
+              yield mainApi.stop();
+              yield mainApi.start();
+              publishEvent("manifest:updated"); // Alert other containers.
             }
           }
           resolve({ manifest });
