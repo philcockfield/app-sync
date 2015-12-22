@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- API: `/api/apps` listing of all the apps (subset of the root status data-set.  
+  Makes for a logically consistent API).
 #### Changed
 #### Deprecated
 #### Removed
