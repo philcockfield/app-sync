@@ -15,10 +15,11 @@ const HOST_NAME = process.env.HOSTNAME || "unknown";
  *
  * @param {Object} settings:
  *                  - apps:       Collection of apps to start.
+ *                  - manifest:   A manifest object.
  *
  */
 export default (settings = {}) => {
-  const { apps } = settings;
+  const { apps, manifest } = settings;
   const processNameToAppId = (name) => name.split(":")[0];
   const getApp = (id) => {
     id = processNameToAppId(id);
@@ -83,6 +84,7 @@ export default (settings = {}) => {
         .then(appsStatus => res.send({
           host: HOST_NAME,
           version: packageJson.version,
+          manifest: manifest.repo.fullPath,
           apps: appsStatus
         }))
         .catch(err => {

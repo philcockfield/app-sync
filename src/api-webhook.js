@@ -22,6 +22,7 @@ export default (settings = {}) => {
 
       const isManifestMatch = R.any(path => path === manifest.repo.path, modified);
       if (isManifestMatch) {
+        log.info(`Github webhook for the manifest '${ manifest.repo.fullPath }' changed.  Updating now...`)
         manifest.update()
           .catch(err => {
             log.error(`Failed while updating manifest.`);

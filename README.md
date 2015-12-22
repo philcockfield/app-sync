@@ -32,9 +32,8 @@ Pass the following environment variables into the [docker container](https://hub
         GITHUB_USER_AGENT     # https://developer.github.com/v3/#user-agent-required
         MANIFEST              # <user/repo>/path/manifest.yml:<branch>
 
-The following environment variables, if present, will override their corresponding values in the `manifest.yml`:
 
-    Overrides:
+    Optional:
         RABBIT_MQ             # URL to the RabbitMQ/AMQP server.
 
 
@@ -44,7 +43,6 @@ The `MANIFEST` points to a YAML file that declares global configuration settings
 
 ```yaml
 targetFolder: "/opt/downloads"    # Optional
-rabbitMQ: "amqp://rabbitmq"       # Optional
 api:                              # Optional
   route: <domain>/<path>
   tokens: [<token>, <token>, ...] # Optional

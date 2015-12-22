@@ -5,7 +5,7 @@ import appSync from "../src/main";
 // Initialize the module.
 appSync({
   token: process.env.GITHUB_TOKEN,
-  rabbitMQ: process.env.RABBIT_MQ,
+  rabbitMQ: "amqp://rabbitmq",
   manifest: "philcockfield/app-sync/example/manifest.yml:devel"
 })
 .then(api => {

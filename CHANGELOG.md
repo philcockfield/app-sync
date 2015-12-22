@@ -6,13 +6,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased] - YYYY-MM-DD
 #### Added
 - Logging auth failures.
+- Manifest path within API status.
 #### Changed
-- API webhook route changed from "api/repo" => "api/github"
+- API webhook route changed from "api/repo" => "api/github".
+- RabbitMQ can only be specified as an environment variable (no longer declared within `manifest.yml`).
 #### Deprecated
 #### Removed
 #### Fixed
 - Ensure the system provides clear logs output when PM2 is not installed.
 - Cleaned up repeat error logging on failure to connect to RabbitMQ.
+- Updates on Github callback when `manifest.yml` changes.
 #### Security
 
 

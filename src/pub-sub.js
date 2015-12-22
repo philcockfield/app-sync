@@ -22,6 +22,7 @@ export default (uid, apps, url) => {
   const pubsub = pubsubFactory(url);
   const appUpdatedEvent = pubsub.event("app:updated");
   const appRestartedEvent = pubsub.event("app:restarted");
+  const manifestUpdatedEvent = pubsub.event("manifest:updated");
 
   // Log that connection is ready.
   pubsub.ready()
@@ -38,7 +39,11 @@ export default (uid, apps, url) => {
         if (payload.uid !== uid) {
           return R.find(item => item.id === payload.data.id, apps);
         }
-  };
+      };
+
+  const catchSubscribeError = (title, err) => {
+        if (err.code !== "ECONNREFUSED") { log.error(`${ title } Event -`, err) };
+      };
 
   // Listen for events from the other containers.
   appUpdatedEvent.subscribe(payload => {
@@ -48,7 +53,7 @@ export default (uid, apps, url) => {
           app.start();
         }
       })
-      .catch(err => { if (err.code !== "ECONNREFUSED") { log.error("App Updated Event -", err); }});
+      .catch(err => catchSubscribeError("App Updated", err));
 
 
   appRestartedEvent.subscribe(payload => {
@@ -59,7 +64,19 @@ export default (uid, apps, url) => {
           app.start();
         }
       })
-      .catch(err => { if (err.code !== "ECONNREFUSED") { log.error("App Restarted Event -", err); }});
+      .catch(err => catchSubscribeError("App Restarted", err));
+
+
+  manifestUpdatedEvent.subscribe(payload => {
+        // The manifest changed, restart all apps.
+        console.log(`The manifest.yml changed in another container - restarting all apps now...`);
+        apps.forEach(app => {
+          app.start();
+        });
+      })
+      .catch(err => catchSubscribeError("App Restarted", err));
+
+
 
   // API.
   return {
@@ -75,6 +92,7 @@ export default (uid, apps, url) => {
       switch (event) {
         case "app:updated": appUpdatedEvent.publish({ uid, data }); break;
         case "app:restarted": appRestartedEvent.publish({ uid, data }); break;
+        case "manifest:updated": manifestUpdatedEvent.publish({ uid, data }); break;
 
         default: throw new Error(`The '${ event }' event is not supported.`);
       }

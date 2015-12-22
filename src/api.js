@@ -24,7 +24,7 @@ pm2.connect().then(() => isConnected = true);
 export default (settings = {}) => {
   const { apiRoute, apps, middleware, manifest } = settings;
   const baseRoute = Route.parse(apiRoute);
-  const status = apiStatus({ apps });
+  const status = apiStatus({ apps, manifest });
   const webhook = apiWebhook({ apps, manifest });
   const actions = apiActions({ apps });
 
