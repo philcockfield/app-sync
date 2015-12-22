@@ -44,7 +44,7 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
   const token = settings.token;
-  let publishEvent;
+  let publishEvent, currentGatewayPort;
 
   const api = {
     uid: uuid.v4().toString(),
@@ -169,12 +169,12 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     start(options = {}) {
-      api.gatewayPort = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
+      currentGatewayPort = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
       return start({
         apps: this.apps,
         update: (args) => this.update(args),
         manifest: this.manifest,
-        port: api.gatewayPort,
+        port: currentGatewayPort,
         publishEvent,
         mainApi: api
       });
@@ -190,8 +190,8 @@ export default (settings = {}) => {
           try {
 
               yield api.stop();
-              yield api.start({ port: api.gatewayPort });
-              resolve({ port: api.gatewayPort });
+              yield api.start({ port: currentGatewayPort });
+              resolve({ port: currentGatewayPort });
 
           } catch (err) { reject(err); }
         }).call(this);
