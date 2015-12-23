@@ -57,8 +57,10 @@ export default (settings = {}) => {
         log.info(`Gateway running on port:${ port }`);
         log.info("");
         items.forEach(item => {
-            const version = item.version ? ` (v${ item.version })` : "";
-            log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);
+            if (item) {
+              const version = item.version ? ` (v${ item.version })` : "";
+              log.info(` - '${ item.id }'${ version } routing '${ item.route }' => port:${ item.port }`);
+            }
         });
         log.info("");
 
