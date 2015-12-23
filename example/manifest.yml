@@ -10,7 +10,7 @@ apps:
   foo:
     repo: "philcockfield/app-sync/example/app-2"
     route: "*"
-    branch: "devel____"
+    branch: "devel"
   bar:
     repo: "philcockfield/app-sync/example/app-1"
     route: "*/1"
