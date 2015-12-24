@@ -23,8 +23,20 @@ export default (id, localFolder, getVersion, startDownload, start, options = {})
     Promise.coroutine(function*() {
       let restart = false;
       const restartAfterUpdate = options.start === undefined ? true : options.start;
-      const version = yield getVersion().catch(err => reject(err));
+
+      // Get the version information.
+      let version;
+      try {
+        version = yield getVersion().catch(err => reject(err));
+      } catch (err) { return reject(err); }
+
+      // Prepare return value.
       const result = { id, updated: false, installed: false, version: version.remote };
+      if (!result.version) {
+        result.exists = false;  // Must exist in remote repo to be considered to exist.
+                                //    It may not exist if the manifest contains an error to
+                                //    the repo path or the branch no longer exists.
+      }
 
       // Determine if the `node_modules` folder exists.
       const nodeModulesPath = fsPath.join(localFolder, "node_modules");
@@ -45,7 +57,7 @@ export default (id, localFolder, getVersion, startDownload, start, options = {})
       }
 
       // NPM install if required.
-      if (!nodeModulesExist || version.isDependenciesChanged) {
+      if (result.exists && !nodeModulesExist || version.isDependenciesChanged) {
         log.info(`Running [npm install] for '${ id }'...`);
         yield appInstall(localFolder);
         log.info(`...[npm install] complete for '${ id }'`);

@@ -5,6 +5,7 @@ import fsPath from "path";
 import github from "file-system-github";
 import Route from "./route";
 import pm2 from "./pm2";
+import log from "./log";
 import { isEmpty } from "./util";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
@@ -169,14 +170,31 @@ export default (settings = {}) => {
             const status = yield this.update({ start: false });
             yield this.stop();
 
-            // Start the app.
-            shell.cd(localFolder);
-            shell.exec(`pm2 start . --name '${ processName }' --node-args '. --port ${ port }'`);
-            shell.cd(WORKING_DIRECTORY);
+            const result = {
+              id,
+              port: this.port,
+              route: this.route,
+              version: status.version
+            };
 
-            // Finish.
-            resolve({ id, started: true, port: this.port, route: this.route, version: status.version });
+            if (status.exists !== false) {
+              // Start the app.
+              shell.cd(localFolder);
+              shell.exec(`pm2 start . --name '${ processName }' --node-args '. --port ${ port }'`);
+              shell.cd(WORKING_DIRECTORY);
 
+              result.started = true;
+              result.exists = true;
+              resolve(result);
+
+            } else {
+              // The app does not exist in the remote repo.
+              log.warn(`WARNING: The app '${ id }' cannot be started as it does not exist at: '${ repo.fullPath }:${ branch }'`);
+
+              result.started = false;
+              result.exists = false;
+              resolve(result);
+            }
           } catch (err) { reject(err); }
 
         }).call(this);
