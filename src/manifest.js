@@ -18,18 +18,22 @@ export const getManifest = (repo, repoPath, branch) => {
         return reject(new Error("A path to a YAML file must be specified (.yml)"));
       }
 
-      // Pull file from the repo.
-      const download = yield repo.get(repoPath, { branch }).catch(err => reject(err));
-      const files = download && download.files;
+      try {
+        // Pull file from the repo.
+        const download = yield repo.get(repoPath, { branch });
+        const files = download && download.files;
 
-      // Parse and return the manifest.
-      if (files && files.length > 0) {
-        const manifest = files[0].toString();
-        try {
-          resolve(yaml.safeLoad(manifest));
-        } catch (e) {
-          reject(new Error(`Failed while parsing YAML: ${ e.message }`));
+        // Parse and return the manifest.
+        if (files && files.length > 0) {
+          const manifest = files[0].toString();
+          try {
+            resolve(yaml.safeLoad(manifest));
+          } catch (e) {
+            reject(new Error(`Failed while parsing YAML: ${ e.message }`));
+          }
         }
+      } catch (err) {
+        return reject(err);
       }
     })();
   });
@@ -82,7 +86,6 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     get() {
-
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
             try {
@@ -146,6 +149,8 @@ export default (settings = {}) => {
               if (!R.is(String, manifestApp.route)) { throw new Error(`The app '${ id } does not have a route, eg: www.domain.com/path'`); }
               manifestApp.branch = manifestApp.branch || "master";
               const app = getApp(id);
+              // console.log("id", id);
+              // console.log("app.id", app.id);
               if (app) {
                 if (isAppChanged(manifestApp, app)) {
                   // The app has changed. Replace it with the new definition.

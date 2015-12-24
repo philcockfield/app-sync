@@ -37,19 +37,32 @@ export default (id, gettinglocalPackage, gettingRemotePackage) => {
 
       Promise.coroutine(function*() {
         // Retrieve async data.
-        const localPackage = yield gettinglocalPackage.catch(err => reject(err));
-        const remotePackage = yield gettingRemotePackage.catch(err => reject(err));
+        let localPackage, remotePackage;
+        try {
+          localPackage = yield gettinglocalPackage;
+          remotePackage = yield gettingRemotePackage;
+        } catch (err) {
+          if (err.error && err.error.status === 404) {
+            // Ignore - The repo/branch does not exist.
+            //          This is a non-failing error.
+          } else {
+            return reject(err)
+          }
+        }
 
         // Calculate values.
-        const localVersion = localPackage.exists ? localPackage.json.version : null;
-        const remoteVersion = remotePackage.exists ? remotePackage.json.version : null;
+        const localVersion = localPackage && localPackage.exists ? localPackage.json.version : null;
+        const remoteVersion = remotePackage && remotePackage.exists ? remotePackage.json.version : null;
         const result = {
           id,
           local: localVersion,
-          remote: remoteVersion,
-          isUpdateRequired: isUpdateRequired(localVersion, remoteVersion),
-          isDependenciesChanged: isDependenciesChanged(localPackage.json, remotePackage.json)
+          remote: remoteVersion
         };
+
+        if (remotePackage) {
+          result.isUpdateRequired = isUpdateRequired(localVersion, remoteVersion);
+          result.isDependenciesChanged = isDependenciesChanged(localPackage.json, remotePackage.json);
+        }
 
         // Finish up.
         resolve(result);
