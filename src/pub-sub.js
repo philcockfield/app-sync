@@ -19,22 +19,12 @@ export default (settings = {}) => {
   const { url, mainApi } = settings;
   const { uid } = mainApi;
   if (!url) { throw new Error("A URL to the RabbitMQ server is required."); }
+  let connectionFailed = null;
 
   // Setup the pub/sub event.
   const pubsub = pubsubFactory(url);
   const appUpdatedEvent = pubsub.event("app:updated");
   const appRestartedEvent = pubsub.event("app:restarted");
-
-  // Log that connection is ready.
-  pubsub.ready()
-    .then(result => log.info(`Connected to RabbitMQ on '${ url }'\n`))
-    .catch(err => {
-        log.error(`Failed to connect to RabbitMQ on ${ url }`);
-        log.error(" - code:", err.code);
-        log.error(" - ip-address:", `${ err.address }:${ err.port }`);
-        log.error("");
-    });
-
 
   const getApp = (payload) => {
         if (payload.uid !== uid) {
@@ -46,26 +36,42 @@ export default (settings = {}) => {
         if (err.code !== "ECONNREFUSED") { log.error(`${ title } Event -`, err) };
       };
 
-  // Listen for events from the other containers.
-  appUpdatedEvent.subscribe(payload => {
-        const app = getApp(payload);
-        if (app) {
-          console.log(`App '${ app.id }' updated in another container - restarting it now...`);
-          app.start();
-        }
-      })
-      .catch(err => catchSubscribeError("App Updated", err));
+  // Log that connection is ready.
+  pubsub.ready()
+    .then(result => {
+      log.info(`Connected to RabbitMQ on '${ url }'\n`);
+
+      // Listen for events from the other containers.
+      appUpdatedEvent.subscribe(payload => {
+            const app = getApp(payload);
+            if (app) {
+              console.log(`App '${ app.id }' updated in another container - restarting it now...`);
+              app.start();
+            }
+          })
+          .catch(err => catchSubscribeError("App Updated", err));
 
 
-  appRestartedEvent.subscribe(payload => {
-        // The app was restarted within another container, restart it now.
-        const app = getApp(payload);
-        if (app) {
-          console.log(`App '${ app.id }' restarted in another container - restarting it now...`);
-          app.start();
-        }
-      })
-      .catch(err => catchSubscribeError("App Restarted", err));
+      appRestartedEvent.subscribe(payload => {
+            // The app was restarted within another container, restart it now.
+            const app = getApp(payload);
+            if (app) {
+              console.log(`App '${ app.id }' restarted in another container - restarting it now...`);
+              app.start();
+            }
+          })
+          .catch(err => catchSubscribeError("App Restarted", err));
+
+
+    })
+    .catch(err => {
+        connectionFailed = true;
+        log.error(`Failed to connect to RabbitMQ on ${ url }`);
+        log.error(" - code:", err.code);
+        log.error(" - ip-address:", `${ err.address }:${ err.port }`);
+        log.error("");
+    });
+
 
 
 
@@ -80,6 +86,11 @@ export default (settings = {}) => {
      *
      */
     publish(event, data) {
+      if (connectionFailed) {
+        // Failed to connect to server - an error has already been emitted to
+        // the log, exit now to avoid emitting more confusing error messages.
+        return;
+      }
       switch (event) {
         case "app:updated": appUpdatedEvent.publish({ uid, data }); break;
         case "app:restarted": appRestartedEvent.publish({ uid, data }); break;
