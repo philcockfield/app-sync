@@ -66,7 +66,13 @@ const connect = () => {
 const apps = (filter) => {
     return new Promise((resolve) => {
       Promise.coroutine(function*() {
-        let list = (yield listP()) || [];
+        let list;
+        try {
+          list = (yield listP()) || [];
+        } catch (err) {
+          list = [];
+        }
+
         const isAppProcess = (item) => {
               // Apps can be identified by having a port in the 5000 range,
               // eg: <name>:5001
