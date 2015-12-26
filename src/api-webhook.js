@@ -11,14 +11,13 @@ import log from "./log";
  *
  */
 export default (settings = {}) => {
-  const { apps, manifest } = settings;
+  const { apps } = settings;
   return {
     post(req, res) {
       // Extract data.
       const data = req.body;
       const branch = (data.ref && R.last(data.ref.split("/"))) || data.repository.default_branch;
       const repo = data.repository.full_name;
-      const modified = (data.head_commit && data.head_commit.modified) || [];
 
       // Match apps that reside within the repo that Github posted.
       const isRepoMatch = (app) => app.repo.name === repo && app.branch === branch;

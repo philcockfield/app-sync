@@ -42,11 +42,11 @@ export default (id, gettinglocalPackage, gettingRemotePackage) => {
           localPackage = yield gettinglocalPackage;
           remotePackage = yield gettingRemotePackage;
         } catch (err) {
-          if (err.error && err.error.status === 404) {
+          if (err.error && err.error.status === 404) { // eslint-disable-line no-empty
             // Ignore - The repo/branch does not exist.
             //          This is a non-failing error.
           } else {
-            return reject(err)
+            return reject(err);
           }
         }
 

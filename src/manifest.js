@@ -69,7 +69,7 @@ const toRepoObject = (repoPath) => {
  */
 export default (settings = {}) => {
   // Setup initial conditions.
-  const { userAgent, token, repoPath, mainApi, publishEvent } = settings;
+  const { userAgent, token, repoPath, mainApi } = settings;
 
   // Create the repo proxy.
   const repoObject = toRepoObject(repoPath);
@@ -89,7 +89,7 @@ export default (settings = {}) => {
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
             try {
-              this.current = yield getManifest(repo, this.repo.path, this.repo.branch)
+              this.current = yield getManifest(repo, this.repo.path, this.repo.branch);
               resolve(this.current);
             } catch (err) {
               reject(err);

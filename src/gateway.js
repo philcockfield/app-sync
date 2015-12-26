@@ -22,7 +22,7 @@ let server;
 const start = (settings = {}) => {
     return new Promise((resolve, reject) => {
       Promise.coroutine(function*() {
-        const { apps, manifest, publishEvent, mainApi } = settings;
+        const { apps, manifest, mainApi } = settings;
         const port = settings.port || DEFAULT_GATEWAY_PORT;
         const middleware = express().use(bodyParser.json());
 

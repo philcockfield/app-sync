@@ -3,7 +3,6 @@ import gateway from "./gateway";
 import log from "./log";
 import pm2 from "./pm2";
 import { promises, sortAppsByRoute } from "./util";
-import { DEFAULT_GATEWAY_PORT } from "./const";
 
 
 

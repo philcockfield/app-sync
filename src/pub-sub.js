@@ -33,12 +33,12 @@ export default (settings = {}) => {
       };
 
   const catchSubscribeError = (title, err) => {
-        if (err.code !== "ECONNREFUSED") { log.error(`${ title } Event -`, err) };
+        if (err.code !== "ECONNREFUSED") { log.error(`${ title } Event -`, err); }
       };
 
   // Log that connection is ready.
   pubsub.ready()
-    .then(result => {
+    .then(() => {
       log.info(`Connected to RabbitMQ on '${ url }'\n`);
 
       // Listen for events from the other containers.
