@@ -31,7 +31,7 @@ export default (id, localFolder, getVersion, startDownload, start, options = {})
       } catch (err) { return reject(err); }
 
       // Prepare return value.
-      const result = { id, updated: false, installed: false, version: version.remote };
+      const result = { id, updated: false, installed: false, version: version.remote, exists: true };
       if (!result.version) {
         result.exists = false;  // Must exist in remote repo to be considered to exist.
                                 //    It may not exist if the manifest contains an error to
@@ -56,7 +56,7 @@ export default (id, localFolder, getVersion, startDownload, start, options = {})
         restart = true;
       }
 
-      // NPM install if required.
+      // Run NPM install if required.
       if (result.exists && !nodeModulesExist || version.isDependenciesChanged) {
         log.info(`Running [npm install] for '${ id }'...`);
         yield appInstall(localFolder);
