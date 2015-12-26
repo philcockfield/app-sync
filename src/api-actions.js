@@ -71,7 +71,10 @@ export default (settings = {}) => {
         app.update()
           .then(result => {
               res.send({ app: app.id, updated: result.updated, version: result.version });
-              log.info(`API:...Updated app '${ app.id }'.`);
+              const msg = result.updated
+                ? `API: ...updated app '${ app.id }' to version ${ result.version }.`
+                : `API: ...did not update app '${ app.id }', latest version ${ result.version } already running.`
+              log.info(msg);
           })
           .catch(err => res.status(500).send({ message: err.message }));
       }
