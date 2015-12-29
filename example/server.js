@@ -7,6 +7,7 @@ appSync({
   token: process.env.GITHUB_TOKEN,
   rabbitMQ: "amqp://rabbitmq",
   manifest: "philcockfield/app-sync/example/manifest.yml:devel"
+  // manifest: "philcockfield/sites/manifest.yml"
 })
 .then(api => {
 
