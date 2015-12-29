@@ -19,4 +19,4 @@ apps:
     branch: "devel"
 
 redirect:
-  - "*/redirect => */one"
+  - "localhost/redirect => */one"
