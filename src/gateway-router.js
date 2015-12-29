@@ -23,7 +23,7 @@ proxy.on("error", (err) => {
 
 const formatRedirects = (items) => {
     const result = [];
-    items.forEach((item, i) => {
+    items.forEach(item => {
         // Extract the "to" and "from" parts.
         const parts = item.split("=>");
         let from = parts[0] && parts[0].trim();
@@ -34,7 +34,7 @@ const formatRedirects = (items) => {
           from = Route.parse(from);
           to = Route.parse(to);
         } else {
-          log.warn(`The redirect '${ item }' is invalid. Must be in a format like '*/from => */to'.`)
+          log.warn(`The redirect '${ item }' is invalid. Must be in a format like '*/from => */to'.`);
         }
 
         // Store.
@@ -46,16 +46,14 @@ const formatRedirects = (items) => {
 
 
 const findRedirect = (domain, path, redirects) => {
-  if (!redirects) { return; }
-  let result = R.find(item => item.from.match(domain, path), redirects);
-  if (result) {
-    // Ensure the redirection is not pointing to the current URL.
-    // Note: This avoids a redirection loop getting started.
-    if (result.to.match(domain, path)) {
-      result = null;
+  if (redirects) {
+    const redirect = R.find(item => item.from.match(domain, path), redirects);
+    if (redirect && !redirect.to.match(domain, path)) {
+      // NOTE: Ensure the redirection is not pointing to the current URL.
+      //       This avoids a redirection loop getting started.
+      return redirect;
     }
   }
-  return result;
 };
 
 
