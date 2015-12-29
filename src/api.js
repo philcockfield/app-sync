@@ -16,16 +16,16 @@ pm2.connect().then(() => isConnected = true);
  *
  * @param {Object} settings:
  *                  - middleware:   The express middleware.
- *                  - manifest:     A manifest object.
  *                  - apiRoute:     The base URL to the API.
  *                  - mainApi:      The main API.
  *
  */
 export default (settings = {}) => {
-  const { apiRoute, middleware, manifest, mainApi } = settings;
+  const { apiRoute, middleware, mainApi } = settings;
+  const { manifest } = mainApi;
   const baseRoute = Route.parse(apiRoute);
 
-  const status = apiStatus({ mainApi, manifest });
+  const status = apiStatus({ mainApi });
   const webhook = apiWebhook({ mainApi });
   const actions = apiActions({ mainApi });
 

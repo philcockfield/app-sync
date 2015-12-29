@@ -12,7 +12,6 @@ let server;
 /**
  * Starts the gateway.
  * @param options:
- *            - manifest:       The manifest to add apps from.
  *            - port:           The port to use.
  *            - publishEvent:   Function that publishes an event across all containers (via RabbitMQ).
  *            - mainApi:        The main API.
@@ -21,7 +20,8 @@ let server;
 const start = (settings = {}) => {
     return new Promise((resolve, reject) => {
       Promise.coroutine(function*() {
-        const { manifest, mainApi } = settings;
+        const { mainApi } = settings;
+        const { manifest } = mainApi;
         const port = settings.port || DEFAULT_GATEWAY_PORT;
         const middleware = express().use(bodyParser.json());
 
@@ -43,7 +43,7 @@ const start = (settings = {}) => {
         }
 
         // Routes.
-        if (apiRoute) { api({ apiRoute, middleware, manifest, mainApi }); }
+        if (apiRoute) { api({ apiRoute, middleware, mainApi }); }
         gatewayRouter({ middleware, mainApi });
 
         // Listen on the desired port.
