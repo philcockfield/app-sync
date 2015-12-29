@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- A `redirect` array within the manifest.
 #### Changed
 #### Deprecated
 #### Removed
