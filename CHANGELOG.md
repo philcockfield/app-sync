@@ -22,13 +22,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Changed
 - Manifest: Now optionally supporting an array of routes per app.
 - Sorting apps by route upon adding them to the main API.
-#### Deprecated
 #### Removed
 - Removed auto-restart when `manifest.yml` file changes.
     - Was causing strange errors.
     - Now when the manifest changes force a restart using the REST api: `/api/restart`
-#### Fixed
-#### Security
 
 
 
