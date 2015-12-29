@@ -13,5 +13,7 @@ apps:
     branch: "devel"
   bar:
     repo: "philcockfield/app-sync/example/app-1"
-    route: "*/1"
+    route:
+      - "*/1"
+      - "*/bar"
     branch: "devel"
