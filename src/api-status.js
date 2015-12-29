@@ -36,7 +36,7 @@ export default (settings = {}) => {
           const status = {
               id: app.id,
               status: processItem.pm2_env.status,
-              route: `${ app.route.toString() } ⇨ ${ app.port }`,
+              route: `${ app.routes.toString() } ⇨ ${ app.port }`,
               repository: `${ app.repo.name }:${ app.branch }`,
               resources: {
                 memory: prettyBytes(processItem.monit.memory),

@@ -123,8 +123,10 @@ export default (settings = {}) => {
 
             const isAppChanged = (manifestApp, app) => {
                   if (manifestApp.repo !== app.repo.fullPath) { return true; }
-                  if (manifestApp.route !== app.route.toString()) { return true; }
                   if (manifestApp.branch !== app.branch) { return true; }
+                  for (let route of app.routes) {
+                    if (manifestApp.route !== route.toString()) { return true; }
+                  }
                   return false;
                 };
 

@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Deprecated
 #### Removed
 #### Fixed
+- Route array errors within the REST API.
 #### Security
 
 
