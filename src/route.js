@@ -39,6 +39,7 @@ const parse = (route) => {
       path = formatMatchValue(path);
       if (path) { path = path.replace(/^\//, ""); }
       const isWildcardDomain = this.domain === "*";
+      const isWildcardPath = this.path === "*";
 
       if (!isWildcardDomain) {
         if (domain !== this.domain) { return false; }
@@ -46,7 +47,11 @@ const parse = (route) => {
 
       if (this.path) {
         if (!path) { return false; }
-        if (path && !(path + "/").startsWith(this.path)) { return false; }
+        if (!isWildcardPath && path && !(path + "/").startsWith(this.path)) { return false; }
+      }
+
+      if (!this.path && path) {
+        return false;
       }
 
       // Finish up.
@@ -65,5 +70,17 @@ const parse = (route) => {
 
 
 
+/**
+ * Parses all routes within the given value(s).
+ * @param {String|Array} route: The Route or Routes to parse.
+ * @return {Array}.
+ */
+const parseAll = (route) => {
+  if (!R.is(Array, route)) { route = [route]; }
+  return R.map(parse, route);
+};
 
-export default { parse };
+
+
+
+export default { parse, parseAll };

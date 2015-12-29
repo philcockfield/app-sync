@@ -25,6 +25,7 @@ import { getLocalPackage, getRemotePackage } from "./app-package";
  *                             restricted resources.
  *                                 see: https://github.com/settings/tokens
  *            - route:         Route details for directing requests to the app.
+ *                             {String} or {Array} of strings.
  *            - targetFolder:  The root location where apps are downloaded to.
  *            - repo:          The Github 'username/repo'.
  *                             Optionally you can specify a sub-path within the repos
@@ -40,11 +41,12 @@ export default (settings = {}) => {
   if (isEmpty(id)) { throw new Error(`'id' for the app is required`); }
   if (isEmpty(repo)) { throw new Error(`'repo' name required, eg. 'username/my-repo'`); }
   if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
-  if (isEmpty(route)) { throw new Error(`A 'route' must be specified for the '${ id }' app.`); }
-  route = Route.parse(route);
+  if (isEmpty(route)) { throw new Error(`One or more 'route' values must be specified for the '${ id }' app.`); }
+
   branch = branch || "master";
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
+  const routes = Route.parseAll(route);
   const WORKING_DIRECTORY = process.cwd();
 
   // Extract the repo and sub-path.
@@ -65,7 +67,7 @@ export default (settings = {}) => {
   const app = {
     id,
     repo,
-    route,
+    routes,
     port,
     branch,
     localFolder,
@@ -173,7 +175,7 @@ export default (settings = {}) => {
             const result = {
               id,
               port: this.port,
-              route: this.route,
+              routes: this.routes,
               version: status.version
             };
 

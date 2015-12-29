@@ -9,7 +9,13 @@ import Promise from "bluebird";
 /**
  * Determines whether the given value is Null/Undefined or Empty.
  */
-export const isEmpty = (value) => (R.isNil(value) || R.isEmpty(value));
+export const isEmpty = (value) => {
+  if (R.is(Array, value)) {
+    value = R.reject(R.isNil, value);
+    value = R.reject(R.isEmpty, value);
+  }
+  return R.isNil(value) || R.isEmpty(value)
+};
 
 
 
@@ -129,22 +135,24 @@ export const loadJson = (path) => {
  * @return {Array}.
  */
 export const sortAppsByRoute = (apps) => {
-    apps = apps.map(app => ({ app, route: app.route.toString() }));
 
-    const wildcard = (app) => app.route.startsWith("*");
+    let items = apps.map(app => ({ id: app.id, app, routes: app.routes }));
+
+    const wildcard = (item) => R.any(r => r.domain === "*", item.routes);
     const notWildcard = (app) => !wildcard(app);
-    const sorted = (filter) => R.pipe(R.filter(filter), R.sortBy(R.prop("route")));
+    const sorted = (filter) => R.pipe(R.filter(filter), R.sortBy(R.prop("routes")));
 
-    let wildcardDomains = sorted(wildcard)(apps);
-    let explicitDomains = sorted(notWildcard)(apps);
+    let wildcardDomains = sorted(wildcard)(items);
+    let explicitDomains = sorted(notWildcard)(items);
 
-    if (wildcardDomains[0] && wildcardDomains[0].route === "*") {
+    // Ensure the wild-card is at the end.
+    if (wildcardDomains[0] && wildcard(wildcardDomains[0])) {
       const catchAll = wildcardDomains[0];
       wildcardDomains = R.remove(0, 1, wildcardDomains);
       wildcardDomains.push(catchAll);
     }
 
     // Finish up.
-    apps = R.union(explicitDomains, wildcardDomains);
-    return apps.map(item => item.app);
+    items = R.union(explicitDomains, wildcardDomains);
+    return items.map(item => item.app);
   };

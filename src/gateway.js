@@ -45,7 +45,7 @@ const start = (settings = {}) => {
 
         // Routes.
         if (apiRoute) { api({ apiRoute, apps, middleware, manifest, mainApi }); }
-        gatewayRouter(apps, middleware);
+        gatewayRouter({ middleware, mainApi });
 
         // Listen on the desired port.
         server = middleware.listen(port, () => {

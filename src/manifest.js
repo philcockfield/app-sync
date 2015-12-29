@@ -145,12 +145,13 @@ export default (settings = {}) => {
             // Add or update each app.
             for (let id of manifestKeys) {
               const manifestApp = manifest.apps[id];
-              if (!R.is(String, manifestApp.repo)) { throw new Error(`The app '${ id } does not have a repo, eg: user/repo/path'`); }
-              if (!R.is(String, manifestApp.route)) { throw new Error(`The app '${ id } does not have a route, eg: www.domain.com/path'`); }
+              if (!R.is(String, manifestApp.repo)) { throw new Error(`The app '${ id }' does not have a repo, eg: user/repo/path'`); }
+              if (!(R.is(String, manifestApp.route) || R.is(Array, manifestApp.route))) {
+                throw new Error(`The app '${ id }' does not have a route, eg: www.domain.com/path'`);
+              }
               manifestApp.branch = manifestApp.branch || "master";
+
               const app = getApp(id);
-              // console.log("id", id);
-              // console.log("app.id", app.id);
               if (app) {
                 if (isAppChanged(manifestApp, app)) {
                   // The app has changed. Replace it with the new definition.
