@@ -15,10 +15,10 @@ const HOST_NAME = process.env.HOSTNAME || "unknown";
  *
  * @param {Object} settings:
  *                  - mainApi:    The main API.
- *                  - manifest:   A manifest object.
  */
 export default (settings = {}) => {
-  const { mainApi, manifest } = settings;
+  const { mainApi } = settings;
+  const { manifest } = mainApi;
   const processNameToAppId = (name) => name.split(":")[0];
   const getApp = (id) => {
     id = processNameToAppId(id);

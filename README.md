@@ -46,6 +46,7 @@ targetFolder: "/opt/downloads"    # Optional
 api:                              # Optional
   route: <domain>/<path>
   tokens: [<token>, <token>, ...] # Optional
+
 apps:
   <id>:
     repo: "<user>/<repo>/path-1"
@@ -58,6 +59,10 @@ apps:
       - "domain.com"
       - "jungle.com/foo"
       - "jazz.com/*"
+
+redirect:
+  - "*/from => */to"
+
 ```
 
 - The optional `targetFolder` specifies where apps are downloaded to.
@@ -70,6 +75,7 @@ apps:
     - `route`: The base route that the API is exposed upon, for example: `*/api`
     - `tokens`: An optional array of passwords to lock the API with. Pass the `token` in the query string.
 - If the `branch` of an app is omitted the default of `master` is used.
+- The optional `redirect` array allows you to catch certain routes within the gateway and force a redirect (`302`) to a different route.
 
 Note - when you make and push changes to the `manifest.yml` file the running containers will not automatically update.  Use the `/api/restart` REST method to force a restart when you are ready.
 
