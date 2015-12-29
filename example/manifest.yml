@@ -16,4 +16,5 @@ apps:
     route:
       - "*/1"
       - "*/one"
+      - "dev/one"
     branch: "devel"
