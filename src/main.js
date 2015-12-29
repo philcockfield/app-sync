@@ -3,6 +3,7 @@ import Promise from "bluebird";
 import uuid from "uuid";
 import shell from "shelljs";
 import Route from "./route";
+import gateway from "./gateway";
 import app from "./app";
 import log from "./log";
 import start from "./main-start";
@@ -60,7 +61,7 @@ export default (settings = {}) => {
      * @return {Boolean}.
      */
     findAppFromRoute(domain, path) {
-      const isMatchingApp = app => R.find(route => route.match(domain, path), app.routes);
+      const isMatchingApp = (a) => R.find(route => route.match(domain, path), a.routes);
       return R.find(isMatchingApp, this.apps);
     },
 
@@ -86,28 +87,14 @@ export default (settings = {}) => {
       // Ensure the route(s) are not already being used.
       if (!R.is(Array, route)) { route = [route]; }
       route.forEach(value => {
-          const { domain, path } = Route.parse(value)
-
-          this.apps.forEach(app => {
-            app.routes.forEach(r => {
+          const { domain, path } = Route.parse(value);
+          this.apps.forEach(a => {
+            a.routes.forEach(r => {
               if (r.toString() !== "*/*" && r.match(domain, path)) {
                 throw new Error(`Cannot add '${ id }' because the route '${ value }' has already been registered.`);
               }
             });
           });
-
-          // const existingApp = this.findAppFromRoute(domain, path);
-          // const isWildcard = existingApp && !R.has(item => item.toString() === "*/*", existingApp.routes)
-          //
-          // console.log("id", id);
-          // console.log("domain", domain);
-          // console.log("path", path);
-          // console.log("isWildcard", isWildcard);
-          // console.log("");
-
-          // if (existingApp && !isWildcard) {
-          //   throw new Error(`Cannot add '${ id }' because the route '${ value }' has already been registered.`);
-          // }
         });
 
       // Create the App object.
