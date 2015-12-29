@@ -53,7 +53,11 @@ apps:
     branch: "devel"
   bar:
     repo: "philcockfield/app-sync/example/app-1"
-    route: "*/bar"
+    route:
+      - "*/bar"
+      - "domain.com"
+      - "jungle.com/foo"
+      - "jazz.com/*"
 ```
 
 - The optional `targetFolder` specifies where apps are downloaded to.
@@ -88,6 +92,8 @@ The `route:` field describes a URL pattern to match for the app.  The pattern ta
     domain.com/path
     */path
     *
+    */*                   # Default if only '*' is specified
+    domain.com/*          # Explicitly stating the wild-card path
 
 
 
