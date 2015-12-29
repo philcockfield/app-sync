@@ -2,7 +2,7 @@ import Promise from "bluebird";
 import gateway from "./gateway";
 import log from "./log";
 import pm2 from "./pm2";
-import { promises, sortAppsByRoute } from "./util";
+import { promises } from "./util";
 
 
 
@@ -11,7 +11,6 @@ import { promises, sortAppsByRoute } from "./util";
  * Starts the gateway and all registered apps.
  *
  * @param {Object} settings:
- *                  - apps:           Collection of apps to start.
  *                  - manifest:       A manifest object.
  *                  - update:         Function that invokes the update method.
  *                  - port:           The port to start the gateway on.
@@ -21,7 +20,7 @@ import { promises, sortAppsByRoute } from "./util";
  * @return {Promise}
  */
 export default (settings = {}) => {
-  let { apps, update, manifest, port, publishEvent, mainApi } = settings;
+  let { update, manifest, port, publishEvent, mainApi } = settings;
 
   return new Promise((resolve, reject) => {
     Promise.coroutine(function*() {
@@ -34,7 +33,7 @@ export default (settings = {}) => {
         yield manifest.update().catch(err => reject(err));
       }
 
-      if (apps.length === 0) {
+      if (mainApi.apps.length === 0) {
         log.warn("WARNING: No apps have been registered. Make sure a manifest has been set.");
 
       } else {
@@ -46,9 +45,8 @@ export default (settings = {}) => {
         }
 
         // Start the gateway and each app.
-        apps = sortAppsByRoute(apps);
-        yield gateway.start({ apps, port, manifest, publishEvent, mainApi }).catch(err => reject(err));
-        const { results: items } = yield promises(apps.map(app => app.start().catch(err => reject(err))));
+        yield gateway.start({ port, manifest, publishEvent, mainApi }).catch(err => reject(err));
+        const { results: items } = yield promises(mainApi.apps.map(app => app.start().catch(err => reject(err))));
 
         // Log status.
         log.info("");

@@ -1,6 +1,5 @@
 import R from "ramda";
 import httpProxy from "http-proxy"; // See: https://github.com/nodejitsu/node-http-proxy
-import { sortAppsByRoute } from "./util";
 import log from "./log";
 
 
@@ -29,7 +28,6 @@ proxy.on("error", (err) => {
 */
 export default (settings = {}) => {
   const { middleware, mainApi } = settings;
-  const apps = sortAppsByRoute(mainApi.apps);
 
   middleware.get("*", (req, res) => {
       const host = req.get("host");

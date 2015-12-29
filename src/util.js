@@ -135,7 +135,6 @@ export const loadJson = (path) => {
  * @return {Array}.
  */
 export const sortAppsByRoute = (apps) => {
-
     let items = apps.map(app => ({ id: app.id, app, routes: app.routes }));
 
     const wildcard = (item) => R.any(r => r.domain === "*", item.routes);

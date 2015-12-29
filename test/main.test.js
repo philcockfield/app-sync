@@ -50,7 +50,7 @@ describe("Main API (module)", () => {
       expect(app.routes[0].domain).to.equal("*");
       expect(app.routes[0].path).to.equal("foo/");
       expect(app.routes[1].domain).to.equal("domain.com");
-      expect(app.routes[1].path).to.equal(undefined);
+      expect(app.routes[1].path).to.equal("*");
     });
 
     it("adds an app with a path to a sub-folder within the repo", () => {
@@ -101,8 +101,8 @@ describe("Main API (module)", () => {
     it("auto-assigns port numbers", () => {
       api.add("my-app-1", "user/my-repo", "*/foo-1");
       api.add("my-app-2", "user/my-repo", "*/foo-2");
-      expect(api.apps[0].port).to.equal(5000);
-      expect(api.apps[1].port).to.equal(5001);
+      expect(api.apps[1].port).to.equal(5000);
+      expect(api.apps[0].port).to.equal(5001);
     });
   });
 
@@ -117,7 +117,7 @@ describe("Main API (module)", () => {
   });
 
 
-  describe(".findAppFromRoute()", function() {
+  describe("findAppFromRoute", function() {
     it("does not match the route value", () => {
       api.add("my-app-1", "user/my-repo", "*/foo-1");
       api.add("my-app-2", "user/my-repo", ["*/foo-2", "*/foo-3"]);
@@ -129,15 +129,15 @@ describe("Main API (module)", () => {
       api.add("my-app-0", "user/my-repo", "*");
       api.add("my-app-1", "user/my-repo", "*/foo-1");
       api.add("my-app-2", "user/my-repo", "*/foo-2");
-      expect(api.findAppFromRoute("*")).to.equal(api.apps[0]);
-      expect(api.findAppFromRoute("*", "foo-1")).to.equal(api.apps[1]);
-      expect(api.findAppFromRoute("*", "foo-2")).to.equal(api.apps[2]);
+      expect(api.findAppFromRoute("*").id).to.equal("my-app-0");
+      expect(api.findAppFromRoute("*", "foo-1").id).to.equal("my-app-1");
+      expect(api.findAppFromRoute("*", "foo-2").id).to.equal("my-app-2");
     });
 
     it("matches from multiple routes per app.", () => {
       api.add("my-app-1", "user/my-repo", "*/foo-1");
       api.add("my-app-2", "user/my-repo", ["*/foo-2", "*/bar"]);
-      expect(api.findAppFromRoute("*", "bar")).to.equal(api.apps[1]);
+      expect(api.findAppFromRoute("*", "bar").id).to.equal("my-app-2");
     });
   });
 });

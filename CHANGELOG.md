@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   Makes for a logically consistent API).
 #### Changed
 - Manifest: Now optionally supporting an array of routes per app.
+- Sorting apps by route upon adding them to the main API.
 #### Deprecated
 #### Removed
 - Removed auto-restart when `manifest.yml` file changes.

@@ -4,11 +4,10 @@ import uuid from "uuid";
 import shell from "shelljs";
 import Route from "./route";
 import app from "./app";
-import gateway from "./gateway";
 import log from "./log";
 import start from "./main-start";
 import manifest from "./manifest";
-import { promises } from "./util";
+import { promises, sortAppsByRoute } from "./util";
 import pubSub from "./pub-sub";
 import {
   DEFAULT_APP_PORT,
@@ -87,11 +86,29 @@ export default (settings = {}) => {
       // Ensure the route(s) are not already being used.
       if (!R.is(Array, route)) { route = [route]; }
       route.forEach(value => {
-            const { domain, path } = Route.parse(value)
-            if (this.findAppFromRoute(domain, path)) {
-              throw new Error(`Cannot add '${ id }' because the route '${ value }' has already been registered.`);
-            }
+          const { domain, path } = Route.parse(value)
+
+          this.apps.forEach(app => {
+            app.routes.forEach(r => {
+              if (r.toString() !== "*/*" && r.match(domain, path)) {
+                throw new Error(`Cannot add '${ id }' because the route '${ value }' has already been registered.`);
+              }
+            });
           });
+
+          // const existingApp = this.findAppFromRoute(domain, path);
+          // const isWildcard = existingApp && !R.has(item => item.toString() === "*/*", existingApp.routes)
+          //
+          // console.log("id", id);
+          // console.log("domain", domain);
+          // console.log("path", path);
+          // console.log("isWildcard", isWildcard);
+          // console.log("");
+
+          // if (existingApp && !isWildcard) {
+          //   throw new Error(`Cannot add '${ id }' because the route '${ value }' has already been registered.`);
+          // }
+        });
 
       // Create the App object.
       const port = DEFAULT_APP_PORT + (this.apps.length);
@@ -107,10 +124,12 @@ export default (settings = {}) => {
         publishEvent
       });
       this.apps.push(item);
+      this.apps = sortAppsByRoute(this.apps);
 
       // Finish up.
       return this;
     },
+
 
 
     /**
@@ -145,6 +164,7 @@ export default (settings = {}) => {
         }).call(this);
       });
     },
+
 
 
     /**
@@ -191,7 +211,6 @@ export default (settings = {}) => {
     start(options = {}) {
       currentGatewayPort = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
       return start({
-        apps: this.apps,
         update: (args) => this.update(args),
         manifest: this.manifest,
         port: currentGatewayPort,

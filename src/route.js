@@ -19,9 +19,10 @@ const parse = (route) => {
 
   // URL path.
   let urlPath = R.takeLast(parts.length - 1, parts).join("/").trim();
-  urlPath = isEmpty(urlPath) ? undefined : urlPath;
-  if (urlPath) {
-    urlPath = urlPath.endsWith("/") ? urlPath : urlPath + "/";
+  urlPath = urlPath.replace(/\/$/, "");
+  urlPath = isEmpty(urlPath) ? "*" : urlPath;
+  if (urlPath !== "*") {
+    urlPath += "/";
   }
 
   return {
@@ -45,13 +46,9 @@ const parse = (route) => {
         if (domain !== this.domain) { return false; }
       }
 
-      if (this.path) {
+      if (!isWildcardPath) {
         if (!path) { return false; }
-        if (!isWildcardPath && path && !(path + "/").startsWith(this.path)) { return false; }
-      }
-
-      if (!this.path && path) {
-        return false;
+        if (path && !(path + "/").startsWith(this.path)) { return false; }
       }
 
       // Finish up.
