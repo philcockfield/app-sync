@@ -17,3 +17,6 @@ apps:
       - "*/1"
       - "*/one"
     branch: "devel"
+
+redirect:
+  - "*/redirect => */one"
