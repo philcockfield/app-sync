@@ -14,7 +14,7 @@ export const isEmpty = (value) => {
     value = R.reject(R.isNil, value);
     value = R.reject(R.isEmpty, value);
   }
-  return R.isNil(value) || R.isEmpty(value)
+  return R.isNil(value) || R.isEmpty(value);
 };
 
 

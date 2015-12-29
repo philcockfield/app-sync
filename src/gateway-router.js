@@ -1,4 +1,3 @@
-import R from "ramda";
 import httpProxy from "http-proxy"; // See: https://github.com/nodejitsu/node-http-proxy
 import log from "./log";
 
