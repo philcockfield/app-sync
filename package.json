@@ -1,6 +1,6 @@
 {
   "name": "app-sync",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Continuous deployment from Github.",
   "main": "./index.js",
   "scripts": {
