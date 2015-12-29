@@ -15,5 +15,5 @@ apps:
     repo: "philcockfield/app-sync/example/app-1"
     route:
       - "*/1"
-      - "*/bar"
+      - "*/one"
     branch: "devel"
