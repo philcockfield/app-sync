@@ -45,6 +45,20 @@ const formatRedirects = (items) => {
 
 
 
+const findRedirect = (domain, path, redirects) => {
+  if (!redirects) { return; }
+  let result = R.find(item => item.from.match(domain, path), redirects);
+  if (result) {
+    // Ensure the redirection is not pointing to the current URL.
+    // Note: This avoids a redirection loop getting started.
+    if (result.to.match(domain, path)) {
+      result = null;
+    }
+  }
+  return result;
+};
+
+
 
 
 /**
@@ -53,19 +67,19 @@ const formatRedirects = (items) => {
  * @param options:
  *            - middleware:     The express middleware.
  *            - mainApi:        The main API.
- *            - port:           The gateway port.
+ *            - gatewayPort:    The gateway port.
  *
 */
 export default (settings = {}) => {
-  const { middleware, mainApi, port } = settings;
+  const { middleware, mainApi, gatewayPort } = settings;
   const { manifest } = mainApi;
 
   const redirectUrl = (req, route) => {
-      let { domain, path } = route;
-      if (domain === "*") { domain = req.get("host").split(":")[0]; }
-      if (path === "*") { path = "/"; }
-      return `${ req.protocol }://${ domain }:${ port }/${ path }`;
-    };
+        let { domain, path } = route;
+        if (domain === "*") { domain = req.get("host").split(":")[0]; }
+        if (path === "*") { path = "/"; }
+        return `${ req.protocol }://${ domain }:${ gatewayPort }/${ path }`;
+      };
 
   // Read in the redirect table from the manifest (if it exists).
   let redirects = manifest.current && manifest.current.redirect;
@@ -73,27 +87,19 @@ export default (settings = {}) => {
     redirects = formatRedirects(redirects);
   }
 
-
   middleware.get("*", (req, res) => {
       // Setup initial conditions.
       const host = req.get("host");
       const domain = (host && host.split(":")[0]) || "*";
       const path = req.url;
-      const findRedirect = () => redirects && R.find(item => item.from.match(domain, path), redirects)
-
-      console.log("");
-      console.log("host", host);
-      console.log("domain", domain);
-      console.log("path", path);
 
       // Check if there is a redirect for the route.
-      const redirect = findRedirect();
-
+      const redirect = findRedirect(domain, path, redirects);
       if (redirect) {
 
         // A redirection URL was found - send the browser to that address now.
+        // HTTP 302: Found ("Moved Temporarily").
         const url = redirectUrl(req, redirect.to);
-        console.log("REDIRECT TO", url);
         res.redirect(302, url);
 
       } else {
