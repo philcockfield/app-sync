@@ -81,12 +81,20 @@ export default (settings = {}) => {
       const path = req.url;
       const findRedirect = () => redirects && R.find(item => item.from.match(domain, path), redirects)
 
+      console.log("");
+      console.log("host", host);
+      console.log("domain", domain);
+      console.log("path", path);
+
       // Check if there is a redirect for the route.
       const redirect = findRedirect();
+
       if (redirect) {
 
         // A redirection URL was found - send the browser to that address now.
-        res.redirect(302, redirectUrl(req, redirect.to));
+        const url = redirectUrl(req, redirect.to);
+        console.log("REDIRECT TO", url);
+        res.redirect(302, url);
 
       } else {
 
@@ -94,8 +102,7 @@ export default (settings = {}) => {
         const app = mainApi.findAppFromRoute(domain, path);
         if (app) {
 
-          // An app matches the current route.
-          // Proxy the request to it.
+          // An app matches the current route. Proxy the request to it.
           const target = { host: "localhost", port: app.port };
           proxy.web(req, res, { target });
 
