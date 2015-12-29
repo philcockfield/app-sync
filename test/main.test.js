@@ -38,8 +38,19 @@ describe("Main API (module)", () => {
       expect(app.id).to.equal("my-app");
       expect(app.repo.name).to.equal("philcockfield/app-sync");
       expect(app.localFolder).to.equal(fsPath.resolve("./.build/my-app"));
-      expect(app.route.domain).to.equal("*");
-      expect(app.route.path).to.equal("foo/");
+      expect(app.routes.length).to.equal(1);
+      expect(app.routes[0].domain).to.equal("*");
+      expect(app.routes[0].path).to.equal("foo/");
+    });
+
+    it("adds an app with several incoming routes", () => {
+      api.add("my-app", "philcockfield/app-sync", ["*/foo", "domain.com"]);
+      const app = api.apps[0];
+      expect(app.routes.length).to.equal(2);
+      expect(app.routes[0].domain).to.equal("*");
+      expect(app.routes[0].path).to.equal("foo/");
+      expect(app.routes[1].domain).to.equal("domain.com");
+      expect(app.routes[1].path).to.equal("*");
     });
 
     it("adds an app with a path to a sub-folder within the repo", () => {
@@ -77,18 +88,21 @@ describe("Main API (module)", () => {
 
     it("throws if a route is repeated", () => {
       api.add("my-app-1", "user/my-repo-1", "*/foo");
-      let fn = () => {
-        api.add("my-app-2", "user/my-repo-2", "*/foo");
-      };
+      let fn = () => api.add("my-app-2", "user/my-repo-2", ["domain.com", "*/foo"]);
       expect(fn).to.throw();
     });
 
+    it("throws if a route is repeated (within an array)", () => {
+      api.add("my-app-1", "user/my-repo-1", ["domain.com", "*/foo"]);
+      let fn = () => api.add("my-app-2", "user/my-repo-2", ["google.com", "*/foo"]);
+      expect(fn).to.throw();
+    });
 
     it("auto-assigns port numbers", () => {
       api.add("my-app-1", "user/my-repo", "*/foo-1");
       api.add("my-app-2", "user/my-repo", "*/foo-2");
-      expect(api.apps[0].port).to.equal(5000);
-      expect(api.apps[1].port).to.equal(5001);
+      expect(api.apps[1].port).to.equal(5000);
+      expect(api.apps[0].port).to.equal(5001);
     });
   });
 
@@ -99,6 +113,31 @@ describe("Main API (module)", () => {
       .then(result => {
           expect(api.apps.length).to.equal(0);
       });
+    });
+  });
+
+
+  describe("findAppFromRoute", function() {
+    it("does not match the route value", () => {
+      api.add("my-app-1", "user/my-repo", "*/foo-1");
+      api.add("my-app-2", "user/my-repo", ["*/foo-2", "*/foo-3"]);
+      expect(api.findAppFromRoute("*", "bar")).to.equal(undefined);
+      expect(api.findAppFromRoute("*")).to.equal(undefined);
+    });
+
+    it("matches with a single route per app.", () => {
+      api.add("my-app-0", "user/my-repo", "*");
+      api.add("my-app-1", "user/my-repo", "*/foo-1");
+      api.add("my-app-2", "user/my-repo", "*/foo-2");
+      expect(api.findAppFromRoute("*").id).to.equal("my-app-0");
+      expect(api.findAppFromRoute("*", "foo-1").id).to.equal("my-app-1");
+      expect(api.findAppFromRoute("*", "foo-2").id).to.equal("my-app-2");
+    });
+
+    it("matches from multiple routes per app.", () => {
+      api.add("my-app-1", "user/my-repo", "*/foo-1");
+      api.add("my-app-2", "user/my-repo", ["*/foo-2", "*/bar"]);
+      expect(api.findAppFromRoute("*", "bar").id).to.equal("my-app-2");
     });
   });
 });

@@ -2,12 +2,12 @@ import R from "ramda";
 import Promise from "bluebird";
 import uuid from "uuid";
 import shell from "shelljs";
+import Route from "./route";
 import app from "./app";
-import gateway from "./gateway";
 import log from "./log";
 import start from "./main-start";
 import manifest from "./manifest";
-import { promises } from "./util";
+import { promises, sortAppsByRoute } from "./util";
 import pubSub from "./pub-sub";
 import {
   DEFAULT_APP_PORT,
@@ -44,13 +44,26 @@ if (shell.exec("pm2 -v", { silent: true }).code !== 0) {
 export default (settings = {}) => {
   const userAgent = settings.userAgent || "app-syncer";
   const token = settings.token;
-  let publishEvent;
+  let publishEvent, currentGatewayPort;
 
   const api = {
     uid: uuid.v4().toString(),
     apps: [],
     userAgent,
     targetFolder: settings.targetFolder || DEFAULT_TARGET_FOLDER,
+
+
+    /**
+     * Looks up the app with the given route.
+     * @param {String} domain: The domain of the route to look up.
+     * @param {String} path:   The URL path of the route.
+     * @return {Boolean}.
+     */
+    findAppFromRoute(domain, path) {
+      const isMatchingApp = app => R.find(route => route.match(domain, path), app.routes);
+      return R.find(isMatchingApp, this.apps);
+    },
+
 
     /**
      * Adds a new application to run.
@@ -69,9 +82,33 @@ export default (settings = {}) => {
       if (R.find(item => item.id === id, this.apps)) {
         throw new Error(`An app with the ID '${ id }' has already been registered.`);
       }
-      if (R.find(item => item.route.toString() === route, this.apps)) {
-        throw new Error(`An app with the route '${ route }' has already been registered.`);
-      }
+
+      // Ensure the route(s) are not already being used.
+      if (!R.is(Array, route)) { route = [route]; }
+      route.forEach(value => {
+          const { domain, path } = Route.parse(value)
+
+          this.apps.forEach(app => {
+            app.routes.forEach(r => {
+              if (r.toString() !== "*/*" && r.match(domain, path)) {
+                throw new Error(`Cannot add '${ id }' because the route '${ value }' has already been registered.`);
+              }
+            });
+          });
+
+          // const existingApp = this.findAppFromRoute(domain, path);
+          // const isWildcard = existingApp && !R.has(item => item.toString() === "*/*", existingApp.routes)
+          //
+          // console.log("id", id);
+          // console.log("domain", domain);
+          // console.log("path", path);
+          // console.log("isWildcard", isWildcard);
+          // console.log("");
+
+          // if (existingApp && !isWildcard) {
+          //   throw new Error(`Cannot add '${ id }' because the route '${ value }' has already been registered.`);
+          // }
+        });
 
       // Create the App object.
       const port = DEFAULT_APP_PORT + (this.apps.length);
@@ -87,10 +124,12 @@ export default (settings = {}) => {
         publishEvent
       });
       this.apps.push(item);
+      this.apps = sortAppsByRoute(this.apps);
 
       // Finish up.
       return this;
     },
+
 
 
     /**
@@ -125,6 +164,7 @@ export default (settings = {}) => {
         }).call(this);
       });
     },
+
 
 
     /**
@@ -169,12 +209,11 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     start(options = {}) {
-      api.gatewayPort = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
+      currentGatewayPort = options.port === undefined ? DEFAULT_GATEWAY_PORT : options.port;
       return start({
-        apps: this.apps,
         update: (args) => this.update(args),
         manifest: this.manifest,
-        port: api.gatewayPort,
+        port: currentGatewayPort,
         publishEvent,
         mainApi: api
       });
@@ -190,8 +229,8 @@ export default (settings = {}) => {
           try {
 
               yield api.stop();
-              yield api.start({ port: api.gatewayPort });
-              resolve({ port: api.gatewayPort });
+              yield api.start({ port: currentGatewayPort });
+              resolve({ port: currentGatewayPort });
 
           } catch (err) { reject(err); }
         }).call(this);

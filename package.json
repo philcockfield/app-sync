@@ -1,6 +1,6 @@
 {
   "name": "app-sync",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Continuous deployment from Github.",
   "main": "./index.js",
   "scripts": {
@@ -11,9 +11,7 @@
     "watch": "nodemon ./example --ignore .build",
     "test": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register",
     "tdd": "./node_modules/mocha/bin/mocha --recursive --compilers js:babel/register --watch",
-    "prepublish": "gulp lint",
-    "dbuild": "sh ./sh/docker-build.sh",
-    "drun": "sh ./sh/test-docker-run.sh"
+    "prepublish": "gulp lint"
   },
   "dependencies": {
     "amqplib": "^0.4.0",

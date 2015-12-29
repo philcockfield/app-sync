@@ -18,18 +18,22 @@ export const getManifest = (repo, repoPath, branch) => {
         return reject(new Error("A path to a YAML file must be specified (.yml)"));
       }
 
-      // Pull file from the repo.
-      const download = yield repo.get(repoPath, { branch }).catch(err => reject(err));
-      const files = download && download.files;
+      try {
+        // Pull file from the repo.
+        const download = yield repo.get(repoPath, { branch });
+        const files = download && download.files;
 
-      // Parse and return the manifest.
-      if (files && files.length > 0) {
-        const manifest = files[0].toString();
-        try {
-          resolve(yaml.safeLoad(manifest));
-        } catch (e) {
-          reject(new Error(`Failed while parsing YAML: ${ e.message }`));
+        // Parse and return the manifest.
+        if (files && files.length > 0) {
+          const manifest = files[0].toString();
+          try {
+            resolve(yaml.safeLoad(manifest));
+          } catch (e) {
+            reject(new Error(`Failed while parsing YAML: ${ e.message }`));
+          }
         }
+      } catch (err) {
+        return reject(err);
       }
     })();
   });
@@ -65,7 +69,7 @@ const toRepoObject = (repoPath) => {
  */
 export default (settings = {}) => {
   // Setup initial conditions.
-  const { userAgent, token, repoPath, mainApi, publishEvent } = settings;
+  const { userAgent, token, repoPath, mainApi } = settings;
 
   // Create the repo proxy.
   const repoObject = toRepoObject(repoPath);
@@ -82,11 +86,10 @@ export default (settings = {}) => {
      * @return {Promise}
      */
     get() {
-
       return new Promise((resolve, reject) => {
         Promise.coroutine(function*() {
             try {
-              this.current = yield getManifest(repo, this.repo.path, this.repo.branch)
+              this.current = yield getManifest(repo, this.repo.path, this.repo.branch);
               resolve(this.current);
             } catch (err) {
               reject(err);
@@ -142,9 +145,12 @@ export default (settings = {}) => {
             // Add or update each app.
             for (let id of manifestKeys) {
               const manifestApp = manifest.apps[id];
-              if (!R.is(String, manifestApp.repo)) { throw new Error(`The app '${ id } does not have a repo, eg: user/repo/path'`); }
-              if (!R.is(String, manifestApp.route)) { throw new Error(`The app '${ id } does not have a route, eg: www.domain.com/path'`); }
+              if (!R.is(String, manifestApp.repo)) { throw new Error(`The app '${ id }' does not have a repo, eg: user/repo/path'`); }
+              if (!(R.is(String, manifestApp.route) || R.is(Array, manifestApp.route))) {
+                throw new Error(`The app '${ id }' does not have a route, eg: www.domain.com/path'`);
+              }
               manifestApp.branch = manifestApp.branch || "master";
+
               const app = getApp(id);
               if (app) {
                 if (isAppChanged(manifestApp, app)) {

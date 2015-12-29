@@ -10,16 +10,15 @@ const delay = (msecs, func) => global.setTimeout(func, msecs);
  * Manages actions that change the state of the service.
  *
  * @param {Object} settings:
- *                  - apps:     Collection of apps to start.
  *                  - mainApi:  The main API.
  *
  */
 export default (settings = {}) => {
-  const { apps, mainApi } = settings;
+  const { mainApi } = settings;
 
   const getApp = (req, res) => {
         const id = req.params.app;
-        const app = R.find(item => item.id === id, apps);
+        const app = R.find(item => item.id === id, mainApi.apps);
         if (app) {
           return app;
         } else {
@@ -71,7 +70,10 @@ export default (settings = {}) => {
         app.update()
           .then(result => {
               res.send({ app: app.id, updated: result.updated, version: result.version });
-              log.info(`API:...Updated app '${ app.id }'.`);
+              const msg = result.updated
+                ? `API: ...updated app '${ app.id }' to version ${ result.version }.`
+                : `API: ...did not update app '${ app.id }', latest version ${ result.version } already running.`;
+              log.info(msg);
           })
           .catch(err => res.status(500).send({ message: err.message }));
       }

@@ -56,6 +56,32 @@ describe("app (integration)", function() {
             expect(version.local).to.equal(version.remote);
         });
     });
+
+    it("does not have a remote version (repo does not exist)", () => {
+      const settings = R.clone(APP_SETTINGS);
+      settings.repo = "username/does-not-exist";
+      settings.branch = "master";
+      // settings.branch = "does-not-exist";
+      const app = new App(settings);
+      return app.version()
+        .then(version => {
+            expect(version.remote).to.equal(null);
+            expect(version.isUpdateRequired).to.equal(undefined);
+            expect(version.isDependenciesChanged).to.equal(undefined);
+        });
+    });
+
+    it("does not have a remote version (branch does not exist)", () => {
+      const settings = R.clone(APP_SETTINGS);
+      settings.branch = "does-not-exist";
+      const app = new App(settings);
+      return app.version()
+        .then(version => {
+            expect(version.remote).to.equal(null);
+            expect(version.isUpdateRequired).to.equal(undefined);
+            expect(version.isDependenciesChanged).to.equal(undefined);
+        });
+    });
   });
 
 

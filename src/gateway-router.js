@@ -1,6 +1,5 @@
 import R from "ramda";
 import httpProxy from "http-proxy"; // See: https://github.com/nodejitsu/node-http-proxy
-import { sortAppsByRoute } from "./util";
 import log from "./log";
 
 
@@ -19,18 +18,23 @@ proxy.on("error", (err) => {
 
 
 
-
-export default (apps, middleware) => {
-  apps = sortAppsByRoute(apps);
-  const findMatchingApp = (domain, path) => {
-        return R.find(app => app.route.match(domain, path), apps);
-      };
+/**
+ * Starts the gateway.
+ *
+ * @param options:
+ *            - middleware:     The express middleware.
+ *            - mainApi:        The main API.
+ *
+*/
+export default (settings = {}) => {
+  const { middleware, mainApi } = settings;
 
   middleware.get("*", (req, res) => {
       const host = req.get("host");
       const domain = (host && host.split(":")[0]) || "*";
       const path = req.url;
-      const app = findMatchingApp(domain, path);
+      const app = mainApi.findAppFromRoute(domain, path);
+
       if (app) {
         // An app matches the current route.
         // Proxy the request to it.

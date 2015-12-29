@@ -14,16 +14,15 @@ const HOST_NAME = process.env.HOSTNAME || "unknown";
  * Provides status details about the gateway and apps.
  *
  * @param {Object} settings:
- *                  - apps:       Collection of apps to start.
+ *                  - mainApi:    The main API.
  *                  - manifest:   A manifest object.
- *
  */
 export default (settings = {}) => {
-  const { apps, manifest } = settings;
+  const { mainApi, manifest } = settings;
   const processNameToAppId = (name) => name.split(":")[0];
   const getApp = (id) => {
     id = processNameToAppId(id);
-    return R.find(app => app.id === id, apps);
+    return R.find(app => app.id === id, mainApi.apps);
   };
 
 

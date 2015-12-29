@@ -3,18 +3,31 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+
 ## [Unreleased] - YYYY-MM-DD
+#### Added
+#### Changed
+#### Deprecated
+#### Removed
+#### Fixed
+#### Security
+
+
+
+
+## [1.4.0] - 2015-12-29
 #### Added
 - API: `/api/apps` listing of all the apps (subset of the root status data-set.  
   Makes for a logically consistent API).
 #### Changed
-#### Deprecated
+- Manifest: Now optionally supporting an array of routes per app.
+- Sorting apps by route upon adding them to the main API.
 #### Removed
 - Removed auto-restart when `manifest.yml` file changes.
     - Was causing strange errors.
     - Now when the manifest changes force a restart using the REST api: `/api/restart`
-#### Fixed
-#### Security
+
+
 
 
 ## [1.3.0] - 2015-12-22
@@ -33,11 +46,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updates on Github callback when `manifest.yml` changes.
 
 
+
+
 ## [1.2.0] - 2015-12-16
 #### Added
 - Added secret `tokens` for locking down the API (specified within `manifest.yml`).
 - API Action: Update
 - API Action: Restart
+
+
 
 
 ## [1.1.0] - 2015-12-14
@@ -48,6 +65,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Removed the use of the `file-system-cache` as a means of communicating when other instances are downloading an app.  Now using RabbitMQ and pub/sub for inter-container communication.
 
 
+
+
 ## [1.0.6] - 2015-11-30
 #### Added
 - Reading `targetFolder` from manifest.
@@ -56,12 +75,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - The `TARGET_FOLDER` environment variable.
 
 
+
+
 ## [1.0.1] - 2015-11-30
 #### Added
 - Version of the `app-sync` module on API status.
 #### Changed
 - API as an object on manifest (eg. `api/route`).
   This allows for more details (like `tokens`) to be associated with the API within the manifest.
+
+
 
 
 ## [1.0.0] - 2015-11-29
@@ -73,6 +96,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Changed
 - Only running NPM install when absolutely required (faster).
+
+
 
 
 ## [0.0.2] - 2015-11-8

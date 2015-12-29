@@ -5,6 +5,7 @@ import fsPath from "path";
 import github from "file-system-github";
 import Route from "./route";
 import pm2 from "./pm2";
+import log from "./log";
 import { isEmpty } from "./util";
 import { DEFAULT_APP_PORT, DEFAULT_TARGET_FOLDER } from "./const";
 
@@ -24,6 +25,7 @@ import { getLocalPackage, getRemotePackage } from "./app-package";
  *                             restricted resources.
  *                                 see: https://github.com/settings/tokens
  *            - route:         Route details for directing requests to the app.
+ *                             {String} or {Array} of strings.
  *            - targetFolder:  The root location where apps are downloaded to.
  *            - repo:          The Github 'username/repo'.
  *                             Optionally you can specify a sub-path within the repos
@@ -39,11 +41,12 @@ export default (settings = {}) => {
   if (isEmpty(id)) { throw new Error(`'id' for the app is required`); }
   if (isEmpty(repo)) { throw new Error(`'repo' name required, eg. 'username/my-repo'`); }
   if (isEmpty(userAgent)) { throw new Error(`The github API user-agent must be specified.  See: https://developer.github.com/v3/#user-agent-required`); }
-  if (isEmpty(route)) { throw new Error(`A 'route' must be specified for the '${ id }' app.`); }
-  route = Route.parse(route);
+  if (isEmpty(route)) { throw new Error(`One or more 'route' values must be specified for the '${ id }' app.`); }
+
   branch = branch || "master";
   targetFolder = targetFolder || DEFAULT_TARGET_FOLDER;
   port = port || DEFAULT_APP_PORT;
+  const routes = Route.parseAll(route);
   const WORKING_DIRECTORY = process.cwd();
 
   // Extract the repo and sub-path.
@@ -64,7 +67,7 @@ export default (settings = {}) => {
   const app = {
     id,
     repo,
-    route,
+    routes,
     port,
     branch,
     localFolder,
@@ -169,14 +172,31 @@ export default (settings = {}) => {
             const status = yield this.update({ start: false });
             yield this.stop();
 
-            // Start the app.
-            shell.cd(localFolder);
-            shell.exec(`pm2 start . --name '${ processName }' --node-args '. --port ${ port }'`);
-            shell.cd(WORKING_DIRECTORY);
+            const result = {
+              id,
+              port: this.port,
+              routes: this.routes,
+              version: status.version
+            };
 
-            // Finish.
-            resolve({ id, started: true, port: this.port, route: this.route, version: status.version });
+            if (status.exists !== false) {
+              // Start the app.
+              shell.cd(localFolder);
+              shell.exec(`pm2 start . --name '${ processName }' --node-args '. --port ${ port }'`);
+              shell.cd(WORKING_DIRECTORY);
 
+              result.started = true;
+              result.exists = true;
+              resolve(result);
+
+            } else {
+              // The app does not exist in the remote repo.
+              log.warn(`WARNING: The app '${ id }' cannot be started as it does not exist at: '${ repo.fullPath }:${ branch }'`);
+
+              result.started = false;
+              result.exists = false;
+              resolve(result);
+            }
           } catch (err) { reject(err); }
 
         }).call(this);

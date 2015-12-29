@@ -15,7 +15,6 @@ pm2.connect().then(() => isConnected = true);
  * The API to the gateway service.
  *
  * @param {Object} settings:
- *                  - apps:         Collection of apps to start.
  *                  - middleware:   The express middleware.
  *                  - manifest:     A manifest object.
  *                  - apiRoute:     The base URL to the API.
@@ -23,12 +22,12 @@ pm2.connect().then(() => isConnected = true);
  *
  */
 export default (settings = {}) => {
-  const { apiRoute, apps, middleware, manifest, mainApi } = settings;
+  const { apiRoute, middleware, manifest, mainApi } = settings;
   const baseRoute = Route.parse(apiRoute);
 
-  const status = apiStatus({ apps, manifest });
-  const webhook = apiWebhook({ apps, manifest });
-  const actions = apiActions({ apps, mainApi });
+  const status = apiStatus({ mainApi, manifest });
+  const webhook = apiWebhook({ mainApi });
+  const actions = apiActions({ mainApi });
 
   const tokens = R.pipe(
       R.reject(R.isNil),
