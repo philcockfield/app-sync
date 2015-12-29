@@ -44,13 +44,6 @@ const formatRedirects = (items) => {
   };
 
 
-const redirectUrl = (req, route) => {
-    let { domain, path } = route;
-    if (domain === "*") { domain = req.get("host"); }
-    if (path === "*") { path = "/"; }
-    return `${ req.protocol }://${ domain }/${ path }`;
-  };
-
 
 
 
@@ -60,12 +53,19 @@ const redirectUrl = (req, route) => {
  * @param options:
  *            - middleware:     The express middleware.
  *            - mainApi:        The main API.
+ *            - port:           The gateway port.
  *
 */
 export default (settings = {}) => {
-  const { middleware, mainApi } = settings;
+  const { middleware, mainApi, port } = settings;
   const { manifest } = mainApi;
 
+  const redirectUrl = (req, route) => {
+      let { domain, path } = route;
+      if (domain === "*") { domain = req.get("host").split(":")[0]; }
+      if (path === "*") { path = "/"; }
+      return `${ req.protocol }://${ domain }:${ port }/${ path }`;
+    };
 
   // Read in the redirect table from the manifest (if it exists).
   let redirects = manifest.current && manifest.current.redirect;
