@@ -5,7 +5,7 @@
 **Continuous deployment from Github.**  This module downloads and runs node apps from Github, keeping them in sync with the remote repository based on [Semantic Versioning](http://semver.org/).
 
 
-![Diagram](https://cloud.githubusercontent.com/assets/185555/12045444/87c555fa-af08-11e5-897c-90dce485f2f1.png)
+![Diagram](https://cloud.githubusercontent.com/assets/185555/12055998/4a1564c2-af97-11e5-9b3b-55ebe59e7a2d.png)
 
 
 
@@ -92,13 +92,12 @@ The `repo:` field must be a fully qualified Github repository including the user
 #### Route
 The `route:` field describes a URL pattern to match for the app.  The pattern takes the form of `<domain>/<path>`.  Use a wildcard (`*`) to match any incoming domain. For example:
 
-    www.domain.com
-    api.domain.com
+    domain.com
     domain.com/path
     */path
-    *
-    */*                   # Default if only '*' is specified
-    domain.com/*          # Explicitly stating the wildcard path
+    *                     # Wildcard domain and path.
+    */*                   # Same as the deafult wildcard, single '*'.
+    domain.com/*          # Explicitly stating a wildcard path on a domain.
 
 
 #### Redirect
