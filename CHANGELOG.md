@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
-- `redirect` array within the manifest allowing redirects
+- `redirect` array within the manifest allowing URL redirects
   between paths to be handled by the gateway server.
 #### Changed
 #### Deprecated

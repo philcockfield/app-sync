@@ -5,7 +5,7 @@
 **Continuous deployment from Github.**  This module downloads and runs node apps from Github, keeping them in sync with the remote repository based on [Semantic Versioning](http://semver.org/).
 
 
-![Diagram](https://cloud.githubusercontent.com/assets/185555/11834849/e4a58274-a434-11e5-85b7-258f91182f69.png)
+![Diagram](https://cloud.githubusercontent.com/assets/185555/12045444/87c555fa-af08-11e5-897c-90dce485f2f1.png)
 
 
 
@@ -75,7 +75,6 @@ redirect:
     - `route`: The base route that the API is exposed upon, for example: `*/api`
     - `tokens`: An optional array of passwords to lock the API with. Pass the `token` in the query string.
 - If the `branch` of an app is omitted the default of `master` is used.
-- The optional `redirect` array allows you to catch certain routes within the gateway and force a redirect (`302`) to a different route.
 
 Note - when you make and push changes to the `manifest.yml` file the running containers will not automatically update.  Use the `/api/restart` REST method to force a restart when you are ready.
 
@@ -99,7 +98,34 @@ The `route:` field describes a URL pattern to match for the app.  The pattern ta
     */path
     *
     */*                   # Default if only '*' is specified
-    domain.com/*          # Explicitly stating the wild-card path
+    domain.com/*          # Explicitly stating the wildcard path
+
+
+#### Redirect
+The `redirect` field is an optional array of URL redirection patterns.  Each item in the array takes the form of:
+
+    redirect:
+      - "{from} => {two}"
+
+For example:
+
+- `*/path => */foo`
+
+  Matches any domain with the URL `/path` and redirects to that same domain with the new path `/foo`.
+
+- `www.specific.com => */bar`
+
+  Matches the specific domain and redirects `/` requests to that same domain with the given path, eg. `www.specific.com/bar`
+
+- `www.one.com => www.two.com/foo`
+
+  Redirects from one domain to another optionally with a URL path (in this case `/foo`).
+
+- `* => */foo`
+
+  Root wildcard matches requests to the root with any domain, and redirects them to the given path.
+  IMPORTANT: Make sure your wildcard goes last so that it doesn't eat more specific redirect patterns.
+
 
 
 
