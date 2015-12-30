@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `redirect` array within the manifest allowing URL redirects
   between paths to be handled by the gateway server.
 #### Changed
+- Updated to Babel version 6.
 #### Deprecated
 #### Removed
 #### Fixed
