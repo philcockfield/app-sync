@@ -92,13 +92,12 @@ The `repo:` field must be a fully qualified Github repository including the user
 #### Route
 The `route:` field describes a URL pattern to match for the app.  The pattern takes the form of `<domain>/<path>`.  Use a wildcard (`*`) to match any incoming domain. For example:
 
-    www.domain.com
-    api.domain.com
+    domain.com
     domain.com/path
     */path
-    *
-    */*                   # Default if only '*' is specified
-    domain.com/*          # Explicitly stating the wildcard path
+    *                     # Wildcard domain and path.
+    */*                   # Same as the deafult wildcard, single '*'.
+    domain.com/*          # Explicitly stating a wildcard path on a domain.
 
 
 #### Redirect
