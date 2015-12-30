@@ -5,7 +5,7 @@
 **Continuous deployment from Github.**  This module downloads and runs node apps from Github, keeping them in sync with the remote repository based on [Semantic Versioning](http://semver.org/).
 
 
-![Diagram](https://cloud.githubusercontent.com/assets/185555/11834849/e4a58274-a434-11e5-85b7-258f91182f69.png)
+![Diagram](https://cloud.githubusercontent.com/assets/185555/12045444/87c555fa-af08-11e5-897c-90dce485f2f1.png)
 
 
 
