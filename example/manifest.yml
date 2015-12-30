@@ -20,4 +20,4 @@ apps:
 
 redirect:
   - "localhost/redirect => */one"
-  # - "* => */one"
+  - "* => */foo"

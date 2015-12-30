@@ -48,10 +48,24 @@ const formatRedirects = (items) => {
 const findRedirect = (domain, path, redirects) => {
   if (redirects) {
     const redirect = R.find(item => item.from.match(domain, path), redirects);
-    if (redirect && !redirect.to.match(domain, path)) {
-      // NOTE: Ensure the redirection is not pointing to the current URL.
-      //       This avoids a redirection loop getting started.
-      return redirect;
+
+    if (redirect) {
+      // Check whether the redirection is not pointing to the current URL.
+      // This avoids a redirection loop getting started.
+      const isCurrentUrl = redirect.to.match(domain, path);
+      if (isCurrentUrl) {
+        return;
+      }
+
+      // If the redirect is a root wild-card (ie, no path) ensure the
+      // current URL the user is going to does not have a path.
+      const isRootWildcard = redirect.from.path === "*";
+      if (isRootWildcard && path !== "/") {
+        return;
+      }
+
+      // Finish up.
+      return redirect; //eslint-disable-line consistent-return
     }
   }
 };
