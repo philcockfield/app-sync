@@ -3,18 +3,26 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
-
 ## [Unreleased] - YYYY-MM-DD
 #### Added
-- `redirect` array within the manifest allowing URL redirects
-  between paths to be handled by the gateway server.
 #### Changed
-- Updated to Babel version 6.
 #### Deprecated
 #### Removed
 #### Fixed
-- Route array errors within the REST API.
 #### Security
+
+
+
+## [1.5.0] - 2015-12-31
+#### Added
+- `redirect` array within the manifest allowing URL redirects
+  between paths to be handled by the gateway server.
+
+#### Changed
+- Updated to Babel version 6.
+
+#### Fixed
+- Route array errors within the REST API.
 
 
 
@@ -23,9 +31,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - API: `/api/apps` listing of all the apps (subset of the root status data-set.  
   Makes for a logically consistent API).
+
 #### Changed
 - Manifest: Now optionally supporting an array of routes per app.
 - Sorting apps by route upon adding them to the main API.
+
 #### Removed
 - Removed auto-restart when `manifest.yml` file changes.
     - Was causing strange errors.
@@ -41,9 +51,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Storing `gatewayPort` on the main API, and remembering it on a manifest restart.
 - `restart()` method to the main API.
 - API: `/api/restart` method.
+
 #### Changed
 - API webhook route changed from "api/repo" => "api/github".
 - RabbitMQ can only be specified as an environment variable (no longer declared within `manifest.yml`).
+
 #### Fixed
 - Ensure the system provides clear logs output when PM2 is not installed.
 - Cleaned up repeat error logging on failure to connect to RabbitMQ.
@@ -65,6 +77,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Changed
 - Apps running within different containers are restarted when updated via inter-module communication using RabbitMQ (pub/sub).
 - Updated pub/sub to use the `mq-pubsub` module (https://github.com/philcockfield/mq-pubsub)
+
 #### Removed
 - Removed the use of the `file-system-cache` as a means of communicating when other instances are downloading an app.  Now using RabbitMQ and pub/sub for inter-container communication.
 
@@ -75,6 +88,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Reading `targetFolder` from manifest.
 - Run `CMD` added to `Dockerfile`.
+
 #### Removed
 - The `TARGET_FOLDER` environment variable.
 
@@ -84,6 +98,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.1] - 2015-11-30
 #### Added
 - Version of the `app-sync` module on API status.
+
 #### Changed
 - API as an object on manifest (eg. `api/route`).
   This allows for more details (like `tokens`) to be associated with the API within the manifest.
