@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - YYYY-MM-DD
 #### Added
+- Request handlers for all HTTP verbs (`get, put, post delete`).
 #### Changed
 #### Deprecated
 #### Removed

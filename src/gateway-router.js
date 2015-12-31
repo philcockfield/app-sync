@@ -99,7 +99,8 @@ export default (settings = {}) => {
     redirects = formatRedirects(redirects);
   }
 
-  middleware.get("*", (req, res) => {
+
+  const handleRequest = (req, res) => {
       // Setup initial conditions.
       const host = req.get("host");
       const domain = (host && host.split(":")[0]) || "*";
@@ -129,5 +130,10 @@ export default (settings = {}) => {
           res.status(404).send({ message: "Route not found", domain, path });
         }
       }
-    });
+  };
+
+  middleware.get("*", handleRequest);
+  middleware.put("*", handleRequest);
+  middleware.post("*", handleRequest);
+  middleware.delete("*", handleRequest);
 };
