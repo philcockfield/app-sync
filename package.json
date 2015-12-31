@@ -1,6 +1,6 @@
 {
   "name": "app-sync",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Continuous deployment from Github.",
   "main": "./index.js",
   "scripts": {
@@ -20,7 +20,6 @@
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "babel-register": "^6.3.13",
-
     "amqplib": "^0.4.0",
     "bluebird": "^3.0.5",
     "body-parser": "^1.14.1",
